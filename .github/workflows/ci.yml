@@ -2,18 +2,25 @@ name: CI
 
 on:
   pull_request:
-  push:
-    branches: [main, master]
+    branches: [master]
+  # Reutilizado por deploy.yml en cada push a master
+  workflow_call:
 
 jobs:
+  # El nombre "quality" es el check requerido por la protección de master
   quality:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/package-lock.json
 
       - name: Backend — instalar
         working-directory: backend

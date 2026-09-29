@@ -1,0 +1,58 @@
+name: Backup
+
+on:
+  schedule:
+    - cron: '17 3 * * *' # diario, 03:17 UTC
+  workflow_dispatch:
+
+concurrency:
+  group: backup
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      APP_URL: ${{ secrets.APP_URL }}
+      BACKUP_TOKEN: ${{ secrets.BACKUP_TOKEN }}
+      S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
+      S3_BUCKET: ${{ secrets.S3_BUCKET }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: auto
+    steps:
+      - name: Descargar copia consistente
+        run: |
+          set -euo pipefail
+          echo "TS=$(date -u +%Y-%m-%dT%H%M%SZ)" >> "$GITHUB_ENV"
+          curl --fail -sS -H "Authorization: Bearer $BACKUP_TOKEN" "$APP_URL/api/admin/backup" -o backup.db
+          ls -l backup.db
+
+      - name: Verificar integridad
+        run: |
+          set -euo pipefail
+          result=$(sqlite3 backup.db 'PRAGMA integrity_check')
+          echo "integrity_check: $result"
+          [[ "$result" == "ok" ]]
+
+      - name: Subir al bucket
+        run: |
+          set -euo pipefail
+          aws s3 cp backup.db "s3://$S3_BUCKET/descanso/$TS.db" --endpoint-url "$S3_ENDPOINT"
+
+      # Solo llega aquí si la copia de hoy se subió bien: un fallo nunca borra respaldos (FR-013)
+      - name: Podar respaldos de más de 14 días
+        run: |
+          set -euo pipefail
+          cutoff=$(date -u -d '14 days ago' +%Y-%m-%dT%H:%M:%SZ)
+          keys=$(aws s3api list-objects-v2 --bucket "$S3_BUCKET" --prefix descanso/ --endpoint-url "$S3_ENDPOINT" \
+            --query "Contents[?LastModified<'$cutoff'].Key" --output text)
+          for key in $keys; do
+            [[ "$key" == "None" ]] && continue
+            echo "Borrando $key"
+            aws s3api delete-object --bucket "$S3_BUCKET" --key "$key" --endpoint-url "$S3_ENDPOINT"
+          done

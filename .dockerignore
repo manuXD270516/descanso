@@ -1,0 +1,15 @@
+**/node_modules
+**/dist
+**/.angular
+backend/data
+*.db
+*.db-wal
+*.db-shm
+.git
+.github
+specs
+docs
+.specify
+.claude
+*.log
+.env*

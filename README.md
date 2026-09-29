@@ -1,5 +1,7 @@
 # Descanso — tracker de sueño, siestas y métricas
 
+[![Deploy](https://github.com/manuXD270516/descanso/actions/workflows/deploy.yml/badge.svg?branch=master)](https://github.com/manuXD270516/descanso/actions/workflows/deploy.yml)
+
 Aplicación full-stack para registrar la hora de dormir cada noche, la hora de despertar
 al día siguiente, siestas con inicio y fin, y un panel de métricas configurables
 (escala, número, sí/no o texto) con historial diario.
@@ -20,6 +22,15 @@ sleep-tracker/
 ```
 
 ## Ejecutar en local
+
+Todo en un comando (requiere Docker). La app queda en http://localhost:3000 y los datos en el
+volumen `descanso-data`:
+
+```bash
+docker compose up --build
+```
+
+Sin Docker, en modo desarrollo:
 
 ```bash
 # 1. Backend (puerto 3000)
@@ -43,6 +54,8 @@ cd ../backend && npm start        # sirve frontend/dist/frontend/browser
 | `PORT`          | `3000`                              | Puerto HTTP                              |
 | `DB_PATH`       | `backend/data/sleep.db`             | Ruta del archivo SQLite                  |
 | `FRONTEND_DIST` | `frontend/dist/frontend/browser`    | Carpeta del build de Angular a servir    |
+| `APP_VERSION`   | `dev`                               | Versión desplegada (la inyecta el pipeline en la imagen) |
+| `BACKUP_TOKEN`  | —                                   | Habilita `GET /api/admin/backup` (Bearer); sin definir, el endpoint no existe |
 
 ## API
 
@@ -63,6 +76,8 @@ cd ../backend && npm start        # sirve frontend/dist/frontend/browser
 | PUT    | `/api/metrics/:id/entries/:date`      | `{value}` — crea o actualiza el valor del día      |
 | DELETE | `/api/metrics/:id/entries/:date`      | Borra el valor del día                             |
 | GET    | `/api/stats?from&to`                  | Resumen diario + promedios (sueño, siestas, horas medias) |
+| GET    | `/api/health`                         | `{ok, time, version}` — healthcheck y versión desplegada |
+| GET    | `/api/admin/backup`                   | Copia SQLite consistente; requiere `Authorization: Bearer <BACKUP_TOKEN>` |
 
 Las horas se guardan en ISO 8601 **con offset** (ej. `2026-09-11T23:15:00-04:00`), así los
 promedios de "hora de dormir/despertar" respetan tu zona horaria sin importar dónde
@@ -77,16 +92,43 @@ cd frontend && npm run lint && npx ng test --watch=false --browsers=ChromeHeadle
 
 La especificación, el contrato de la API (`contracts/openapi.yaml`) y la deuda técnica
 conocida están en `specs/001-linea-base/`. CI (`.github/workflows/ci.yml`) ejecuta lint,
-tests y el build de producción en cada pull request.
+tests y el build de producción en cada pull request. Es un check obligatorio para fusionar.
 
 ## Desplegar
 
-### Opción A — Render (recomendada, gratis con disco persistente)
+### Opción A — Pipeline automático a Render (la que se usa)
 
-1. Sube este repositorio a GitHub.
-2. En Render: **New → Blueprint**, selecciona el repo. `render.yaml` ya define el
-   servicio web con Docker y un disco de 1 GB montado en `/data` para la base SQLite.
-3. Listo: la URL pública sirve frontend + API.
+Cada merge a `master` ejecuta el workflow **Deploy**:
+
+1. lint, tests y build (`quality`);
+2. publica la imagen en GHCR (`ghcr.io/manuxd270516/descanso:<sha>` y `:latest`);
+3. la despliega en Render por su SHA;
+4. verifica que `/api/health` devuelve esa versión en ≤ 60 s. La versión aparece también en el
+   pie de la app.
+
+Los PR no se pueden fusionar si `quality` falla.
+
+Configuración única:
+
+1. En Render, **New → Blueprint** con este repo. `render.yaml` define un servicio basado en
+   imagen, en plan de pago (el gratuito no tiene disco persistente), con un disco de 1 GB en
+   `/data` y el health check en `/api/health`. Define `BACKUP_TOKEN` (`openssl rand -hex 32`).
+2. Carga en GitHub (Settings → Secrets → Actions) los secretos listados en
+   [`specs/002-pipeline-ci-cd/contracts/pipeline.md`](specs/002-pipeline-ci-cd/contracts/pipeline.md).
+3. Tras el primer despliegue, marca como público el paquete `descanso` en GHCR para que Render
+   pueda descargarlo.
+
+### Respaldos
+
+El workflow **Backup** corre a diario (03:17 UTC) y también se puede lanzar a mano:
+
+1. descarga una copia consistente de la base con `/api/admin/backup`, protegido con
+   `BACKUP_TOKEN`;
+2. verifica su integridad;
+3. la sube a un bucket privado compatible con S3;
+4. borra las copias de más de 14 días.
+
+Para restaurar, sigue [`docs/runbooks/restaurar-respaldo.md`](docs/runbooks/restaurar-respaldo.md).
 
 ### Opción B — Railway / Fly.io / VPS con Docker
 

@@ -25,8 +25,8 @@ confirmación y credenciales al usuario**; nunca se ejecutan sin permiso.
 
 **Purpose**: una imagen más pequeña y cacheable, que sirve de base a US2 y US4 (research R4).
 
-- [ ] T001 [P] Crear .dockerignore en la raíz con `**/node_modules`, `**/dist`, `**/.angular`, `backend/data`, `*.db`, `*.db-wal`, `*.db-shm`, `.git`, `.github`, `specs`, `docs`, `.specify`, `.claude`, `*.log`, `.env*`
-- [ ] T002 Reescribir Dockerfile (multi-stage, principio V):
+- [X] T001 [P] Crear .dockerignore en la raíz con `**/node_modules`, `**/dist`, `**/.angular`, `backend/data`, `*.db`, `*.db-wal`, `*.db-shm`, `.git`, `.github`, `specs`, `docs`, `.specify`, `.claude`, `*.log`, `.env*`
+- [X] T002 Reescribir Dockerfile (multi-stage, principio V):
   - Etapa `frontend`: igual que ahora.
   - Nueva etapa `backend-deps` (node:22-alpine): `COPY backend/package*.json` → `npm ci --omit=dev --ignore-scripts`. `better-sqlite3` usa su binario precompilado `linuxmusl-x64`.
   - Etapa final: node:22-alpine **sin** `apk add python3 make g++`. Copia `node_modules` desde `backend-deps`, el código del backend y el build de Angular.
@@ -43,8 +43,8 @@ confirmación y credenciales al usuario**; nunca se ejecutan sin permiso.
 **Purpose**: la versión desplegada tiene que poder verificarse. La usan el despliegue (US2) y el
 pie de página (US5).
 
-- [ ] T003 Ampliar backend/test/health.test.js: sin `APP_VERSION`, `GET /api/health` → `version === "dev"`. Crear backend/test/health-version.test.js, que fija `process.env.APP_VERSION = 'abc123'` antes de requerir `./helpers`: → `version === "abc123"`. Ambos deben **fallar** antes de T004.
-- [ ] T004 En backend/src/app.js, añadir `version: process.env.APP_VERSION || 'dev'` a la respuesta de `/api/health` (FR-018; contrato en contracts/openapi-delta.yaml)
+- [X] T003 Ampliar backend/test/health.test.js: sin `APP_VERSION`, `GET /api/health` → `version === "dev"`. Crear backend/test/health-version.test.js, que fija `process.env.APP_VERSION = 'abc123'` antes de requerir `./helpers`: → `version === "abc123"`. Ambos deben **fallar** antes de T004.
+- [X] T004 En backend/src/app.js, añadir `version: process.env.APP_VERSION || 'dev'` a la respuesta de `/api/health` (FR-018; contrato en contracts/openapi-delta.yaml)
 
 **Checkpoint**: `npm test` y `npm run lint` en verde en backend/.
 
@@ -56,7 +56,7 @@ pie de página (US5).
 
 **Independent Test**: un PR con un test roto queda bloqueado; al arreglarlo se desbloquea.
 
-- [ ] T005 [US1] Modificar .github/workflows/ci.yml según contracts/pipeline.md:
+- [X] T005 [US1] Modificar .github/workflows/ci.yml según contracts/pipeline.md:
   - disparadores `pull_request` (branches: [master]) y `workflow_call` (quitar `push`);
   - `timeout-minutes: 10`;
   - `actions/setup-node` con `cache: npm` y `cache-dependency-path: | backend/package-lock.json frontend/package-lock.json`.
@@ -79,7 +79,7 @@ pie de página (US5).
 **Independent Test**: tras un merge, GHCR tiene las dos etiquetas y `$APP_URL/api/health`
 devuelve `version == sha`.
 
-- [ ] T007 [US2] Crear .github/workflows/deploy.yml, parte de publicación:
+- [X] T007 [US2] Crear .github/workflows/deploy.yml, parte de publicación:
   - `name: Deploy`, con `on: push: branches: [master]` y `workflow_dispatch`;
   - `concurrency: { group: deploy-production, cancel-in-progress: false }`;
   - `permissions: { contents: read, packages: write }`.
@@ -93,7 +93,7 @@ devuelve `version == sha`.
     4. `docker/build-push-action` con `push: true`, `build-args: APP_VERSION=${{ github.sha }}` y `cache-from/to: type=gha` (`mode=max` en `cache-to`).
 
   Salida del job: `image=ghcr.io/manuxd270516/descanso:${{ github.sha }}` (FR-004, FR-005).
-- [ ] T008 [US2] Añadir a .github/workflows/deploy.yml el job `deploy` (`needs: publish`, `environment: production`, `timeout-minutes: 20`), según research R6. Pasos bash con `set -euo pipefail`:
+- [X] T008 [US2] Añadir a .github/workflows/deploy.yml el job `deploy` (`needs: publish`, `environment: production`, `timeout-minutes: 20`), según research R6. Pasos bash con `set -euo pipefail`:
   1. `curl -fsS -X POST "$RENDER_DEPLOY_HOOK_URL&imgURL=<image>"`. Si la URL ya tiene `?`, usar `&`; comprobarlo al construirla. Extraer el id del despliegue con `jq -r .deploy.id // .id`. Si la respuesta es 202 sin id, esperar al último despliegue con `GET /v1/services/$RENDER_SERVICE_ID/deploys?limit=1`.
   2. Cada 10 s, durante 15 min como máximo, consultar `GET https://api.render.com/v1/services/$RENDER_SERVICE_ID/deploys/$ID` con `Authorization: Bearer $RENDER_API_KEY`:
      - `live` → continuar;
@@ -101,13 +101,13 @@ devuelve `version == sha`.
   3. Durante 60 s como máximo, consultar `curl -fsS $APP_URL/api/health` cada 5 s hasta que `jq -r .version` == `$GITHUB_SHA`. Si no llega, `exit 1` (FR-007).
 
   Secretos: `RENDER_DEPLOY_HOOK_URL`, `RENDER_API_KEY`, `RENDER_SERVICE_ID` y `APP_URL`.
-- [ ] T009 [P] [US2] Reescribir render.yaml para el servicio `descanso`:
+- [X] T009 [P] [US2] Reescribir render.yaml para el servicio `descanso`:
   - `type: web`, `runtime: image`, `image: { url: ghcr.io/manuxd270516/descanso:latest }`;
   - `plan`: el plan de pago más pequeño que admita disco, con el nombre que acepte hoy el Blueprint (verificarlo en la documentación de Render; research R5);
   - `healthCheckPath: /api/health`;
   - `disk: { name: descanso-data, mountPath: /data, sizeGB: 1 }`;
   - `envVars`: `DB_PATH=/data/sleep.db` y `BACKUP_TOKEN` con `sync: false`;
-  - `autoDeploy: false`, porque despliega el pipeline.
+  - ~~`autoDeploy: false`~~: no aplica. Según la documentación del Blueprint, los servicios basados en imagen no se redespliegan solos; solo lo hace el deploy hook. Plan usado: `0.5c-512mb`, porque `starter` ya no existe.
 - [ ] T010 [US2] **(manual, usuario)** Guía paso a paso y, con confirmación, apoyo:
   1. crear o actualizar el servicio en Render desde el Blueprint (si el servicio existente es `runtime: docker`, antes descargar un respaldo manual; riesgo R-04);
   2. generar `BACKUP_TOKEN` con `openssl rand -hex 32` y cargarlo en Render;
@@ -127,7 +127,7 @@ restauración probada.
 **Independent Test**: lanzar `Backup` a mano, ver el archivo en el bucket y restaurarlo en local
 con el runbook.
 
-- [ ] T011 [P] [US3] Crear backend/test/admin.test.js. Deben **fallar** antes de T012:
+- [X] T011 [P] [US3] Crear backend/test/admin.test.js. Deben **fallar** antes de T012:
   - sin `BACKUP_TOKEN` en el entorno, `GET /api/admin/backup` → 404. Este caso va en un archivo aparte, backend/test/admin-disabled.test.js, porque la variable se lee al montar la ruta;
   - con `BACKUP_TOKEN=t0k3n` fijado antes de requerir la app:
     - sin cabecera → 401 `{error:'No autorizado'}`;
@@ -135,13 +135,13 @@ con el runbook.
     - con `Bearer t0k3n` → 200, `Content-Type` `application/octet-stream` y `Content-Disposition` con `descanso-…db`.
   - El cuerpo, guardado en un temporal y abierto con better-sqlite3, contiene una noche creada antes por la API y pasa `PRAGMA integrity_check` = `ok`.
   - Tras la respuesta, no queda ningún archivo temporal de respaldo en `os.tmpdir()`.
-- [ ] T012 [US3] Crear backend/src/routes/admin.js y montarlo en backend/src/app.js **solo si** `process.env.BACKUP_TOKEN` está definido (`app.use('/api/admin', require('./routes/admin'))`). Comportamiento:
+- [X] T012 [US3] Crear backend/src/routes/admin.js y montarlo en backend/src/app.js **solo si** `process.env.BACKUP_TOKEN` está definido (`app.use('/api/admin', require('./routes/admin'))`). Comportamiento:
   - `GET /backup` compara el Bearer con `crypto.timingSafeEqual`, comprobando antes que las longitudes coincidan; si no, responde 401 `{error:'No autorizado'}`;
   - hace `await db.backup(tmp)` con `tmp = path.join(os.tmpdir(), 'descanso-<timestamp>.db')`;
   - `res.download(tmp, 'descanso-<YYYY-MM-DDTHHMMSSZ>.db', () => fs.rm(tmp, {force:true}))`.
 
   Contrato: contracts/openapi-delta.yaml (FR-021).
-- [ ] T013 [US3] Crear .github/workflows/backup.yml según contracts/pipeline.md:
+- [X] T013 [US3] Crear .github/workflows/backup.yml según contracts/pipeline.md:
   - `schedule: - cron: '17 3 * * *'` y `workflow_dispatch`;
   - `concurrency: backup`;
   - `timeout-minutes: 10`.
@@ -154,7 +154,7 @@ con el runbook.
 
   Env: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_DEFAULT_REGION: auto`, `S3_ENDPOINT`, `S3_BUCKET`, `APP_URL`, `BACKUP_TOKEN` (FR-010 a FR-013, FR-020).
 - [ ] T014 [US3] **(manual, usuario)** Crear el bucket privado compatible con S3 y unas credenciales limitadas a él, y cargar en GitHub los secretos `S3_ENDPOINT`, `S3_BUCKET`, `AWS_ACCESS_KEY_ID` y `AWS_SECRET_ACCESS_KEY` (el usuario introduce los valores)
-- [ ] T015 [P] [US3] Crear docs/runbooks/restaurar-respaldo.md (research R9):
+- [X] T015 [P] [US3] Crear docs/runbooks/restaurar-respaldo.md (research R9):
   - requisitos;
   - cómo listar y descargar respaldos (`aws s3 ls`, `aws s3 cp` con `--endpoint-url`);
   - **variante local**: `docker compose down`, copiar el archivo al volumen `descanso-data` (`docker run --rm -v descanso-data:/data -v "$PWD":/in alpine cp /in/<archivo>.db /data/sleep.db` y borrar `sleep.db-wal`/`-shm`), `docker compose up`, verificar;
@@ -174,12 +174,12 @@ va en la Fase 8.
 **Independent Test**: clon limpio → comando → app en :3000; los datos sobreviven a
 `down` + `up`.
 
-- [ ] T016 [US4] Crear compose.yaml en la raíz:
+- [X] T016 [US4] Crear compose.yaml en la raíz:
   - `services.app`: `build: .`, `ports: ["3000:3000"]`, `volumes: ["descanso-data:/data"]`, `environment: { DB_PATH: /data/sleep.db }`, `restart: unless-stopped`;
   - `volumes: { descanso-data: {} }`.
 
   Sin `APP_VERSION`, para que el pie muestre "dev" (FR-015).
-- [ ] T017 [US4] Verificar en local:
+- [X] T017 [US4] Verificar en local:
   1. `docker compose up --build -d` → `/api/health` responde `version:"dev"` y el contenedor queda `healthy`;
   2. crear una noche con la API y hacer `docker compose down` + `up -d` → la noche sigue;
   3. cronometrar la primera construcción (SC-007: < 10 min);
@@ -193,14 +193,14 @@ va en la Fase 8.
 
 **Independent Test**: el pie muestra los 7 primeros caracteres de la versión, o "dev".
 
-- [ ] T018 [P] [US5] Ampliar frontend/src/app/app.spec.ts. Deben **fallar** antes de T019:
+- [X] T018 [P] [US5] Ampliar frontend/src/app/app.spec.ts. Deben **fallar** antes de T019:
   - con `HttpTestingController`, al responder `/api/health` con `{ok:true, version:'a6efe9b68d08a574233ce72d5ade7d40babfb739'}`, el `footer` muestra `a6efe9b`;
   - con `version:'dev'`, muestra `dev`;
   - si `/api/health` falla, el pie no rompe la app y no muestra versión.
 
   Usar `match` para descartar las peticiones de los componentes hijos.
-- [ ] T019 [US5] Añadir `health(): Observable<{ ok: boolean; time: string; version: string }>` en frontend/src/app/core/api.service.ts. En frontend/src/app/app.ts, añadir la signal `version`, cargada una vez con `api.health()`; si el valor tiene 40 caracteres hexadecimales se recorta a 7, y en caso contrario se usa tal cual. En frontend/src/app/app.html, añadir `<footer class="version muted small">Versión <span class="tabular">{{ version() }}</span></footer>`, que solo se muestra si hay versión. Estilo discreto en frontend/src/app/app.css (FR-017)
-- [ ] T020 [P] [US5] Actualizar README.md:
+- [X] T019 [US5] Añadir `health(): Observable<{ ok: boolean; time: string; version: string }>` en frontend/src/app/core/api.service.ts. En frontend/src/app/app.ts, añadir la signal `version`, cargada una vez con `api.health()`; si el valor tiene 40 caracteres hexadecimales se recorta a 7, y en caso contrario se usa tal cual. En frontend/src/app/app.html, añadir `<footer class="version muted small">Versión <span class="tabular">{{ version() }}</span></footer>`, que solo se muestra si hay versión. Estilo discreto en frontend/src/app/app.css (FR-017)
+- [X] T020 [P] [US5] Actualizar README.md:
   - badge `Deploy` al principio (research R11);
   - sección "Entorno local": `docker compose up --build`;
   - "Desplegar": pipeline automático, secretos necesarios (enlace a specs/002-pipeline-ci-cd/contracts/pipeline.md) y plan de pago con disco;
@@ -212,7 +212,7 @@ va en la Fase 8.
 
 ## Phase 8: Polish & Cross-Cutting Concerns
 
-- [ ] T021 Puerta de calidad local: `npm run lint` y `npm test` en backend/; `npm run lint`, `ng test --watch=false --browsers=ChromeHeadless` y `ng build` en frontend/; `docker build .` sin errores
+- [X] T021 Puerta de calidad local: `npm run lint` y `npm test` en backend/; `npm run lint`, `ng test --watch=false --browsers=ChromeHeadless` y `ng build` en frontend/; `docker build .` sin errores
 - [ ] T022 Validación de extremo a extremo con quickstart.md §3–5, una vez hechas T006, T010 y T014:
   - PR bloqueado en rojo y desbloqueado en verde, con su duración (SC-001);
   - merge → despliegue verificado y versión en el pie (SC-002);

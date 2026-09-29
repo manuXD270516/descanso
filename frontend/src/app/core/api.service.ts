@@ -62,6 +62,12 @@ export interface Stats {
   };
 }
 
+export interface Health {
+  ok: boolean;
+  time: string;
+  version: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private http = inject(HttpClient);
@@ -122,6 +128,11 @@ export class ApiService {
   }
   deleteEntry(metricId: number, date: string): Observable<void> {
     return this.http.delete<void>(`${this.base}/metrics/${metricId}/entries/${date}`);
+  }
+
+  // Salud y versión desplegada
+  health(): Observable<Health> {
+    return this.http.get<Health>(`${this.base}/health`);
   }
 
   // Estadísticas

@@ -50,3 +50,12 @@
   .tabs { justify-content: stretch; }
   .tab { flex: 1; text-align: center; }
 }
+
+.version {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 1rem 1.5rem;
+  color: var(--ink-dim);
+  font-size: 0.75rem;
+  text-align: center;
+}

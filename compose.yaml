@@ -1,0 +1,18 @@
+# Entorno local completo en un comando: docker compose up --build
+# App en http://localhost:3000 (API + frontend), datos en el volumen "descanso-data"
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      DB_PATH: /data/sleep.db
+      # Opcional, para probar /api/admin/backup en local; vacío = endpoint deshabilitado
+      BACKUP_TOKEN: ${BACKUP_TOKEN:-}
+    volumes:
+      - descanso-data:/data
+    restart: unless-stopped
+
+volumes:
+  descanso-data:
+    name: descanso-data

@@ -1,12 +1,19 @@
 services:
   - type: web
     name: descanso
-    runtime: docker
-    plan: free
-    envVars:
-      - key: DB_PATH
-        value: /data/sleep.db
+    # Imagen publicada por .github/workflows/deploy.yml; el pipeline despliega por SHA con el deploy hook (imgURL)
+    runtime: image
+    image:
+      url: ghcr.io/manuxd270516/descanso:latest
+    # El plan gratuito no admite disco persistente; este es el plan de pago más pequeño
+    plan: 0.5c-512mb
+    healthCheckPath: /api/health
     disk:
       name: descanso-data
       mountPath: /data
       sizeGB: 1
+    envVars:
+      - key: DB_PATH
+        value: /data/sleep.db
+      - key: BACKUP_TOKEN
+        sync: false
