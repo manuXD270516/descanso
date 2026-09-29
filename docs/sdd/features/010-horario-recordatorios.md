@@ -117,3 +117,5 @@ Criterios de aceptación medibles por cada historia. Marca [NEEDS CLARIFICATION]
 **Coste de operación:** 0 $. El servidor no programa nada, así que no hace falta `zonedToUtc`.
 
 **Datos:** la exportación de 004 y el borrado incluyen el horario.
+
+**Aislamiento:** Sus rutas usan la capa `repo/` con `userId` (feature 008) y se añaden a la suite de aislamiento de dos usuarios de 008.

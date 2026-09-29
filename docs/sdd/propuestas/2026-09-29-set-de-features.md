@@ -16,13 +16,15 @@ las seis áreas que pediste: las cuatro iniciales más gamificación y recordato
 | 006 | Diario opcional, ciclos y honestidad de datos | **REM / fases (sin sensores)** | S/M | Lista para especificar |
 | 010 | Mi horario de sueño y recordatorios (sin servidor) | **Recordatorios** | S/M | Lista para especificar (tras un spike de calendario) |
 | 011 | Rachas de constancia | **Gamificación** | S/M | Lista para especificar |
-| 007 | Importar mi sueño del reloj por archivo | **REM medido + wearables, paso 1** | L | Tras un spike técnico; depende de tu dispositivo |
-| 008 | Multiusuario completo (invitaciones, aislamiento, borrar cuenta) | **Multiusuario, paso 2** | L | Condicionada: ¿quién más la usará? |
+| 007 | Importar mi sueño de la pulsera o reloj por archivo (**Huawei** y Apple) | **REM medido + wearables, paso 1** | L | **Lista** tras un spike con tu exportación real de Huawei |
+| 008 | Multiusuario con perfiles (invitaciones, aislamiento, perfil, borrar cuenta) | **Multiusuario, paso 2** | L | **Lista para especificar** (P1 = sí) |
 | 009 | Sincronización automática con un reloj o anillo (OAuth) | **Wearables, paso 2** | L | Condicionada: ¿qué dispositivo usas? |
-| 012 | App instalable en el móvil (PWA) | **Recordatorios, paso 2** | S–M | Condicionada: iPhone **y** avisos con la app cerrada (P5) |
-| 013 | Avisos push con la app cerrada | **Recordatorios, paso 3** | M | Condicionada: P5 acepta el coste (+ 012 solo en iPhone) |
+| 012 | App instalable en el móvil (PWA) | **Recordatorios, paso 2** | S–M | **Descartada por ahora**: usas Android, que recibe push sin instalar la app |
+| 013 | Avisos push con la app cerrada | **Recordatorios, paso 3** | M | Condicionada al coste (≈ 3,1 $/mes de cómputo en total): pendiente de tu techo |
 
-**Orden de ejecución**: 003 → 004 → 005 → 006 → 010 → 011 → [007] → [008] → [009] → [012] → [013].
+**Orden de ejecución** (actualizado con tus respuestas): 003 → 004 → **008** → 005 → 006 → 010 → 011 → 007 (Huawei) → [009] → [013].
+
+008 se adelanta para que todo lo posterior nazca aislado por usuario y no haya que reescribir consultas dos veces.
 Los corchetes indican una feature condicionada.
 
 Hay dos decisiones que ordenan todo el conjunto:
@@ -51,6 +53,14 @@ Se usaron cuatro patrones de trabajo con agentes, en dos rondas: la primera para
    - en cada ronda hubo una revisión dirigida y una reevaluación: V-01…V-13 en la primera y V-14…V-23 en la segunda.
 
 Las puntuaciones están en [Evaluación](#evaluación).
+
+## Decisiones tomadas (2026-09-29)
+
+| # | Respuesta | Efecto |
+|---|-----------|--------|
+| P1 | **Sí**: habrá varios usuarios, con perfiles | 008 lista para especificar (entrada [`008-multiusuario-perfiles.md`](../features/008-multiusuario-perfiles.md)), adelantada tras 004. Enmienda MAJOR de alcance antes de su plan |
+| P2 | **Huawei Band** ("Band Pro 7"; probablemente una Band 7), con la app Huawei Health | **Sí se obtienen horas y fases.** 007 pasa a estar lista, con la importación de Huawei como P1 (anexo [16-react-G-huawei](anexos-2026-09-29/16-react-G-huawei.md)). La sincronización automática solo sería posible vía Health Sync (de pago) → Google Health API (009, opcional) |
+| P5 | **Android** | 012 (PWA) se descarta. La guía de 010 prioriza Android (Google Calendar web o el calendario del fabricante). 013 queda pendiente solo del techo de coste |
 
 ## Tus decisiones pendientes (6 preguntas)
 
@@ -82,6 +92,7 @@ exponen datos en el propio dispositivo requieren una app nativa, que queda fuera
 | Google Health Connect (Android) | Sí | No: solo en el dispositivo | App Android | No viable |
 | Garmin | Sí | Sí, pero **solo para empresas** | Aprobación comercial | No viable para uso personal |
 | Samsung Health | Sí | No: solo socios | Programa de socios | No viable |
+| **Huawei Band / Huawei Health** (tu dispositivo) | Sí (ligero, profundo, REM, despierto + siestas) | **No por API** para particulares (Health Kit REST exige una app en AppGallery o ser empresa). **Sí importando la exportación** del Centro de privacidad (ZIP cifrado con JSON) | 0 $; el export tarda hasta 7 días | **Viable por archivo (007)**; sincronización automática solo vía la app de pago Health Sync → Google Health API (009, condicionado) |
 | Xiaomi / Amazfit (Zepp) | En su app | Sin API pública oficial | — | No viable de forma directa |
 | Agregadores (Terra, Rook, Sahha…) | Normalizan | Sí | 299–499 $/mes | No viable por coste |
 
@@ -327,7 +338,7 @@ motivar la *constancia*. Es opcional y se puede ocultar (enmienda VIII).
   - `TICK_TOKEN` con rate limit;
   - ventana de recuperación de avisos perdidos mayor que la duración de un despliegue.
 
-**008 · Multiusuario completo (L).** Condición: P1 confirma otros usuarios reales. Se apoya en 004, que ya
+**008 · Multiusuario con perfiles (L).** **Condición cumplida** (P1 = sí). Entrada: [`008-multiusuario-perfiles.md`](../features/008-multiusuario-perfiles.md). Añade la historia "Mi perfil": nombre, zona horaria, objetivo y preferencias. Se apoya en 004, que ya
 deja `user_id` en todas las tablas.
 
 - Invitaciones de un solo uso que caducan a las 72 h. Registro sin invitación → 403.
@@ -407,7 +418,7 @@ Se aplican con `/speckit-constitution`, cada una **antes del plan** de la featur
 | II: reconstruir una tabla con copia verificada en la misma migración (patrón SQLite de 12 pasos) no es "DROP de datos"; toda migración va por el runner con respaldo previo | PATCH | Plan de 004 |
 | VIII nuevo "Datos de salud: privacidad y honestidad": origen declarado, lenguaje no clínico, "sin dato" ≠ 0, estadísticos solo con n mínima y en lenguaje no causal, consentimiento y revocación por fuente, tokens cifrados, **notificaciones sin datos de salud** | MINOR | Plan de 006 |
 | VIII, ampliación: la motivación se basa solo en conductas controlables; se prohíben las puntuaciones de resultado, la comparación social, las recompensas canjeables y las alertas de pérdida; toda gamificación es opcional y ocultable | MINOR | Plan de 011 |
-| II: el borrado que pide el propio usuario (de una fuente o de su cuenta) no es DROP | MINOR | Plan de 007 |
+| II: el borrado que pide el propio usuario (de una fuente o de su cuenta) no es DROP | MINOR | Plan de 008 (el primero que la necesita) |
 | Alcance: de mono-usuario a multiusuario con aislamiento estricto | MAJOR | Plan de 008 |
 
 ## Evaluación
@@ -423,6 +434,8 @@ checklist completo.
 | 005 | 4,65 · aprobada | V-07 | **4,65 · aprobada** |
 | 006 | 4,20 · aprobada | V-08, V-09 | **4,20 · aprobada** |
 | 007 | 3,30 · revisión | V-10 a V-12, V-13 | **3,90 · aprobada** (sujeta a P2 y al spike) |
+| 007 con Huawei (tras P2) | 3,80 · revisión | V-27 a V-29 | **4,10 · aprobada** (sujeta al spike con tu exportación real) |
+| 008 como entrada completa (tras P1) | 4,30 · revisión | V-24 a V-26, V-30 | **4,45 · aprobada** |
 | 010 | 4,50 · revisión | V-14, V-16, V-17 | **4,60 · aprobada** (sujeta al spike de calendario) |
 | 011 | 4,10 · revisión | V-15, V-18 a V-23 | **4,45 · aprobada** |
 

@@ -17,7 +17,7 @@ Quiero entender mi descanso a lo largo del tiempo: si duermo las horas que quier
 - **(P2) Regularidad en palabras.**
   - Veo cuánto varía mi hora de dormir y la de despertar, por ejemplo "±40 min".
   - Con menos de 7 noches veo "Aún no hay datos suficientes".
-- **(P2) Bienvenida.** La primera vez, una pantalla opcional me pregunta cuántas horas quiero dormir. Si la salto, el objetivo queda en 7 h. Las features 010 (horario) y 011 (racha) amplían esta misma bienvenida; no crean otras.
+- **(P2) Bienvenida.** La primera vez de **cada usuario**, una pantalla opcional me pregunta cuántas horas quiero dormir. Si la salto, el objetivo queda en 7 h. Las features 010 (horario) y 011 (racha) amplían esta misma bienvenida; no crean otras.
 - **(P2) Gráficos accesibles.**
   - Cada gráfico, incluida la cinta de 14 noches actual, tiene una descripción y una tabla alternativa.
   - El texto tenue cumple un contraste de 4,5:1 o más.
@@ -59,3 +59,5 @@ Diseño de referencia: `docs/sdd/propuestas/2026-09-29-set-de-features.md` (feat
 - Deuda y desviación circular con fixtures.
 - Contrato del endpoint.
 - E2E de la pestaña con datos sembrados.
+
+**Aislamiento:** Sus rutas usan la capa `repo/` con `userId` (feature 008) y se añaden a la suite de aislamiento de dos usuarios de 008.

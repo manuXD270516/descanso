@@ -60,3 +60,4 @@ Diseño de referencia: `docs/sdd/propuestas/2026-09-29-set-de-features.md` (feat
   - ciclos de 70 a 110 min;
   - AASM: la tecnología de consumo no diagnostica;
   - riesgo de ortosomnia, por eso no hay puntuaciones.
+- **Aislamiento:** Sus rutas usan la capa `repo/` con `userId` (feature 008) y se añaden a la suite de aislamiento de dos usuarios de 008.

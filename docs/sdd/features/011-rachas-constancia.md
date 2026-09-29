@@ -121,3 +121,6 @@ Criterios de aceptación medibles por cada historia. Marca [NEEDS CLARIFICATION]
 
 **Exportación y borrado**
 - Incluyen los ajustes y los logros.
+
+**Aislamiento**
+- Sus rutas usan la capa `repo/` con `userId` (feature 008) y se añaden a la suite de aislamiento de dos usuarios de 008.
