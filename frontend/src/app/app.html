@@ -1,0 +1,21 @@
+<header class="top">
+  <h1 class="wordmark">Descanso</h1>
+  <nav class="tabs" aria-label="Secciones">
+    @for (t of tabs; track t.id) {
+      <button
+        type="button"
+        class="tab"
+        [class.active]="tab() === t.id"
+        [attr.aria-current]="tab() === t.id ? 'page' : null"
+        (click)="tab.set(t.id)">{{ t.label }}</button>
+    }
+  </nav>
+</header>
+
+<main class="content">
+  @switch (tab()) {
+    @case ('night') { <app-night /> }
+    @case ('naps') { <app-naps /> }
+    @case ('metrics') { <app-metrics /> }
+  }
+</main>

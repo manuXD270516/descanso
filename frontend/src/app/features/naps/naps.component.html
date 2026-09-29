@@ -1,0 +1,54 @@
+@if (error()) { <p class="error" role="alert">{{ error() }}</p> }
+
+<section class="panel form">
+  <h2>Nueva siesta</h2>
+  <div class="grid-2">
+    <label class="field"><span>Inicio</span><input type="datetime-local" [(ngModel)]="form.start"></label>
+    <label class="field"><span>Fin</span><input type="datetime-local" [(ngModel)]="form.end"></label>
+  </div>
+  <label class="field"><span>Notas (opcional)</span><input type="text" [(ngModel)]="form.notes" placeholder="Ej. después del almuerzo"></label>
+  <div class="row between">
+    <span class="muted small tabular">{{ formDuration() ? 'Duración: ' + fmtDuration(formDuration()) : 'El fin debe ser posterior al inicio' }}</span>
+    <button class="btn btn-dawn" type="button" (click)="save()" [disabled]="busy() || !formDuration()">Guardar siesta</button>
+  </div>
+</section>
+
+<section class="list">
+  <h2>Últimos 30 días</h2>
+  @if (grouped().length === 0) {
+    <p class="empty">Sin siestas registradas todavía. Añade la primera arriba.</p>
+  }
+  @for (g of grouped(); track g.date) {
+    <div class="day">
+      <div class="day-head">
+        <span class="day-date">{{ fmtDateShort(g.date) }}</span>
+        <span class="muted small tabular">{{ g.items.length }} {{ g.items.length === 1 ? 'siesta' : 'siestas' }} · {{ fmtDuration(g.total) }}</span>
+      </div>
+      @for (n of g.items; track n.id) {
+        <article class="panel nap">
+          @if (editingId() === n.id) {
+            <div class="grid-2">
+              <label class="field"><span>Inicio</span><input type="datetime-local" [(ngModel)]="edit.start"></label>
+              <label class="field"><span>Fin</span><input type="datetime-local" [(ngModel)]="edit.end"></label>
+            </div>
+            <label class="field"><span>Notas</span><input type="text" [(ngModel)]="edit.notes"></label>
+            <div class="row end">
+              <button class="btn btn-ghost btn-sm" type="button" (click)="editingId.set(null)">Cancelar</button>
+              <button class="btn btn-sm" type="button" (click)="saveEdit(n.id)" [disabled]="busy()">Guardar cambios</button>
+            </div>
+          } @else {
+            <div class="nap-main">
+              <span class="tabular">{{ fmtTime(n.start_time) }} → {{ fmtTime(n.end_time) }}</span>
+              <span class="nap-dur tabular">{{ fmtDuration(n.duration_min) }}</span>
+            </div>
+            @if (n.notes) { <p class="small muted">{{ n.notes }}</p> }
+            <div class="row end">
+              <button class="btn btn-ghost btn-sm" type="button" (click)="startEdit(n)">Editar</button>
+              <button class="btn btn-ghost btn-sm btn-danger" type="button" (click)="remove(n)">Eliminar</button>
+            </div>
+          }
+        </article>
+      }
+    </div>
+  }
+</section>

@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: descanso
+    runtime: docker
+    plan: free
+    envVars:
+      - key: DB_PATH
+        value: /data/sleep.db
+    disk:
+      name: descanso-data
+      mountPath: /data
+      sizeGB: 1

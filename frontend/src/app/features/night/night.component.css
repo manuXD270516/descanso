@@ -1,0 +1,57 @@
+:host { display: grid; gap: 1rem; }
+
+.state { display: grid; gap: 0.6rem; border-color: var(--moon-deep); }
+.state.sleeping { border-color: var(--dawn-deep); }
+.state-title { font-size: 1.5rem; font-weight: 600; letter-spacing: -0.02em; }
+.state-title strong { color: var(--dawn); }
+.state input[type="datetime-local"] { flex: 1; min-width: 200px; }
+.wrap { flex-wrap: wrap; }
+.manual-toggle { justify-self: start; }
+.manual { display: grid; gap: 0.75rem; padding-top: 0.5rem; border-top: 1px solid var(--line); }
+.end { justify-content: flex-end; }
+.between { justify-content: space-between; }
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+.summary > div { display: grid; gap: 0.1rem; padding: 0.6rem 0.75rem; background: var(--night-2); border-radius: var(--radius-sm); }
+.num { font-size: 1.25rem; font-weight: 600; letter-spacing: -0.01em; }
+.lbl { font-size: 0.75rem; color: var(--ink-dim); line-height: 1.2; }
+@media (max-width: 560px) { .summary { grid-template-columns: 1fr 1fr; } }
+
+/* Cinta */
+.ribbon-panel { display: grid; gap: 0.5rem; }
+.legend { display: inline-flex; align-items: center; gap: 0.4rem; }
+.sw { display: inline-block; width: 12px; height: 8px; border-radius: 3px; }
+.sw.moon { background: var(--moon); }
+.sw.dawn { background: var(--dawn); }
+.axis { position: relative; height: 1.1rem; margin-left: 4.6rem; }
+.axis span { position: absolute; transform: translateX(-50%); }
+.axis span:first-child { transform: none; }
+.axis span:last-child { transform: translateX(-100%); }
+.ribbons { display: grid; gap: 6px; }
+.ribbon-row { display: grid; grid-template-columns: 4.2rem 1fr; gap: 0.4rem; align-items: center; }
+.ribbon-label { white-space: nowrap; text-transform: capitalize; }
+.track {
+  position: relative;
+  height: 16px;
+  background: repeating-linear-gradient(90deg, var(--night-3) 0 1px, transparent 1px 25%);
+  border-radius: 4px;
+}
+.bar { position: absolute; top: 0; height: 100%; border-radius: 4px; }
+.bar.sleep { background: var(--moon); }
+.bar.nap { background: var(--dawn); top: 3px; height: 10px; }
+
+/* Lista */
+.list { display: grid; gap: 0.6rem; }
+.record { display: grid; gap: 0.5rem; padding: 0.85rem 1rem; }
+.record-main { display: grid; grid-template-columns: 1fr auto auto; gap: 0.75rem; align-items: baseline; }
+.record-date { font-weight: 600; text-transform: capitalize; }
+.record-dur { color: var(--moon); font-weight: 600; }
+@media (max-width: 420px) { .record-main { grid-template-columns: 1fr; gap: 0.15rem; } }
+
+@media (max-width: 420px) {
+  .ribbon-panel .between { flex-direction: column; align-items: flex-start; gap: 0.2rem; }
+}

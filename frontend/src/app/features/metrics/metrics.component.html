@@ -1,0 +1,162 @@
+@if (error()) { <p class="error" role="alert">{{ error() }}</p> }
+
+<!-- Selector de día -->
+<section class="day-picker">
+  <button class="btn btn-ghost" type="button" (click)="shiftDate(-1)" aria-label="Día anterior">‹</button>
+  <div class="day-center">
+    <span class="day-label">{{ date() === today ? 'Hoy' : fmtDateShort(date()) }}</span>
+    <input type="date" [ngModel]="date()" (ngModelChange)="setDate($event)" [max]="today" aria-label="Fecha">
+  </div>
+  <button class="btn btn-ghost" type="button" (click)="shiftDate(1)" [disabled]="date() >= today" aria-label="Día siguiente">›</button>
+</section>
+
+<!-- Registro del día -->
+<section class="entries">
+  @if (active().length === 0) {
+    <p class="empty">No hay métricas activas. Crea la primera desde el panel de configuración.</p>
+  }
+  @for (m of active(); track m.id) {
+    <article class="panel metric" [style.--accent]="m.color">
+      <div class="metric-head">
+        <h3>{{ m.name }}</h3>
+        @if (m.unit) { <span class="muted small">{{ m.unit }}</span> }
+      </div>
+
+      @switch (m.type) {
+        @case ('scale') {
+          <div class="scale" role="radiogroup" [attr.aria-label]="m.name">
+            @for (v of scaleValues(m); track v) {
+              <button type="button" class="scale-btn tabular" role="radio"
+                [attr.aria-checked]="value(m.id) === '' + v"
+                [class.on]="value(m.id) === '' + v"
+                (click)="setValue(m, value(m.id) === '' + v ? '' : v)">{{ v }}</button>
+            }
+          </div>
+        }
+        @case ('number') {
+          <input type="number" class="num-input tabular" [ngModel]="value(m.id) ?? ''" (ngModelChange)="setValue(m, $event)"
+            [min]="m.min_value" [max]="m.max_value" step="any" placeholder="—" [attr.aria-label]="m.name">
+        }
+        @case ('boolean') {
+          <button type="button" class="bool" [class.yes]="value(m.id) === '1'" [class.no]="value(m.id) === '0'" (click)="toggleBool(m)">
+            {{ value(m.id) === '1' ? 'Sí' : value(m.id) === '0' ? 'No' : 'Sin registrar' }}
+          </button>
+        }
+        @case ('text') {
+          <input type="text" [ngModel]="value(m.id) ?? ''" (ngModelChange)="setValue(m, $event)" placeholder="Escribe una nota" [attr.aria-label]="m.name">
+        }
+      }
+    </article>
+  }
+</section>
+
+<!-- Historial -->
+@if (active().length > 0) {
+  <section class="panel history">
+    <h2>Últimos 7 días</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            @for (d of historyDates(); track d) { <th class="small muted">{{ fmtDateShort(d).split(',')[0] }}<br><span class="faint">{{ d.slice(8) }}</span></th> }
+          </tr>
+        </thead>
+        <tbody>
+          @for (m of active(); track m.id) {
+            <tr>
+              <th class="row-name"><i class="dot" [style.background]="m.color"></i>{{ m.name }}</th>
+              @for (d of historyDates(); track d) {
+                <td class="tabular" [class.faint]="value(m.id, d) === undefined" [class.today]="d === date()">{{ display(m, d) }}</td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+}
+
+<!-- Panel de configuración -->
+<section class="panel config">
+  <div class="row between">
+    <h2>Configurar métricas</h2>
+    <button class="btn btn-sm" type="button" (click)="newMetric()">Nueva métrica</button>
+  </div>
+
+  @if (configOpen()) {
+    <div class="form">
+      <h3>{{ form().id === null ? 'Nueva métrica' : 'Editar métrica' }}</h3>
+      <label class="field"><span>Nombre</span>
+        <input type="text" [ngModel]="form().name" (ngModelChange)="patch('name', $event)" placeholder="Ej. Estado de ánimo" maxlength="60">
+      </label>
+      <div class="field"><span>Tipo</span>
+        <div class="types">
+          @for (t of types; track t.id) {
+            <button type="button" class="type-btn" [class.on]="form().type === t.id" (click)="onTypeChange(t.id)">
+              <strong>{{ t.label }}</strong><span class="small muted">{{ t.hint }}</span>
+            </button>
+          }
+        </div>
+      </div>
+      @if (form().type === 'scale' || form().type === 'number') {
+        <div class="grid-3">
+          <label class="field"><span>Mínimo{{ form().type === 'number' ? ' (opcional)' : '' }}</span>
+            <input type="number" [ngModel]="form().min_value" (ngModelChange)="patch('min_value', $event === '' ? null : +$event)"></label>
+          <label class="field"><span>Máximo{{ form().type === 'number' ? ' (opcional)' : '' }}</span>
+            <input type="number" [ngModel]="form().max_value" (ngModelChange)="patch('max_value', $event === '' ? null : +$event)"></label>
+          <label class="field"><span>Unidad</span>
+            <input type="text" [ngModel]="form().unit" (ngModelChange)="patch('unit', $event)" placeholder="mg, tazas, km" maxlength="20"></label>
+        </div>
+      }
+      <div class="field"><span>Color</span>
+        <div class="swatches">
+          @for (c of palette; track c) {
+            <button type="button" class="swatch" [style.background]="c" [class.on]="form().color === c" (click)="patch('color', c)" [attr.aria-label]="'Color ' + c"></button>
+          }
+        </div>
+      </div>
+      <div class="row end">
+        <button class="btn btn-ghost btn-sm" type="button" (click)="configOpen.set(false)">Cancelar</button>
+        <button class="btn btn-sm btn-moon" type="button" (click)="saveMetric()" [disabled]="busy() || !form().name.trim()">
+          {{ form().id === null ? 'Crear métrica' : 'Guardar cambios' }}
+        </button>
+      </div>
+    </div>
+  }
+
+  <ul class="config-list">
+    @for (m of active(); track m.id; let i = $index; let last = $last) {
+      <li>
+        <i class="dot" [style.background]="m.color"></i>
+        <span class="cfg-name">{{ m.name }} <span class="muted small">{{ m.type === 'scale' ? m.min_value + '–' + m.max_value : m.type === 'number' ? (m.unit || 'número') : m.type === 'boolean' ? 'sí/no' : 'texto' }}</span></span>
+        <span class="cfg-actions">
+          <button class="btn btn-ghost btn-sm" type="button" (click)="move(m, -1)" [disabled]="i === 0" aria-label="Subir">↑</button>
+          <button class="btn btn-ghost btn-sm" type="button" (click)="move(m, 1)" [disabled]="last" aria-label="Bajar">↓</button>
+          <button class="btn btn-ghost btn-sm" type="button" (click)="editMetric(m)">Editar</button>
+          <button class="btn btn-ghost btn-sm" type="button" (click)="archive(m, true)">Archivar</button>
+        </span>
+      </li>
+    }
+  </ul>
+
+  @if (archived().length > 0) {
+    <button class="btn btn-ghost btn-sm" type="button" (click)="showArchived.set(!showArchived())">
+      {{ showArchived() ? 'Ocultar archivadas' : archived().length + ' archivada' + (archived().length > 1 ? 's' : '') }}
+    </button>
+    @if (showArchived()) {
+      <ul class="config-list archived">
+        @for (m of archived(); track m.id) {
+          <li>
+            <i class="dot" [style.background]="m.color"></i>
+            <span class="cfg-name muted">{{ m.name }}</span>
+            <span class="cfg-actions">
+              <button class="btn btn-ghost btn-sm" type="button" (click)="archive(m, false)">Restaurar</button>
+              <button class="btn btn-ghost btn-sm btn-danger" type="button" (click)="removeMetric(m)">Eliminar</button>
+            </span>
+          </li>
+        }
+      </ul>
+    }
+  }
+</section>

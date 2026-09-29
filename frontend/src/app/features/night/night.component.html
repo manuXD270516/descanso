@@ -1,0 +1,104 @@
+@if (error()) { <p class="error" role="alert">{{ error() }}</p> }
+
+<!-- Estado actual -->
+<section class="panel state" [class.sleeping]="open()">
+  @if (open(); as o) {
+    <p class="state-title">Te acostaste a las <strong class="tabular">{{ fmtTime(o.bedtime) }}</strong></p>
+    <p class="muted small">Registra la hora en que despertaste para cerrar la noche.</p>
+    <div class="row wrap">
+      <input type="datetime-local" [ngModel]="wakeInput()" (ngModelChange)="wakeInput.set($event)" aria-label="Hora de despertar">
+      <button class="btn btn-dawn" type="button" (click)="wakeUp()" [disabled]="busy()">Ya despertí</button>
+    </div>
+  } @else {
+    <p class="state-title">¿Hora de dormir?</p>
+    <p class="muted small">Guarda la hora en que te acuestas. Mañana cierras la noche al despertar.</p>
+    <div class="row wrap">
+      <input type="datetime-local" [ngModel]="bedtimeInput()" (ngModelChange)="bedtimeInput.set($event)" aria-label="Hora de dormir">
+      <button class="btn btn-moon" type="button" (click)="goToSleep()" [disabled]="busy()">Me voy a dormir</button>
+    </div>
+  }
+  <button class="btn btn-ghost btn-sm manual-toggle" type="button" (click)="showManual.set(!showManual())">
+    {{ showManual() ? 'Ocultar registro manual' : 'Registrar una noche pasada' }}
+  </button>
+  @if (showManual()) {
+    <div class="manual">
+      <div class="grid-2">
+        <label class="field"><span>Me dormí</span><input type="datetime-local" [(ngModel)]="manual.bedtime"></label>
+        <label class="field"><span>Despertí</span><input type="datetime-local" [(ngModel)]="manual.wake"></label>
+      </div>
+      <label class="field"><span>Notas (opcional)</span><input type="text" [(ngModel)]="manual.notes" placeholder="Ej. me desperté dos veces"></label>
+      <div class="row end"><button class="btn" type="button" (click)="saveManual()" [disabled]="busy() || !manual.bedtime || !manual.wake">Guardar noche</button></div>
+    </div>
+  }
+</section>
+
+<!-- Resumen -->
+@if (stats(); as s) {
+  <section class="summary">
+    <div><span class="num tabular">{{ fmtDuration(s.summary.avg_sleep_min) }}</span><span class="lbl">promedio por noche</span></div>
+    <div><span class="num tabular">{{ fmtMinutesOfDay(s.summary.avg_bedtime_min) }}</span><span class="lbl">hora media de dormir</span></div>
+    <div><span class="num tabular">{{ fmtMinutesOfDay(s.summary.avg_wake_min) }}</span><span class="lbl">hora media de despertar</span></div>
+    <div><span class="num tabular">{{ s.summary.total_naps }}</span><span class="lbl">siestas en 14 días</span></div>
+  </section>
+}
+
+<!-- Cinta de las últimas noches -->
+<section class="panel ribbon-panel">
+  <div class="row between">
+    <h2>Últimas 14 noches</h2>
+    <span class="legend small muted"><i class="sw moon"></i>Sueño <i class="sw dawn"></i>Siesta</span>
+  </div>
+  <div class="axis tabular faint small">
+    @for (t of axisTicks; track $index) { <span [style.left.%]="t.x">{{ t.h }}h</span> }
+  </div>
+  <div class="ribbons">
+    @for (r of ribbons(); track r.date) {
+      <div class="ribbon-row">
+        <span class="ribbon-label small muted">{{ r.label }}</span>
+        <div class="track">
+          @for (n of r.naps; track $index) {
+            <span class="bar nap" [style.left.%]="n.x" [style.width.%]="n.w" [title]="n.text"></span>
+          }
+          @if (r.sleep; as s) {
+            <span class="bar sleep" [style.left.%]="s.x" [style.width.%]="s.w" [title]="s.text"></span>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</section>
+
+<!-- Detalle -->
+<section class="list">
+  <h2>Registros</h2>
+  @if (records().length === 0) {
+    <p class="empty">Aún no hay noches registradas. Empieza con "Me voy a dormir" o registra una noche pasada.</p>
+  }
+  @for (r of records(); track r.id) {
+    <article class="panel record">
+      @if (editingId() === r.id) {
+        <div class="grid-2">
+          <label class="field"><span>Fecha de la noche</span><input type="date" [(ngModel)]="edit.date"></label>
+          <label class="field"><span>Notas</span><input type="text" [(ngModel)]="edit.notes"></label>
+          <label class="field"><span>Me dormí</span><input type="datetime-local" [(ngModel)]="edit.bedtime"></label>
+          <label class="field"><span>Despertí</span><input type="datetime-local" [(ngModel)]="edit.wake"></label>
+        </div>
+        <div class="row end">
+          <button class="btn btn-ghost btn-sm" type="button" (click)="editingId.set(null)">Cancelar</button>
+          <button class="btn btn-sm" type="button" (click)="saveEdit(r.id)" [disabled]="busy()">Guardar cambios</button>
+        </div>
+      } @else {
+        <div class="record-main">
+          <span class="record-date">{{ fmtDateShort(r.date) }}</span>
+          <span class="tabular">{{ fmtTime(r.bedtime) }} → {{ fmtTime(r.wake_time) }}</span>
+          <span class="record-dur tabular" [class.muted]="!r.wake_time">{{ r.wake_time ? fmtDuration(r.duration_min) : 'noche abierta' }}</span>
+        </div>
+        @if (r.notes) { <p class="small muted">{{ r.notes }}</p> }
+        <div class="row end">
+          <button class="btn btn-ghost btn-sm" type="button" (click)="startEdit(r)">Editar</button>
+          <button class="btn btn-ghost btn-sm btn-danger" type="button" (click)="remove(r)">Eliminar</button>
+        </div>
+      }
+    </article>
+  }
+</section>
