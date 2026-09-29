@@ -10,7 +10,7 @@ Referencias: [spec](./spec.md), [contrato del pipeline](./contracts/pipeline.md)
 2. Crear el bucket privado compatible con S3 y unas credenciales limitadas a él (R8).
 3. Crear la app en Fly.io y su volumen, y definir `BACKUP_TOKEN` (comandos en el README,
    "Opción A"; research R13).
-4. Crear un deploy token (`fly tokens create deploy --app descanso-sleep`).
+4. Crear un deploy token (`flyctl tokens create deploy --app descanso-sleep`).
 5. Cargar los secretos de [contracts/pipeline.md](./contracts/pipeline.md) en GitHub.
 6. Comprobar que el paquete de GHCR `descanso` es **público**. Al serlo el repositorio, lo
    hereda (verificado tras el primer `publish`).

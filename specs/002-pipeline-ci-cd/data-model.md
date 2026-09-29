@@ -37,7 +37,7 @@ anterior y el job termina en rojo.
 
 | Atributo | Valor | Reglas |
 |----------|-------|--------|
-| `BACKUP_TOKEN` | 64 caracteres hex (`openssl rand -hex 32`) | Se configura en Fly (`fly secrets set`) y en GitHub (secreto). Se compara en tiempo constante. Si no está definido en el servicio, el endpoint no existe (404). |
+| `BACKUP_TOKEN` | 64 caracteres hex (`openssl rand -hex 32`) | Se configura en Fly (`flyctl secrets set`) y en GitHub (secreto). Se compara en tiempo constante. Si no está definido en el servicio, el endpoint no existe (404). |
 
 ## Versión
 

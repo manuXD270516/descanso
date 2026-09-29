@@ -268,16 +268,16 @@ producto vienen de las Clarifications de la spec.
     lo hace el pipeline.
 - **Secretos**:
   - GitHub:
-    - `FLY_API_TOKEN`: un deploy token limitado a la app (`fly tokens create deploy`);
+    - `FLY_API_TOKEN`: un deploy token limitado a la app (`flyctl tokens create deploy`);
     - `BACKUP_TOKEN`;
     - `S3_*` y `AWS_*`.
-  - Fly (`fly secrets set`): `BACKUP_TOKEN`.
+  - Fly (`flyctl secrets set`): `BACKUP_TOKEN`.
   - `APP_URL` pasa a ser un valor fijo en los workflows (`https://descanso-sleep.fly.dev`): no
     es secreto.
 - **Consecuencias**:
   - La primera petición tras un periodo sin uso tarda unos segundos (arranque en frío).
   - El workflow de respaldo despierta la máquina.
-  - La restauración en producción usa `fly ssh console` (runbook).
+  - La restauración en producción usa `flyctl ssh console` (runbook).
 
 ## Deuda técnica o riesgos nuevos
 

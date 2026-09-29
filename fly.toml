@@ -10,7 +10,7 @@ primary_region = "gru"
   DB_PATH = "/data/sleep.db"
   PORT = "3000"
 
-# Volumen creado una vez con: fly volumes create descanso_data --size 1 --region gru
+# Volumen creado una vez con: flyctl volumes create descanso_data --size 1 --region gru
 [[mounts]]
   source = "descanso_data"
   destination = "/data"

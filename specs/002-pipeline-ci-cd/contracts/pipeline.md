@@ -36,7 +36,7 @@ Detalle de las decisiones en [research.md](../research.md) (R1, R3, R4, R7, R8, 
 
 | Secreto | Usado por | Descripción |
 |---------|-----------|-------------|
-| `FLY_API_TOKEN` | deploy | Deploy token limitado a la app: `fly tokens create deploy --app descanso-sleep`. |
+| `FLY_API_TOKEN` | deploy | Deploy token limitado a la app: `flyctl tokens create deploy --app descanso-sleep`. |
 | `BACKUP_TOKEN` | backup | El mismo valor que el secreto `BACKUP_TOKEN` de la app en Fly. |
 | `S3_ENDPOINT`, `S3_BUCKET` | backup | Bucket privado compatible con S3. |
 | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` | backup | Credenciales limitadas a ese bucket (lectura, escritura, listado y borrado). |
@@ -44,11 +44,11 @@ Detalle de las decisiones en [research.md](../research.md) (R1, R3, R4, R7, R8, 
 `GITHUB_TOKEN` (automático) publica en GHCR. `APP_URL` no es secreto: está fijo en los workflows como `https://descanso-sleep.fly.dev`. Ningún secreto se escribe en el repositorio
 (FR-019).
 
-## Variables de entorno del servicio (Fly.io, `fly.toml` y `fly secrets`)
+## Variables de entorno del servicio (Fly.io, `fly.toml` y `flyctl secrets`)
 
 | Variable | Valor |
 |----------|-------|
 | `DB_PATH` | `/data/sleep.db` |
 | `PORT` | `3000` (`[env]` de `fly.toml`) |
-| `BACKUP_TOKEN` | Secreto: `fly secrets set BACKUP_TOKEN=… --app descanso-sleep` |
+| `BACKUP_TOKEN` | Secreto: `flyctl secrets set BACKUP_TOKEN=… --app descanso-sleep` |
 | `APP_VERSION` | Viene en la imagen; no se define en Fly. |

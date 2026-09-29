@@ -117,10 +117,10 @@ primera petición, que tarda unos segundos. Se paga por uso, a mes vencido, más
 Configuración única (con [`flyctl`](https://fly.io/docs/flyctl/install/)):
 
 ```bash
-fly apps create descanso-sleep
-fly volumes create descanso_data --size 1 --region gru --app descanso-sleep
-fly secrets set BACKUP_TOKEN=<token> --stage --app descanso-sleep   # token: openssl rand -hex 32
-fly tokens create deploy --app descanso-sleep                         # → secreto FLY_API_TOKEN en GitHub
+flyctl apps create descanso-sleep
+flyctl volumes create descanso_data --size 1 --region gru --app descanso-sleep
+flyctl secrets set BACKUP_TOKEN=<token> --stage --app descanso-sleep   # token: openssl rand -hex 32
+flyctl tokens create deploy --app descanso-sleep                         # → secreto FLY_API_TOKEN en GitHub
 ```
 
 Después carga en GitHub (Settings → Secrets → Actions) los secretos listados en

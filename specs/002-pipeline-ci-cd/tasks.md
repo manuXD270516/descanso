@@ -246,12 +246,12 @@ usuario tras el merge de la 002). El resto del pipeline no cambia.
   5. si falla, rollback con `flyctl deploy --image …:<prev>`.
 
   Añadir la entrada `workflow_dispatch.simular_fallo`, que despliega con `--env NODE_OPTIONS=--require=/no-existe.js` (SC-003). El único secreto es `FLY_API_TOKEN`.
-- [X] T025 Fijar `APP_URL: https://descanso-sleep.fly.dev` en deploy.yml y backup.yml (ya no es secreto). Actualizar README (Opción A y árbol), el runbook (restauración en producción con `fly ssh console` y `fly apps restart`) y los artefactos de specs/002: spec (Clarifications y FR-006), research (R13, R5/R6 sustituidas, riesgos), plan, data-model, contracts/pipeline.md y quickstart
-- [ ] T026 [US2] **(manual, usuario)** Con [`flyctl`](https://fly.io/docs/flyctl/install/) y `fly auth login`:
-  1. `fly apps create descanso-sleep`;
-  2. `fly volumes create descanso_data --size 1 --region gru --app descanso-sleep`;
-  3. `fly secrets set BACKUP_TOKEN=<token> --stage --app descanso-sleep`;
-  4. `fly tokens create deploy --app descanso-sleep`;
+- [X] T025 Fijar `APP_URL: https://descanso-sleep.fly.dev` en deploy.yml y backup.yml (ya no es secreto). Actualizar README (Opción A y árbol), el runbook (restauración en producción con `flyctl ssh console` y `flyctl apps restart`) y los artefactos de specs/002: spec (Clarifications y FR-006), research (R13, R5/R6 sustituidas, riesgos), plan, data-model, contracts/pipeline.md y quickstart
+- [ ] T026 [US2] **(manual, usuario)** Con [`flyctl`](https://fly.io/docs/flyctl/install/) y `flyctl auth login`:
+  1. `flyctl apps create descanso-sleep`;
+  2. `flyctl volumes create descanso_data --size 1 --region gru --app descanso-sleep`;
+  3. `flyctl secrets set BACKUP_TOKEN=<token> --stage --app descanso-sleep`;
+  4. `flyctl tokens create deploy --app descanso-sleep`;
   5. en GitHub, `gh secret set FLY_API_TOKEN` y `gh secret set BACKUP_TOKEN`, con los valores que introduce el usuario.
 
   Si se llegó a crear el servicio en Render, eliminarlo para no pagarlo. Después, relanzar `Deploy` a mano.
