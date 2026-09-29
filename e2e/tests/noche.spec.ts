@@ -131,4 +131,17 @@ test.describe('Noche en curso (US1)', () => {
     expect(open).toHaveLength(1);
     expect(open[0].date).toBe('2026-09-07');
   });
+
+  test('Borde · FR-003 · vaciar el despertar al editar reabre la noche si no hay otra abierta', async ({ page, api }) => {
+    await api.createNight('2026-09-07T23:00', '2026-09-08T07:00');
+    await setNow(page, '2026-09-08T09:00');
+    await page.goto('/');
+
+    await page.getByRole('article').getByRole('button', { name: 'Editar' }).click();
+    await page.getByRole('article').getByLabel('Desperté').fill('');
+    await page.getByRole('button', { name: 'Guardar cambios' }).click();
+
+    await expect(page.getByText('Te acostaste a las 23:00')).toBeVisible();
+    await expect(page.getByRole('article')).toContainText('noche abierta');
+  });
 });

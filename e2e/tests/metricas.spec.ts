@@ -211,4 +211,44 @@ test.describe('Métricas (US5)', () => {
     await expect(next).toBeDisabled();
     await expect(historyCells(page, 'Calidad del sueño')).toHaveText(['·', '2', '·', '·', '·', '·', '5']);
   });
+
+  // BUG (FR-023, relacionado con US5-9): el atributo max del <input type="date"> solo limita el
+  // calendario desplegable. Si se escribe una fecha futura con el teclado, setDate() la acepta
+  // sin validar: la app selecciona ese día y deja registrar valores en el futuro. Reproducido
+  // el 2026-09-29 contra master (aafc22f). Quitar el fixme cuando se corrija.
+  test.fixme('FR-023 · escribir una fecha futura en el selector de día no permite seleccionarla', async ({ page, api }) => {
+    const future = addDays(TODAY, 3);
+    const dateInput = page.getByLabel('Fecha', { exact: true });
+    await dateInput.fill(future);
+
+    await expect(page.getByText('Hoy', { exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Día siguiente' })).toBeDisabled();
+    await card(page, 'Calidad del sueño').getByRole('radio', { name: '3', exact: true }).click();
+    expect(await api.entries(future, future)).toEqual([]);
+  });
+
+  test('FR-021 · vaciar el valor de una métrica numérica o de texto borra el registro del día', async ({ page, api }) => {
+    await createMetric(page, 'Diario', /^Texto/);
+    const note = card(page, 'Diario').getByRole('textbox', { name: 'Diario' });
+    const coffees = card(page, 'Cafés').getByRole('spinbutton', { name: 'Cafés' });
+
+    await note.fill('bien');
+    await coffees.fill('3');
+    await expect(historyCells(page, 'Diario').first()).toHaveText('bien');
+    await expect(historyCells(page, 'Cafés').first()).toHaveText('3');
+
+    await note.fill('');
+    await coffees.fill('');
+    await expect(historyCells(page, 'Diario').first()).toHaveText('·');
+    await expect(historyCells(page, 'Cafés').first()).toHaveText('·');
+    expect(await api.entries(TODAY, TODAY)).toEqual([]);
+  });
+
+  test('Borde · una escala con más de 11 valores posibles muestra solo los 11 primeros botones', async ({ page }) => {
+    await createMetric(page, 'Dolor', /^Escala/, async () => {
+      await page.getByLabel('Mínimo', { exact: true }).fill('0');
+      await page.getByLabel('Máximo', { exact: true }).fill('20');
+    });
+    await expect(card(page, 'Dolor').getByRole('radio')).toHaveText(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10']);
+  });
 });
