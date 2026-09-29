@@ -41,7 +41,7 @@ export const test = base.extend<Options & Fixtures>({
       await use(shared);
       return;
     }
-    const server = await AppServer.start(serverEnv);
+    const server = await AppServer.start(testInfo.parallelIndex, serverEnv);
     try {
       await use(server);
     } finally {

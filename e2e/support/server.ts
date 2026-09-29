@@ -10,15 +10,30 @@ export const SERVER_JS = resolve(__dirname, '..', '..', 'backend', 'src', 'serve
 /** Variables del backend que nunca deben filtrarse desde el entorno de quien ejecuta. */
 const BACKEND_VARS = ['PORT', 'DB_PATH', 'APP_VERSION', 'BACKUP_TOKEN', 'FRONTEND_DIST'];
 
-async function freePort(): Promise<number> {
-  return new Promise((ok, fail) => {
+/**
+ * Puertos de cada worker: un rango propio y disjunto (20000 + 20 × índice del worker), por
+ * debajo de los rangos efímeros del sistema. Así dos workers nunca eligen el mismo puerto.
+ * Con el puerto 0 (el que asigna el sistema) había carreras: el sistema podía dar a otro worker
+ * el mismo puerto recién liberado antes de que el servidor lo ocupara.
+ */
+const PORT_BASE = 20_000;
+const PORTS_PER_WORKER = 20;
+
+function isFree(port: number): Promise<boolean> {
+  return new Promise((ok) => {
     const srv = createServer();
-    srv.once('error', fail);
-    srv.listen(0, '127.0.0.1', () => {
-      const { port } = srv.address() as { port: number };
-      srv.close(() => ok(port));
-    });
+    srv.once('error', () => ok(false));
+    // Sin host, igual que app.listen(PORT) del servidor: todas las interfaces
+    srv.listen(port, () => srv.close(() => ok(true)));
   });
+}
+
+async function freePort(workerIndex: number): Promise<number> {
+  const first = PORT_BASE + (workerIndex % 100) * PORTS_PER_WORKER;
+  for (let port = first; port < first + PORTS_PER_WORKER; port++) {
+    if (await isFree(port)) return port;
+  }
+  throw new Error(`No hay puertos libres entre ${first} y ${first + PORTS_PER_WORKER - 1}`);
 }
 
 /**
@@ -40,9 +55,10 @@ export class AppServer {
     return `http://127.0.0.1:${this.port}`;
   }
 
-  static async start(env: Record<string, string> = {}): Promise<AppServer> {
+  /** @param workerIndex testInfo.parallelIndex: único entre los workers que corren a la vez. */
+  static async start(workerIndex: number, env: Record<string, string> = {}): Promise<AppServer> {
     const dir = mkdtempSync(join(tmpdir(), 'descanso-e2e-'));
-    const server = new AppServer(await freePort(), join(dir, 'sleep.db'), env, dir);
+    const server = new AppServer(await freePort(workerIndex), join(dir, 'sleep.db'), env, dir);
     await server.boot();
     return server;
   }
@@ -66,7 +82,8 @@ export class AppServer {
       }
       try {
         const res = await fetch(`${this.url}/api/health`);
-        if (res.ok) return;
+        // Que responda NUESTRO proceso: si murió (p. ej. puerto ocupado), respondió otro
+        if (res.ok && child.exitCode === null) return;
       } catch {
         // todavía no escucha
       }
