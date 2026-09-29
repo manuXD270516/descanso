@@ -1,12 +1,12 @@
 # Propuesta: set de nuevas funcionalidades para Descanso
 
-**Fecha**: 2026-09-29 · **Estado**: v2, lista para decidir · **Destino**: entradas de `/sdd-feature`
+**Fecha**: 2026-09-29 · **Estado**: v3 (con gamificación y recordatorios), lista para decidir · **Destino**: entradas de `/sdd-feature`
 en [`docs/sdd/features/`](../features/)
 
 ## Resumen
 
-Proponemos **cinco features en orden de entrega** y **dos condicionadas** a respuestas tuyas. Cubren
-las cuatro áreas que pediste:
+Proponemos **siete features en orden de entrega** y **cuatro condicionadas** a tus respuestas. Cubren
+las seis áreas que pediste: las cuatro iniciales más gamificación y recordatorios.
 
 | # | Feature | Área | Talla | Estado |
 |---|---------|------|-------|--------|
@@ -14,9 +14,16 @@ las cuatro áreas que pediste:
 | 004 | Acceso protegido y portabilidad | **Multiusuario, paso 1** | M | Lista para especificar |
 | 005 | Tendencias y sueño pendiente (dashboard) | **Métricas y dashboard** | M | Lista para especificar |
 | 006 | Diario opcional, ciclos y honestidad de datos | **REM / fases (sin sensores)** | S/M | Lista para especificar |
+| 010 | Mi horario de sueño y recordatorios (sin servidor) | **Recordatorios** | S/M | Lista para especificar (tras un spike de calendario) |
+| 011 | Rachas de constancia | **Gamificación** | S/M | Lista para especificar |
 | 007 | Importar mi sueño del reloj por archivo | **REM medido + wearables, paso 1** | L | Tras un spike técnico; depende de tu dispositivo |
 | 008 | Multiusuario completo (invitaciones, aislamiento, borrar cuenta) | **Multiusuario, paso 2** | L | Condicionada: ¿quién más la usará? |
 | 009 | Sincronización automática con un reloj o anillo (OAuth) | **Wearables, paso 2** | L | Condicionada: ¿qué dispositivo usas? |
+| 012 | App instalable en el móvil (PWA) | **Recordatorios, paso 2** | S–M | Condicionada: iPhone **y** avisos con la app cerrada (P5) |
+| 013 | Avisos push con la app cerrada | **Recordatorios, paso 3** | M | Condicionada: P5 acepta el coste (+ 012 solo en iPhone) |
+
+**Orden de ejecución**: 003 → 004 → 005 → 006 → 010 → 011 → [007] → [008] → [009] → [012] → [013].
+Los corchetes indican una feature condicionada.
 
 Hay dos decisiones que ordenan todo el conjunto:
 - **Hoy la app expone datos de salud en internet sin autenticación** (DT-17). Por eso el acceso
@@ -26,12 +33,12 @@ Hay dos decisiones que ordenan todo el conjunto:
 
 ## Cómo se construyó esta propuesta
 
-Se usaron cuatro patrones de trabajo con agentes, en este orden:
+Se usaron cuatro patrones de trabajo con agentes, en dos rondas: la primera para las 4 áreas iniciales y la segunda para gamificación y recordatorios. En cada ronda, en este orden:
 
-1. **ReAct.** Cuatro agentes investigaron un área cada uno, alternando razonamiento y acción: leer el
+1. **ReAct.** Seis agentes (cuatro en la primera ronda y dos en la segunda) investigaron un área cada uno, alternando razonamiento y acción: leer el
    código, abrir documentación oficial y estudios, observar y ajustar. Las fuentes que solo se vieron en
    resultados de búsqueda quedaron marcadas y no se usan como evidencia.
-2. **Debate.** Tres críticos con roles enfrentados revisaron las cuatro propuestas a la vez:
+2. **Debate.** Tres críticos con roles enfrentados revisaron a la vez las propuestas de cada ronda:
    - **Escéptico**: constitución, YAGNI, coste y privacidad.
    - **Arquitecto**: dependencias, esquema, seguridad y operación en Fly.
    - **Defensor del usuario**: valor, UX de noche y en el móvil, lenguaje.
@@ -41,11 +48,13 @@ Se usaron cuatro patrones de trabajo con agentes, en este orden:
    ver los resultados**:
    - seis criterios ponderados: valor, factibilidad, constitución, privacidad, esfuerzo y testabilidad;
    - para aprobar: nota ≥ 3,5, criterios obligatorios ≥ 3 y un checklist de calidad;
-   - hubo una ronda de revisión dirigida (V-01…V-13) y una reevaluación.
+   - en cada ronda hubo una revisión dirigida y una reevaluación: V-01…V-13 en la primera y V-14…V-23 en la segunda.
 
 Las puntuaciones están en [Evaluación](#evaluación).
 
-## Tus decisiones pendientes (5 preguntas)
+## Tus decisiones pendientes (6 preguntas)
+
+Solo P1, P2 y P5 bloquean. P3, P4 y P6 tienen una respuesta recomendada por defecto.
 
 | # | Pregunta | Qué decide |
 |---|----------|------------|
@@ -53,7 +62,8 @@ Las puntuaciones están en [Evaluación](#evaluación).
 | P2 | ¿Qué reloj o anillo usas o piensas usar (Apple Watch, Oura, Fitbit/Pixel, Garmin, Polar, Withings, WHOOP, ninguno)? ¿Te basta una **estimación** de tus ciclos o necesitas ver tus fases **medidas**? | El orden y la existencia de 007 y 009; el peso de 006 |
 | P3 | Al despertar, ¿aceptas 2 preguntas opcionales (cuánto tardaste en dormirte y cuántas veces despertaste) o prefieres solo el toque? | 006-US5 |
 | P4 | "Calidad" y "Energía", ¿las anotas sobre la noche anterior (por la mañana) o sobre el día? | El emparejamiento sueño ↔ métricas del backlog B-1 |
-| P5 | ¿Qué techo de coste mensual aceptas? (Estimación propia: unos 2–4 $/mes con la máquina apagándose sin tráfico, más 0,15 $ del volumen; unos 6,5 $/mes si estuviera siempre encendida, según los [precios de Fly.io](https://docs.fly.io/about/pricing/).) | VM de 512 MB, `suspend` o webhooks en 004/009 |
+| P5 | ¿iPhone o Android, y qué calendario usas? ¿Te basta la alarma del calendario (010, gratis) o quieres avisos con la app cerrada (013)? Estos requieren la máquina siempre encendida: ≈ **3,1 $/mes de cómputo en total** (hoy se paga menos, porque se apaga sin tráfico). Cálculo: shared-cpu-1x de 256 MB a 0,00000075 $/s × 2.592.000 s × 1,615 (región gru), según los [precios de Fly.io](https://docs.fly.io/about/pricing/); confírmalo en su calculadora. ¿Qué techo mensual aceptas? A esto se suman 0,15 $/mes del volumen. | 010 frente a 012/013; también la VM de 512 MB, `suspend` o los webhooks de 004/009 |
+| P6 | ¿Qué hábito quieres que se premie? Por defecto, **levantarte a tu hora**; también puede ser acostarte a tu hora o simplemente registrar. ¿Te sirve como recompensa una colección de logros con datos personales, sin puntos ni premios canjeables? | Regla de 011 |
 
 ## Factibilidad de smartwatches y bands
 
@@ -238,7 +248,84 @@ Apple Watch u otro dispositivo que exporte archivos.
 - **US5 (P2) · CSV genérico** (inicio, fin, fase) y **borrar lo importado de una fuente**. Requiere la
   enmienda MINOR del principio II.
 
+### 010 · Mi horario de sueño y recordatorios, sin servidor (S/M): recordatorios, paso 1
+
+Entrada: [`010-horario-recordatorios.md`](../features/010-horario-recordatorios.md). El coste de operación es 0 $.
+
+- **US1 (P1) · Agendar mi horario.**
+  - Una sola bienvenida que se puede saltar.
+  - Pregunta la hora de levantarse y propone la de acostarse: despertar − objetivo − 15 min.
+  - Horario igual todos los días, distinto el fin de semana o uno por día.
+  - Horas de reloj de pared, versionadas: cada edición se aplica desde ese día y no cambia el pasado.
+  - **Es el único horario de la app.**
+- **US2 (P1) · Añadir a mi calendario con alarma.**
+  - Un archivo `.ics` importable con un evento semanal y una alarma X min antes (15–60 min).
+  - Hora flotante y un UID/SEQUENCE que actualiza el calendario en lugar de duplicar eventos.
+  - Guía por plataforma: en iPhone, "Añadir todo"; en Android, Google Calendar web o el calendario del fabricante.
+  - Spike previo en 1 iPhone y 2 Android.
+  - Los avisos no llevan datos de salud: "Descanso: en 30 min es tu hora de dormir".
+- **US3 (P2) · "¿Ya despertaste?"** si la noche sigue abierta 60 min después del despertar agendado. Amplía 006-US4, que se queda con la regla de 14 h cuando no hay horario.
+- **US4 (P2) · Modo pausa** (viaje, enfermedad, turnos): hasta 14 días; pausa también la racha.
+- **US5 (P3) · Aviso dentro de la app** si está abierta a la hora de prepararse.
+
+### 011 · Rachas de constancia (S/M): gamificación
+
+Entrada: [`011-rachas-constancia.md`](../features/011-rachas-constancia.md).
+
+Se premian **conductas que controlas**, nunca las horas ni la calidad del sueño. Así se reconcilia con el
+rechazo previo a las puntuaciones por ortosomnia: se prohíben las puntuaciones de *resultado* y se permite
+motivar la *constancia*. Es opcional y se puede ocultar (enmienda VIII).
+
+- **US1 (P1) · Racha de constancia.**
+  - Con horario: un día cuenta si registras la noche y te levantas dentro de ±30 min de la hora agendada. La hora de acostarse no cuenta, para no incentivar quedarse en cama (AASM).
+  - Sin horario: cuenta con cerrar la noche.
+  - **Un día sin registrar cuenta como no cumplido.** Así no se premia ocultar las malas mañanas.
+  - Tolerancia: hasta 2 faltas en cualquier ventana de 7 días. El récord y el total nunca bajan.
+- **US2 (P1) · Recompensa visible que no caduca.**
+  - Una estrella por cada día cumplido.
+  - A los 7, 21 y 66 días, una **constelación** permanente con un dato personal ("tu hora de levantarte varió solo ±18 min").
+  - Sin puntos, monedas, premios canjeables ni rankings.
+- **US3 (P1) · En su sitio.**
+  - Se ofrece en la bienvenida o tras 3 noches.
+  - Nunca aparece antes de dormir: se ve tras "Ya desperté" y en un plegable del dashboard.
+  - Desactivada no calcula ni muestra nada.
+- **US4 (P2) · Volver a empezar sin culpa.**
+  - "Tu récord sigue siendo 25. Mañana es un buen día para empezar otra".
+  - Hay palabras prohibidas y no hay avisos de "racha en peligro".
+- **US5 (P2) · Pausa**, compartida con 010 (máximo 2 cada 30 días).
+- **US6 (P3) · Resumen de la semana** dentro de la app, sin notificaciones.
+
 ### Condicionadas (semillas para especificar cuando se cumpla la condición)
+
+**012 · App instalable (PWA) (S–M).** Condición: P5 = iPhone **y** quieres avisos con la app cerrada (en iOS, el push solo llega con la app instalada). No tiene coste de operación. Sustituye a B-3 del backlog.
+
+- "Ya desperté" visible sin scroll a 375 px al abrir la app con una noche abierta (N-04).
+
+- Manifest.
+- Service worker que **nunca cachea `/api/*`**, con shell versionado y actualización forzada. Es compatible con la regla expand/contract de 003.
+- Guía "Instalar en tu pantalla de inicio".
+- Tests de actualización tras un despliegue.
+
+**013 · Avisos push con la app cerrada (M).** Condiciones: P5 acepta el coste (≈ 3,1 $/mes de cómputo en total, con la máquina siempre encendida), más 012 solo si es iPhone (Android recibe push sin instalar la app).
+
+- **Disparador**: solo la opción (a), una máquina con `min_machines_running = 1` y `setInterval`, más recuperación al arrancar. Se descartan el cron de GitHub y los servicios de ping externos, porque impiden el auto-stop y fallan en silencio.
+- **Envío**:
+  - idempotencia con reclamo previo (`reminder_deliveries`, PK usuario + tipo + fecha de la noche);
+  - `TTL` y `Topic`;
+  - `web-push` con versión fijada y justificada, o push sin payload;
+  - `zonedToUtc` con Intl: las horas inexistentes se adelantan y las ambiguas usan la primera ocurrencia.
+- **Seguridad**:
+  - lista de hosts de push permitidos (anti-SSRF);
+  - VAPID como secreto de Fly, con runbook.
+- **Experiencia**:
+  - el permiso se pide solo tras "Activar avisos", con una explicación previa;
+  - botón "Enviarme un aviso de prueba";
+  - "No molestar" y "silenciar hoy".
+- **Operación**:
+  - podar `reminder_deliveries` a los 90 días;
+  - borrar la suscripción al cerrar sesión y excluirla de la exportación;
+  - `TICK_TOKEN` con rate limit;
+  - ventana de recuperación de avisos perdidos mayor que la duración de un despliegue.
 
 **008 · Multiusuario completo (L).** Condición: P1 confirma otros usuarios reales. Se apoya en 004, que ya
 deja `user_id` en todas las tablas.
@@ -280,11 +367,10 @@ persona, y P5 (coste).
 |----|------|--------|
 | B-1 | Relación sueño ↔ métricas, en frases ("suelen ir juntos; puede ser casualidad") | ≥ 30 noches con la métrica y P4 respondida. Emparejar por la mañana del despertar. Sin IC de Fisher sobre Spearman |
 | B-2 | Diferencia entre semana y fin de semana, mapa de calor, índice de regularidad (SRI) | Con datos de despertares (007/009). Antes, verificar la fuente del SRI |
-| B-3 | App instalable en el móvil (PWA) | Tras 005 (S–M) |
 | B-4 | Passkeys | Tras 008 |
 | — | **Descartadas**: tendencias por fase (riesgo de ortosomnia, κ bajo), agregadores de pago, Garmin/Samsung/Zepp directo, apps nativas | — |
 
-## Esquema de datos unificado (destino tras 003–009)
+## Esquema de datos unificado (destino tras 003–013)
 
 ```text
 schema_migrations(version PK, name, checksum, applied_at)                         -- 003
@@ -301,8 +387,15 @@ sleep_sessions(id, user_id, source, external_id, start_time, end_time, night_dat
                sleep_record_id NULL, status, is_primary, import_batch_id,
                UNIQUE(user_id, source, external_id))                            -- 007
 sleep_stages(session_id → CASCADE, stage awake|light|deep|rem|unknown, start_time, end_time)  -- 007
+schedule_versions(id, user_id, effective_from, UNIQUE(user_id, effective_from))  -- 010, solo inserciones
+schedule_days(version_id, weekday 0..6, bed_min, wake_min, active)             -- 010
+user_settings(+lead_min)                                                       -- 010
+pauses(id, user_id, start_date ≥ hoy, end_date)                              -- 010, compartida con 011
+user_settings(+streaks_enabled, +wake_window_min)                              -- 011
+user_milestones(user_id, key, achieved_on, seen_at, UNIQUE(user_id, key))      -- 011
 invites / password_resets                                                        -- 008
 user_connections / sync_jobs / webhook_events                                   -- 009
+push_subscriptions / reminder_deliveries                                        -- 013
 ```
 
 ## Enmiendas a la constitución (calendario)
@@ -312,7 +405,8 @@ Se aplican con `/speckit-constitution`, cada una **antes del plan** de la featur
 | Enmienda | Tipo | Antes de |
 |----------|------|----------|
 | II: reconstruir una tabla con copia verificada en la misma migración (patrón SQLite de 12 pasos) no es "DROP de datos"; toda migración va por el runner con respaldo previo | PATCH | Plan de 004 |
-| VIII nuevo "Datos de salud: privacidad y honestidad": origen declarado, lenguaje no clínico, "sin dato" ≠ 0, estadísticos solo con n mínima y en lenguaje no causal, consentimiento y revocación por fuente, tokens cifrados | MINOR | Plan de 006 |
+| VIII nuevo "Datos de salud: privacidad y honestidad": origen declarado, lenguaje no clínico, "sin dato" ≠ 0, estadísticos solo con n mínima y en lenguaje no causal, consentimiento y revocación por fuente, tokens cifrados, **notificaciones sin datos de salud** | MINOR | Plan de 006 |
+| VIII, ampliación: la motivación se basa solo en conductas controlables; se prohíben las puntuaciones de resultado, la comparación social, las recompensas canjeables y las alertas de pérdida; toda gamificación es opcional y ocultable | MINOR | Plan de 011 |
 | II: el borrado que pide el propio usuario (de una fuente o de su cuenta) no es DROP | MINOR | Plan de 007 |
 | Alcance: de mono-usuario a multiusuario con aislamiento estricto | MAJOR | Plan de 008 |
 
@@ -329,6 +423,8 @@ checklist completo.
 | 005 | 4,65 · aprobada | V-07 | **4,65 · aprobada** |
 | 006 | 4,20 · aprobada | V-08, V-09 | **4,20 · aprobada** |
 | 007 | 3,30 · revisión | V-10 a V-12, V-13 | **3,90 · aprobada** (sujeta a P2 y al spike) |
+| 010 | 4,50 · revisión | V-14, V-16, V-17 | **4,60 · aprobada** (sujeta al spike de calendario) |
+| 011 | 4,10 · revisión | V-15, V-18 a V-23 | **4,45 · aprobada** |
 
 En la ronda 2 el evaluador confirmó que todas las revisiones quedaron resueltas (V-10 era parcial; se completó con el criterio de salida del spike). También pidió correcciones en las entradas, ya aplicadas: prioridades por historia, la regla de conciliación en 007, la rotación de sesiones y la entrada del token por formulario en 004, el rango del objetivo en 005 y la latencia configurable en 006. 008 y 009 son semillas bien condicionadas.
 
@@ -350,5 +446,17 @@ En la ronda 2 el evaluador confirmó que todas las revisiones quedaron resueltas
 | Migración con terminal (UX-10, V-02) | Alta y recuperación con `OWNER_SETUP_TOKEN` rotando el secreto en el panel de Fly |
 | Índice único con datos sucios (V-05) | Verificación previa que aborta limpio |
 | Faltaba la matriz de factibilidad (evaluador) | Añadida arriba |
+| **Ronda 2**: una racha que no cuenta los días sin registrar premia omitir datos (E9/X17) | Un día sin registrar cuenta como no cumplido |
+| **Ronda 2**: la gamificación reabre el rechazo por ortosomnia (E10) | Solo conductas controlables, opt-in, sin puntuaciones de resultado; evidencia de fuentes abiertas; enmienda VIII ampliada |
+| **Ronda 2**: dos modelos de horario; "a tiempo" por la hora de acostarse (E11/X18) | 010 es la dueña (`schedule_versions`); solo puntúa la hora de levantarse |
+| **Ronda 2**: los disparadores externos impiden el auto-stop (E12/X21) | Solo máquina encendida (013, condicionada a P5); la fase 1 no necesita servidor |
+| **Ronda 2**: la recompensa se queda en mensajes y la opción desactivada queda invisible (defensor) | Constelaciones permanentes con dato personal; se ofrece en la bienvenida |
+| **Ronda 2**: PWA, criptografía, SSRF, VAPID, ICS y zonas horarias (E13–E14, X22–X29) | Resuelto en 010, 012 y 013 (ver [31-reflexion-r2](anexos-2026-09-29/31-reflexion-r2.md)) |
 
-Material completo de la sesión en [`anexos-2026-09-29/`](anexos-2026-09-29/): rúbrica, 4 investigaciones ReAct, 3 críticas del debate, reflexión v1 y las 2 rondas de evaluación.
+Material completo de la sesión en [`anexos-2026-09-29/`](anexos-2026-09-29/):
+
+- la rúbrica;
+- 6 investigaciones ReAct: A–D, y E–F sobre gamificación y recordatorios;
+- 2 rondas de debate con 3 críticos cada una;
+- las 2 reflexiones;
+- las evaluaciones.
