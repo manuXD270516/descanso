@@ -493,5 +493,5 @@ components:
             avg_sleep_min: { type: integer }
             avg_nap_min: { type: integer }
             total_naps: { type: integer }
-            avg_bedtime_min: { type: [integer, 'null'], minimum: 0, maximum: 1439, description: media circular }
-            avg_wake_min: { type: [integer, 'null'], minimum: 0, maximum: 1439, description: media circular }
+            avg_bedtime_min: { type: [integer, 'null'], minimum: 0, maximum: 1440, description: 'media circular; hoy puede valer 1440 en vez de 0 (DT-21)' }
+            avg_wake_min: { type: [integer, 'null'], minimum: 0, maximum: 1440, description: 'media circular; hoy puede valer 1440 en vez de 0 (DT-21)' }

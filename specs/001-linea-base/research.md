@@ -114,4 +114,6 @@ las decisiones de pruebas y de ajustes mínimos, y el inventario de deuda técni
 | DT-17 | Seguridad | `cors()` abierto a cualquier origen y sin autenticación. | Cualquiera con la URL puede leer y modificar los datos. | Decidirlo en una feature de acceso. |
 | DT-18 | Calidad | No hay tests, lint ni CI. | Incumple el principio IV. | Tests, lint y CI mínimo: **esta feature**. Pipeline completo: feature 002. |
 | DT-19 | Frontend | `run(obs: { subscribe: Function })` y `any` en los handlers de error. | Tipado débil. | Tipar como `Observable<unknown>` y `HttpErrorResponse`. |
+| DT-21 | Resumen | La media circular puede devolver `1440` en lugar de `0` (p. ej. 23:30 y 00:30), por un residuo de coma flotante en `atan2`. Detectado al implementar. | Ninguno visible: `fmtMinutesOfDay` muestra 00:00. Sí rompe el rango 0–1439 del contrato. | Aplicar `% 1440` al resultado de `circularAvg`. |
+| DT-22 | Siestas | `formDuration` era un `computed()` sobre `form`, que es un objeto plano y no un signal: se calculaba una vez y no se actualizaba al editar. Detectado por el test de US3-2. | La validación de fin > inicio no funcionaba en la UI. | **Corregido en esta feature**: ahora es un método. |
 | DT-20 | Frontend | La fuente se carga desde Google Fonts. | Dependencia externa; sin fuente si no hay red. | Alojar la fuente localmente (opcional). |

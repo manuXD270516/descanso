@@ -1,9 +1,11 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { ApiService, Nap, SleepRecord, Stats } from '../../core/api.service';
 import {
   addDays, fmtDateShort, fmtDuration, fmtMinutesOfDay, fmtTime,
-  inputLocalToIso, isoToInputLocal, localDate, minutesOfDay, toInputLocal,
+  inputLocalToIso, isoToInputLocal, localDate, minutesOfDay, nightDate, toInputLocal,
 } from '../../core/time';
 
 const RANGE_DAYS = 14;
@@ -88,7 +90,7 @@ export class NightComponent implements OnInit {
 
   goToSleep() {
     const iso = inputLocalToIso(this.bedtimeInput());
-    this.run(this.api.createSleep({ date: iso.slice(0, 10), bedtime: iso }), () => this.wakeInput.set(toInputLocal()));
+    this.run(this.api.createSleep({ date: nightDate(iso), bedtime: iso }), () => this.wakeInput.set(toInputLocal()));
   }
 
   wakeUp() {
@@ -99,7 +101,7 @@ export class NightComponent implements OnInit {
     if (!this.manual.bedtime || !this.manual.wake) return;
     const bedtime = inputLocalToIso(this.manual.bedtime);
     this.run(
-      this.api.createSleep({ date: bedtime.slice(0, 10), bedtime, wake_time: inputLocalToIso(this.manual.wake), notes: this.manual.notes || null }),
+      this.api.createSleep({ date: nightDate(bedtime), bedtime, wake_time: inputLocalToIso(this.manual.wake), notes: this.manual.notes || null }),
       () => { this.showManual.set(false); this.manual = { bedtime: '', wake: '', notes: '' }; },
     );
   }
@@ -126,16 +128,16 @@ export class NightComponent implements OnInit {
     this.run(this.api.deleteSleep(r.id));
   }
 
-  private run<T>(obs: { subscribe: Function }, after?: () => void) {
+  private run(obs: Observable<unknown>, after?: () => void) {
     this.busy.set(true);
     this.error.set(null);
     obs.subscribe({
       next: () => { after?.(); this.busy.set(false); this.reload(); },
-      error: (e: any) => { this.busy.set(false); this.fail(e); },
+      error: (e: HttpErrorResponse) => { this.busy.set(false); this.fail(e); },
     });
   }
 
-  private fail(e: any) {
+  private fail(e: HttpErrorResponse) {
     this.error.set(e?.error?.error || 'No se pudo conectar con el servidor');
   }
 }

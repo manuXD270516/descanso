@@ -19,6 +19,9 @@ pasadas, siestas, resumen de 14 días con cinta visual, métricas personalizable
   edición una segunda noche abierta.
 - Q: ¿La línea base corrige los textos "Ya despertí" y "Despertí" o los conserva? → A: Se
   corrigen a "Ya desperté" y "Desperté".
+- Q (durante la implementación): en Siestas, la duración y el aviso "El fin debe ser posterior
+  al inicio" no se actualizan al editar las horas, así que US3-2 no se cumple. ¿Se corrige o se
+  registra como deuda? → A: Se corrige en esta feature.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -307,7 +310,8 @@ siguen igual.
 - **SC-006**: Registrar los valores del día de 3 métricas lleva menos de 30 segundos.
 - **SC-007**: Ningún comportamiento visible de la app cambia respecto al MVP actual, salvo el
   rechazo de una segunda noche abierta por parte del servicio (FR-003) y la corrección de los
-  textos "Ya desperté" y "Desperté" (FR-027).
+  textos "Ya desperté" y "Desperté" (FR-027), y que la validación del formulario de siestas se
+  actualice al editar las horas (US3-2).
 
 ## Assumptions
 

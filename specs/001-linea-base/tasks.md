@@ -35,10 +35,10 @@ Aplicación web: `backend/src/`, `backend/test/`, `frontend/src/app/` (specs jun
 
 **Purpose**: herramientas de pruebas y lint que hoy no existen (research D1, D4, D7).
 
-- [ ] T001 Añadir `supertest` como devDependency y los scripts `"test": "node --test"` y `"lint": "eslint ."` en backend/package.json, y fijar `"engines": { "node": ">=22" }` (principio I; el Dockerfile ya usa node:22)
-- [ ] T002 [P] Crear backend/eslint.config.js (flat config, `@eslint/js` recommended, globals de Node CommonJS, ignorar `data/` y `node_modules/`) y añadir `eslint`, `@eslint/js` y `globals` como devDependencies en backend/package.json
-- [ ] T003 [P] Ejecutar `npx ng add @angular-eslint/schematics --skip-confirmation` en frontend/ para generar frontend/eslint.config.js, el target `lint` en frontend/angular.json y el script `"lint": "ng lint"` en frontend/package.json
-- [ ] T004 Corregir solo los **errores** de lint (no los warnings) que aparezcan con `npm run lint` en backend/src/ y frontend/src/app/, sin cambiar el comportamiento
+- [X] T001 Añadir `supertest` como devDependency y los scripts `"test": "node --test"` y `"lint": "eslint ."` en backend/package.json, y fijar `"engines": { "node": ">=22" }` (principio I; el Dockerfile ya usa node:22)
+- [X] T002 [P] Crear backend/eslint.config.js (flat config, `@eslint/js` recommended, globals de Node CommonJS, ignorar `data/` y `node_modules/`) y añadir `eslint`, `@eslint/js` y `globals` como devDependencies en backend/package.json
+- [X] T003 [P] Ejecutar `npx ng add @angular-eslint/schematics --skip-confirmation` en frontend/ para generar frontend/eslint.config.js, el target `lint` en frontend/angular.json y el script `"lint": "ng lint"` en frontend/package.json
+- [X] T004 Corregir solo los **errores** de lint (no los warnings) que aparezcan con `npm run lint` en backend/src/ y frontend/src/app/, sin cambiar el comportamiento
 
 ---
 
@@ -48,14 +48,14 @@ Aplicación web: `backend/src/`, `backend/test/`, `frontend/src/app/` (specs jun
 
 **⚠️ CRITICAL**: ninguna historia puede empezar hasta completar esta fase.
 
-- [ ] T005 Crear backend/src/app.js moviendo desde backend/src/server.js todo menos `listen()`: `require('./db')`, cors, json, `/api/health`, las 4 rutas, estáticos y SPA fallback, y el manejador de errores `{ error }`. Exportar `app` con `module.exports = app`
-- [ ] T006 Reducir backend/src/server.js a `const app = require('./app'); const PORT = process.env.PORT || 3000; app.listen(PORT, () => console.log(...))`, conservando el mensaje de log actual (depende de T005)
-- [ ] T007 Crear backend/test/helpers.js: fija `process.env.DB_PATH = ':memory:'` **antes** de requerir `../src/app`, y exporta `api = supertest(app)` y helpers ISO como `iso('2026-09-07T23:40', '-04:00')` (depende de T005)
-- [ ] T008 [P] Crear backend/test/health.test.js: `GET /api/health` → 200 con `ok === true` y `time` ISO (FR-029)
-- [ ] T009 [P] Crear backend/test/util.test.js con los casos de `isIso`, `isDate` (rechaza `2026-13-01` y `26-09-01`) y `durationMinutes` (23:40-04:00 → 07:10-04:00 = 450), en backend/src/util.js
-- [ ] T010 [P] Añadir `export function nightDate(iso: string): string` en frontend/src/app/core/time.ts. Devuelve `iso.slice(0, 10)`: el día local de quien registra, porque el ISO lleva su offset (FR-004)
-- [ ] T011 [P] Crear frontend/src/app/core/time.spec.ts con ≥ 3 casos de `nightDate` (23:40 → mismo día; 00:30 → ese mismo día; offsets `-04:00` y `+02:00`) (SC-003), más `inputLocalToIso`: añade `:00` y el offset del navegador (FR-005)
-- [ ] T012 Sustituir `iso.slice(0, 10)` y `bedtime.slice(0, 10)` por `nightDate(...)` en frontend/src/app/features/night/night.component.ts, y `start.slice(0, 10)` en frontend/src/app/features/naps/naps.component.ts (depende de T010)
+- [X] T005 Crear backend/src/app.js moviendo desde backend/src/server.js todo menos `listen()`: `require('./db')`, cors, json, `/api/health`, las 4 rutas, estáticos y SPA fallback, y el manejador de errores `{ error }`. Exportar `app` con `module.exports = app`
+- [X] T006 Reducir backend/src/server.js a `const app = require('./app'); const PORT = process.env.PORT || 3000; app.listen(PORT, () => console.log(...))`, conservando el mensaje de log actual (depende de T005)
+- [X] T007 Crear backend/test/helpers.js: fija `process.env.DB_PATH = ':memory:'` **antes** de requerir `../src/app`, y exporta `api = supertest(app)` y helpers ISO como `iso('2026-09-07T23:40', '-04:00')` (depende de T005)
+- [X] T008 [P] Crear backend/test/health.test.js: `GET /api/health` → 200 con `ok === true` y `time` ISO (FR-029)
+- [X] T009 [P] Crear backend/test/util.test.js con los casos de `isIso`, `isDate` (rechaza `2026-13-01` y `26-09-01`) y `durationMinutes` (23:40-04:00 → 07:10-04:00 = 450), en backend/src/util.js
+- [X] T010 [P] Añadir `export function nightDate(iso: string): string` en frontend/src/app/core/time.ts. Devuelve `iso.slice(0, 10)`: el día local de quien registra, porque el ISO lleva su offset (FR-004)
+- [X] T011 [P] Crear frontend/src/app/core/time.spec.ts con ≥ 3 casos de `nightDate` (23:40 → mismo día; 00:30 → ese mismo día; offsets `-04:00` y `+02:00`) (SC-003), más `inputLocalToIso`: añade `:00` y el offset del navegador (FR-005)
+- [X] T012 Sustituir `iso.slice(0, 10)` y `bedtime.slice(0, 10)` por `nightDate(...)` en frontend/src/app/features/night/night.component.ts, y `start.slice(0, 10)` en frontend/src/app/features/naps/naps.component.ts (depende de T010)
 
 **Checkpoint**: `npm test` (backend) y `ng test` (frontend) pasan; la app se comporta igual.
 
@@ -71,19 +71,19 @@ base vacía, y la pestaña Noche en TestBed.
 
 ### Tests for User Story 1 ⚠️
 
-- [ ] T013 [P] [US1] Crear backend/test/sleep-night.test.js con los casos de caracterización. Deben pasar ya:
+- [X] T013 [P] [US1] Crear backend/test/sleep-night.test.js con los casos de caracterización. Deben pasar ya:
   - crear una noche sin `wake_time` → 201 con `wake_time: null` y `duration_min: null`;
   - `GET /api/sleep/open` la devuelve; sin noches abiertas devuelve `null`;
   - `POST /api/sleep/wake` con 07:10 tras 23:40 → 200, `duration_min: 450`, y la fecha de noche se conserva;
   - wake ≤ bedtime → 400 "La hora de despertar debe ser posterior a la de dormir" y la noche sigue abierta;
   - wake sin noche abierta → 404 "No hay una noche abierta para cerrar";
   - `wake_time` no ISO → 400.
-- [ ] T014 [P] [US1] Añadir a backend/test/sleep-night.test.js los casos de FR-003. Deben **fallar** antes de T016:
+- [X] T014 [P] [US1] Añadir a backend/test/sleep-night.test.js los casos de FR-003. Deben **fallar** antes de T016:
   - con una noche abierta, `POST /api/sleep` sin `wake_time` → 409 `{ error: "Ya hay una noche abierta. Ciérrala antes de abrir otra." }`;
   - con una noche abierta, `PUT /api/sleep/:otra` con `wake_time: null` → 409 y la otra noche no cambia;
   - el `PUT` con `wake_time: null` sobre la propia noche abierta → 200;
   - `POST /api/sleep` con `wake_time` válido mientras hay una abierta → 201, porque crea una noche cerrada.
-- [ ] T015 [P] [US1] Crear frontend/src/app/features/night/night.component.spec.ts con TestBed, `provideHttpClient()` y `provideHttpClientTesting()`. Casos:
+- [X] T015 [P] [US1] Crear frontend/src/app/features/night/night.component.spec.ts con TestBed, `provideHttpClient()` y `provideHttpClientTesting()`. Casos:
   - sin noche abierta se ve "Me voy a dormir"; al pulsarlo se hace `POST /api/sleep` con `date === nightDate(bedtime)`;
   - con noche abierta se ve "Te acostaste a las HH:MM" y **"Ya desperté"** (debe fallar antes de T017), y no se ve "Me voy a dormir";
   - un error `{ error }` del servidor se muestra en `role="alert"`;
@@ -91,12 +91,12 @@ base vacía, y la pestaña Noche en TestBed.
 
 ### Implementation for User Story 1
 
-- [ ] T016 [US1] En backend/src/routes/sleep.js añadir el guard de FR-003 (research D6). Condiciones:
+- [X] T016 [US1] En backend/src/routes/sleep.js añadir el guard de FR-003 (research D6). Condiciones:
   - en `POST /`: si `d.wake_time` es null/undefined y existe una fila `wake_time IS NULL`, lanzar `HttpError(409, 'Ya hay una noche abierta. Ciérrala antes de abrir otra.')`;
   - en `PUT /:id`: si el resultado deja `wake_time` null y existe otra fila abierta con `id != existing.id`, lanzar el mismo error.
 
   No cambiar el esquema (principio II).
-- [ ] T017 [US1] En frontend/src/app/features/night/night.component.html cambiar "Ya despertí" → "Ya desperté" y la etiqueta "Despertí" → "Desperté" (las dos apariciones: formulario manual y edición) (FR-027)
+- [X] T017 [US1] En frontend/src/app/features/night/night.component.html cambiar "Ya despertí" → "Ya desperté" y la etiqueta "Despertí" → "Desperté" (las dos apariciones: formulario manual y edición) (FR-027)
 
 **Checkpoint**: T013–T015 en verde. US1 funciona de forma aislada.
 
@@ -111,7 +111,7 @@ duplican.
 
 ### Tests for User Story 6 ⚠️
 
-- [ ] T018 [US6] Crear backend/test/persistence.test.js:
+- [X] T018 [US6] Crear backend/test/persistence.test.js:
   - con `DB_PATH` en un archivo de `os.tmpdir()`, lanzar con `child_process.execFileSync(process.execPath, [script])` un proceso que requiere `src/db.js` e inserta una noche, una siesta y un valor de métrica;
   - lanzar un segundo proceso que los lee y los imprime como JSON, y comprobar que son idénticos (US6-1);
   - comprobar que tras dos arranques hay exactamente 3 métricas (US6-3);
@@ -129,7 +129,7 @@ duplican.
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T019 [P] [US2] Crear backend/test/sleep-history.test.js:
+- [X] T019 [P] [US2] Crear backend/test/sleep-history.test.js:
   - `POST` con `wake_time` → 201 y `duration_min` correcto;
   - `date` inválida → 400 "date debe tener formato YYYY-MM-DD";
   - `bedtime` inválido → 400;
@@ -140,7 +140,7 @@ duplican.
   - notas de 600 caracteres → se guardan 500;
   - notas `''` → null;
   - `GET ?from&to` filtra por `date` inclusivo y ordena por `bedtime` DESC.
-- [ ] T020 [US2] Ampliar frontend/src/app/features/night/night.component.spec.ts (después de T015):
+- [X] T020 [US2] Ampliar frontend/src/app/features/night/night.component.spec.ts (después de T015):
   - "Guardar noche" está deshabilitado si falta dormir o despertar;
   - guardar hace `POST` con `date` = `nightDate(bedtime)` y `wake_time`;
   - "Editar" + "Guardar cambios" hace `PUT` con `wake_time: null` si se vacía el despertar;
@@ -158,7 +158,7 @@ duplican.
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T021 [P] [US3] Crear backend/test/naps.test.js:
+- [X] T021 [P] [US3] Crear backend/test/naps.test.js:
   - `POST` válido → 201 con `duration_min`;
   - fin ≤ inicio → 400 "La siesta debe terminar después de empezar";
   - horas no ISO → 400;
@@ -166,7 +166,7 @@ duplican.
   - `PUT` parcial conserva el resto;
   - `PUT`/`DELETE` inexistente → 404 "Siesta no encontrada";
   - `GET ?from&to` filtra y ordena por `start_time` DESC.
-- [ ] T022 [P] [US3] Crear frontend/src/app/features/naps/naps.component.spec.ts:
+- [X] T022 [P] [US3] Crear frontend/src/app/features/naps/naps.component.spec.ts:
   - al iniciar, el formulario propone inicio = ahora − 30 min y fin = ahora, y muestra "Duración: 30 min" (usar `jasmine.clock().mockDate`);
   - con fin ≤ inicio se muestra "El fin debe ser posterior al inicio" y el botón está deshabilitado;
   - pide `GET /api/naps` con `from = hoy − 29` y `to = hoy`;
@@ -185,7 +185,7 @@ duplican.
 
 ### Tests for User Story 4 ⚠️
 
-- [ ] T023 [P] [US4] Crear backend/test/stats.test.js:
+- [X] T023 [P] [US4] Crear backend/test/stats.test.js:
   - noches de 7 h y 8 h → `avg_sleep_min 450`, `nights 2`;
   - horas de dormir 23:30 y 00:30 → `avg_bedtime_min 0` (media circular);
   - las noches abiertas no cuentan;
@@ -193,7 +193,7 @@ duplican.
   - sin datos → `avg_*_min` de horas `null` y `avg_sleep_min 0`;
   - `days` ordenado por fecha ascendente;
   - la hora media usa el `HH:MM` escrito en el ISO, sin convertirlo (sirven dos noches con offsets distintos).
-- [ ] T024 [US4] Ampliar frontend/src/app/features/night/night.component.spec.ts (después de T020):
+- [X] T024 [US4] Ampliar frontend/src/app/features/night/night.component.spec.ts (después de T020):
   - se pide `GET /api/stats` con `from = hoy − 13` y `to = hoy`;
   - el resumen muestra "7 h 30 min", la hora media con `fmtMinutesOfDay`, y "N" siestas en 14 días;
   - sin datos se muestra "—";
@@ -213,7 +213,7 @@ duplican.
 
 ### Tests for User Story 5 ⚠️
 
-- [ ] T025 [P] [US5] Crear backend/test/metrics.test.js. Casos de configuración:
+- [X] T025 [P] [US5] Crear backend/test/metrics.test.js. Casos de configuración:
   - base nueva → 3 métricas iniciales en orden: "Calidad del sueño" scale 1–5, "Energía al despertar" scale 1–5, "Cafés" number "tazas" min 0;
   - nombre vacío → 400 "El nombre es obligatorio";
   - tipo inválido → 400;
@@ -223,7 +223,7 @@ duplican.
   - `archived: true` oculta la métrica en `GET /api/metrics` pero no con `?all=1`;
   - `sort_order` persiste el orden;
   - `PUT`/`DELETE` inexistente → 404 "Métrica no encontrada".
-- [ ] T026 [P] [US5] Crear backend/test/metric-entries.test.js. Casos de valores:
+- [X] T026 [P] [US5] Crear backend/test/metric-entries.test.js. Casos de valores:
   - `PUT /:id/entries/:date` hace upsert: dos escrituras dejan 1 fila con el último valor (FR-021);
   - `-1` en "Cafés" → 400 "Mínimo 0";
   - `6` en una escala 1–5 → 400 "Máximo 5";
@@ -234,7 +234,7 @@ duplican.
   - `DELETE` de un valor → 204; si no existe → 404 "Registro no encontrado";
   - `GET /entries?from&to` excluye las métricas archivadas;
   - `DELETE /api/metrics/:id` borra en cascada sus valores (FR-019).
-- [ ] T027 [P] [US5] Crear frontend/src/app/features/metrics/metrics.component.spec.ts:
+- [X] T027 [P] [US5] Crear frontend/src/app/features/metrics/metrics.component.spec.ts:
   - carga `GET /api/metrics?all=1` y las entradas de `hoy − 6..hoy`;
   - pulsar un valor de escala hace `PUT` y volver a pulsarlo hace `DELETE`;
   - sí/no alterna "Sin registrar" → "Sí" → "No";
@@ -251,10 +251,10 @@ duplican.
 
 ## Phase 9: Polish & Cross-Cutting Concerns
 
-- [ ] T028 [P] Crear frontend/src/app/app.spec.ts: se muestran las 3 pestañas "Noche", "Siestas" y "Métricas"; la activa tiene `aria-current="page"`, y cambiar de pestaña cambia el componente visible (FR-027)
-- [ ] T029 [P] Actualizar README.md: "Ya despertí" → "Ya desperté"; "Node.js 20+" → "Node.js 22 LTS"; la sección de desarrollo con `npm test`, `npm run lint` y `ng test --watch=false --browsers=ChromeHeadless`; y el 409 de `POST /api/sleep` en la tabla de la API
-- [ ] T030 Crear .github/workflows/ci.yml con **un** job en `pull_request` y `push` a `main`, sobre ubuntu-latest con Node 22 (`actions/setup-node`). Pasos: `npm ci`, `npm run lint` y `npm test` en backend/; `npm ci`, `npm run lint`, `npx ng test --watch=false --browsers=ChromeHeadless` y `npx ng build` en frontend/. Es el mínimo que exige el principio IV ("el build de producción debe pasar en CI"). La caché, la imagen, el despliegue y el badge son de la feature 002
-- [ ] T031 Ejecutar las puertas de calidad de specs/001-linea-base/quickstart.md §2 (lint + tests backend y frontend + `ng build`) y la comprobación manual §3, incluida la de FR-027: a 375 px de ancho no hay scroll horizontal, el foco es visible navegando con Tab, y con `prefers-reduced-motion: reduce` no hay animaciones. Anotar el resultado en el PR
+- [X] T028 [P] Crear frontend/src/app/app.spec.ts: se muestran las 3 pestañas "Noche", "Siestas" y "Métricas"; la activa tiene `aria-current="page"`, y cambiar de pestaña cambia el componente visible (FR-027)
+- [X] T029 [P] Actualizar README.md: "Ya despertí" → "Ya desperté"; "Node.js 20+" → "Node.js 22 LTS"; la sección de desarrollo con `npm test`, `npm run lint` y `ng test --watch=false --browsers=ChromeHeadless`; y el 409 de `POST /api/sleep` en la tabla de la API
+- [X] T030 Crear .github/workflows/ci.yml con **un** job en `pull_request` y `push` a `main`, sobre ubuntu-latest con Node 22 (`actions/setup-node`). Pasos: `npm ci`, `npm run lint` y `npm test` en backend/; `npm ci`, `npm run lint`, `npx ng test --watch=false --browsers=ChromeHeadless` y `npx ng build` en frontend/. Es el mínimo que exige el principio IV ("el build de producción debe pasar en CI"). La caché, la imagen, el despliegue y el badge son de la feature 002
+- [X] T031 Ejecutar las puertas de calidad de specs/001-linea-base/quickstart.md §2 (lint + tests backend y frontend + `ng build`) y la comprobación manual §3, incluida la de FR-027: a 375 px de ancho no hay scroll horizontal, el foco es visible navegando con Tab, y con `prefers-reduced-motion: reduce` no hay animaciones. Anotar el resultado en el PR
 
 ---
 
