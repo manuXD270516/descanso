@@ -1,50 +1,93 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# Descanso Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Stack fijo
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+- Backend: Node.js 22 LTS + Express 5 + SQLite mediante better-sqlite3.
+- Frontend: Angular 20 con componentes standalone y signals.
+- NO se introducen ORMs, frameworks de estado ni librerías de UI salvo que el plan lo justifique
+  explícitamente.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+**Razón**: un stack acotado mantiene el proyecto mono-usuario pequeño, predecible y fácil de
+mantener.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### II. Persistencia segura
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+- Los datos viven en un único archivo SQLite, ubicado por la variable `DB_PATH`.
+- Todo cambio de esquema MUST hacerse con migraciones versionadas e idempotentes.
+- NUNCA se hace DROP de datos del usuario.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+**Razón**: los registros de sueño son historia personal irrecuperable; las migraciones
+repetibles evitan pérdidas y estados inconsistentes.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+### III. Reglas de tiempo (NON-NEGOTIABLE)
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+- Las horas se guardan en ISO 8601 con offset.
+- La "fecha de la noche" es el día en que la persona se acuesta.
+- Esta regla MUST tener pruebas explícitas.
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+**Razón**: las noches cruzan la medianoche y las zonas horarias; sin una regla única y probada,
+las métricas se asignan al día equivocado.
+
+### IV. Calidad antes de terminar
+
+- Ninguna tarea se da por terminada sin tests unitarios en backend (rutas y cálculos) y pruebas
+  de componente en frontend.
+- El lint MUST pasar sin errores.
+- El build de producción MUST pasar en CI.
+
+**Razón**: las puertas automáticas son la única garantía verificable de que una feature funciona.
+
+### V. Despliegue como un solo servicio
+
+- Express sirve la API y el build de Angular desde un único servicio.
+- Imagen Docker multi-stage.
+- Healthcheck en `/api/health`.
+- Volumen persistente para la base de datos.
+- Ningún secreto en el repositorio.
+
+**Razón**: un único artefacto desplegable simplifica la operación y protege los datos y las
+credenciales.
+
+### VI. Simplicidad
+
+- Cada feature entrega el mínimo que cumple su spec.
+- Toda complejidad adicional MUST registrarse en la sección "Complexity Tracking" del plan, con
+  su justificación.
+
+**Razón**: YAGNI; la complejidad no justificada es deuda para un proyecto personal.
+
+### VII. UX accesible en español
+
+- La interfaz está en español.
+- MUST ser responsive.
+- El foco del teclado MUST ser visible.
+- Se respeta `prefers-reduced-motion`.
+
+**Razón**: la app se usa a diario desde distintos dispositivos, a menudo de noche y con poca
+atención; debe ser clara y accesible.
+
+## Alcance del producto
+
+"Descanso" es un tracker personal de sueño, siestas y métricas, mono-usuario. El repositorio
+contiene un MVP funcional en `backend/` y `frontend/`, que es la línea base sobre la que se
+especifican las nuevas features.
+
+## Flujo de trabajo y puertas de calidad
+
+- Cada plan MUST verificar el cumplimiento de los principios I–VII antes de implementarse.
+- Las desviaciones se documentan en "Complexity Tracking" (principio VI).
+- Una tarea solo se cierra cuando se cumplen las puertas del principio IV.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+- Esta constitución prevalece sobre cualquier plan, spec o práctica del proyecto.
+- Toda modificación se versiona y se documenta.
+- Versionado semántico:
+  - MAJOR: se elimina o redefine un principio de forma incompatible.
+  - MINOR: se añade un principio o sección, o se amplía materialmente una guía.
+  - PATCH: aclaraciones y cambios de redacción sin efecto semántico.
+- Las revisiones de planes y PRs MUST comprobar el cumplimiento de esta constitución.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2026-09-29 | **Last Amended**: 2026-09-29
