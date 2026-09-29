@@ -9,11 +9,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get('/api/health', (_req, res) => res.json({ ok: true, time: new Date().toISOString() }));
+app.get('/api/health', (_req, res) =>
+  res.json({ ok: true, time: new Date().toISOString(), version: process.env.APP_VERSION || 'dev' }));
 app.use('/api/sleep', require('./routes/sleep'));
 app.use('/api/naps', require('./routes/naps'));
 app.use('/api/metrics', require('./routes/metrics'));
 app.use('/api/stats', require('./routes/stats'));
+// Respaldo para el pipeline: deshabilitado (404) si no hay token configurado
+if (process.env.BACKUP_TOKEN) app.use('/api/admin', require('./routes/admin'));
 
 // Sirve el frontend compilado de Angular si existe (despliegue en un solo servicio)
 const distDir = process.env.FRONTEND_DIST || path.join(__dirname, '..', '..', 'frontend', 'dist', 'frontend', 'browser');

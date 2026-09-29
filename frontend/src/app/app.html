@@ -19,3 +19,7 @@
     @case ('metrics') { <app-metrics /> }
   }
 </main>
+
+@if (version(); as v) {
+  <footer class="version">Versión <span class="tabular">{{ v }}</span></footer>
+}

@@ -1,0 +1,68 @@
+openapi: 3.1.0
+info:
+  title: Descanso API — cambios de la feature 002
+  version: 1.1.0
+  description: |
+    Cambios sobre specs/001-linea-base/contracts/openapi.yaml. El resto del contrato no cambia.
+servers:
+  - url: /api
+
+paths:
+  /health:
+    get:
+      tags: [health]
+      summary: Chequeo de salud con la versión desplegada (FR-018)
+      responses:
+        '200':
+          description: Servicio operativo
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, time, version]
+                properties:
+                  ok: { type: boolean, const: true }
+                  time: { type: string, format: date-time }
+                  version:
+                    type: string
+                    description: SHA completo del commit desplegado, o "dev" si APP_VERSION no está definido
+                    examples: ['a6efe9b68d08a574233ce72d5ade7d40babfb739', 'dev']
+
+  /admin/backup:
+    get:
+      tags: [admin]
+      summary: Copia consistente de la base SQLite (FR-021)
+      description: |
+        Solo existe si el servicio tiene BACKUP_TOKEN configurado; si no, responde 404 como
+        cualquier ruta desconocida. La copia se genera con la API de backup online de SQLite
+        (consistente aunque haya escrituras en curso).
+      security:
+        - backupToken: []
+      responses:
+        '200':
+          description: Archivo SQLite completo
+          headers:
+            Content-Disposition:
+              schema: { type: string }
+              description: attachment; filename="descanso-<YYYY-MM-DDTHHMMSSZ>.db"
+          content:
+            application/octet-stream:
+              schema: { type: string, format: binary }
+        '401':
+          description: Falta el token o no es válido. No se entrega ningún dato.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [error]
+                properties:
+                  error: { type: string, const: 'No autorizado' }
+        '404':
+          description: BACKUP_TOKEN no configurado en el servicio (endpoint deshabilitado).
+
+components:
+  securitySchemes:
+    backupToken:
+      type: http
+      scheme: bearer
+      description: Authorization Bearer <BACKUP_TOKEN>; se compara en tiempo constante.
