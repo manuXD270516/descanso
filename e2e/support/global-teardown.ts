@@ -1,12 +1,34 @@
-import { rmSync } from 'node:fs';
+import { readdirSync, rmSync, statSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
-/** Borra la carpeta temporal de la ejecución (la base del servidor compartido). */
-export default function globalTeardown(): void {
-  const dir = process.env.E2E_RUN_DIR;
-  if (!dir) return;
+const STALE_MS = 60 * 60 * 1000;
+
+function remove(dir: string): void {
   try {
     rmSync(dir, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
   } catch {
-    // En Windows el servidor compartido puede seguir reteniendo el archivo: queda en %TEMP%
+    // En Windows el servidor compartido aún retiene su base: se borra en una ejecución posterior
+  }
+}
+
+/**
+ * Borra la carpeta temporal de esta ejecución y las de ejecuciones anteriores de hace más de
+ * una hora (en Windows, la base del servidor compartido sigue abierta durante el teardown y
+ * no se puede borrar hasta la siguiente ejecución).
+ */
+export default function globalTeardown(): void {
+  const current = process.env.E2E_RUN_DIR;
+  if (current) remove(current);
+
+  const now = Date.now();
+  for (const name of readdirSync(tmpdir())) {
+    if (!name.startsWith('descanso-e2e-')) continue;
+    const dir = join(tmpdir(), name);
+    try {
+      if (statSync(dir).isDirectory() && now - statSync(dir).mtimeMs > STALE_MS) remove(dir);
+    } catch {
+      // desapareció entre medias
+    }
   }
 }

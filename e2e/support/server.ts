@@ -59,7 +59,12 @@ export class AppServer {
   static async start(workerIndex: number, env: Record<string, string> = {}): Promise<AppServer> {
     const dir = mkdtempSync(join(tmpdir(), 'descanso-e2e-'));
     const server = new AppServer(await freePort(workerIndex), join(dir, 'sleep.db'), env, dir);
-    await server.boot();
+    try {
+      await server.boot();
+    } catch (err) {
+      await server.stop();
+      throw err;
+    }
     return server;
   }
 

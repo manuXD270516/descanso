@@ -363,8 +363,9 @@ ignorarse. En local, sin reintentos.
 - **Selectores CSS en resumen, cinta y grupos de siestas**, porque no tienen roles. Dar a esas
   zonas semántica (p. ej. `<dl>` para el resumen, `aria-label` por día) haría los tests más
   robustos y mejoraría la accesibilidad.
-- **Windows:** la base del servidor compartido puede quedar en `%TEMP%\descanso-e2e-run-*` si el
-  proceso aún la retiene al terminar. Es inofensivo.
+- **Windows:** el servidor compartido aún tiene abierta su base cuando corre el teardown, así que
+  `%TEMP%\descanso-e2e-run-*` no se puede borrar en esa ejecución. El teardown borra las carpetas
+  `descanso-e2e-*` de más de una hora en la siguiente.
 - **Bug abierto (FR-023):** escribir con el teclado una fecha futura en el selector de día de
   Métricas la selecciona y permite registrar valores en el futuro: el `max` del
   `<input type="date">` solo limita el calendario desplegable y `setDate()` no lo valida (la API
