@@ -62,7 +62,7 @@ pie de página (US5).
   - `actions/setup-node` con `cache: npm` y `cache-dependency-path: | backend/package-lock.json frontend/package-lock.json`.
 
   El job se sigue llamando `quality`.
-- [ ] T006 [US1] **(manual, usuario)** Preparar y, con confirmación explícita, ejecutar:
+- [X] T006 [US1] **(manual, usuario)** Preparar y, con confirmación explícita, ejecutar:
   1. `gh repo edit manuXD270516/descanso --visibility public --accept-visibility-change-consequences`;
   2. la protección de `master` con `gh api -X PUT repos/manuXD270516/descanso/branches/master/protection`, con `required_status_checks: {strict: true, contexts: ["quality"]}`, `enforce_admins: true`, `required_pull_request_reviews: null` y `restrictions: null` (FR-002, research R1).
 
