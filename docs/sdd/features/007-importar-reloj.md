@@ -69,7 +69,7 @@ Diseño de referencia: `docs/sdd/propuestas/2026-09-29-set-de-features.md` (feat
 
 ### Spike previo al plan
 
-- **Antes del spike**: confirmar el modelo exacto (Ajustes → Acerca de) y que la app es **Huawei Health**, no Honor Health.
+- **Modelo confirmado por el usuario (2026-09-29)**: **Huawei Band 7** ("HUAWEI Band 7-8F0" es su nombre Bluetooth), con Huawei Health; no es Honor. Registra fases con REM (TruSleep 2.0).
 - **Huawei (P1)**: prueba de concepto con una exportación real del usuario.
   - **La exportación real nunca se sube al repositorio.** Los fixtures de prueba son sintéticos o anonimizados, y hay uno por versión del formato para detectar cambios de Huawei.
   - Descifrar el ZIP AES en el navegador con una librería justificada en Complexity Tracking (zip.js admite AES-256).

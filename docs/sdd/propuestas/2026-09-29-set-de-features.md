@@ -20,7 +20,7 @@ las seis áreas que pediste: las cuatro iniciales más gamificación y recordato
 | 008 | Multiusuario con perfiles (invitaciones, aislamiento, perfil, borrar cuenta) | **Multiusuario, paso 2** | L | **Lista para especificar** (P1 = sí) |
 | 009 | Sincronización automática con un reloj o anillo (OAuth) | **Wearables, paso 2** | L | Condicionada: ¿qué dispositivo usas? |
 | 012 | App instalable en el móvil (PWA) | **Recordatorios, paso 2** | S–M | **Descartada por ahora**: usas Android, que recibe push sin instalar la app |
-| 013 | Avisos push con la app cerrada | **Recordatorios, paso 3** | M | Condicionada al coste (≈ 3,1 $/mes de cómputo en total): pendiente de tu techo |
+| 013 | Avisos push con la app cerrada | **Recordatorios, paso 3** | M | Condicionada a que elijas el disparador: **siempre encendida (≈ 3,3 $/mes, recomendada)** o QStash (≈ 2 $/mes, con un tercero) |
 
 **Orden de ejecución** (actualizado con tus respuestas): 003 → 004 → **008** → 005 → 006 → 010 → 011 → 007 (Huawei) → [009] → [013].
 
@@ -60,7 +60,7 @@ Las puntuaciones están en [Evaluación](#evaluación).
 |---|-----------|--------|
 | P1 | **Sí**: habrá varios usuarios, con perfiles | 008 lista para especificar (entrada [`008-multiusuario-perfiles.md`](../features/008-multiusuario-perfiles.md)), adelantada tras 004. Enmienda MAJOR de alcance antes de su plan |
 | P2 | **Huawei Band** ("Band Pro 7"; probablemente una Band 7), con la app Huawei Health | **Sí se obtienen horas y fases.** 007 pasa a estar lista, con la importación de Huawei como P1 (anexo [16-react-G-huawei](anexos-2026-09-29/16-react-G-huawei.md)). La sincronización automática solo sería posible vía Health Sync (de pago) → Google Health API (009, opcional) |
-| P5 | **Android** | 012 (PWA) se descarta. La guía de 010 prioriza Android (Google Calendar web o el calendario del fabricante). 013 queda pendiente solo del techo de coste |
+| P5 | **Android** | **012 (PWA) se descarta**. La guía de 010 prioriza Android (Google Calendar web o el calendario del fabricante). Para 013 falta elegir el disparador (P5b) |
 
 ## Tus decisiones pendientes (6 preguntas)
 
@@ -73,6 +73,7 @@ Solo P1, P2 y P5 bloquean. P3, P4 y P6 tienen una respuesta recomendada por defe
 | P3 | Al despertar, ¿aceptas 2 preguntas opcionales (cuánto tardaste en dormirte y cuántas veces despertaste) o prefieres solo el toque? | 006-US5 |
 | P4 | "Calidad" y "Energía", ¿las anotas sobre la noche anterior (por la mañana) o sobre el día? | El emparejamiento sueño ↔ métricas del backlog B-1 |
 | P5 | ¿iPhone o Android, y qué calendario usas? ¿Te basta la alarma del calendario (010, gratis) o quieres avisos con la app cerrada (013)? Estos requieren la máquina siempre encendida: ≈ **3,1 $/mes de cómputo en total** (hoy se paga menos, porque se apaga sin tráfico). Cálculo: shared-cpu-1x de 256 MB a 0,00000075 $/s × 2.592.000 s × 1,615 (región gru), según los [precios de Fly.io](https://docs.fly.io/about/pricing/); confírmalo en su calculadora. ¿Qué techo mensual aceptas? A esto se suman 0,15 $/mes del volumen. | 010 frente a 012/013; también la VM de 512 MB, `suspend` o los webhooks de 004/009 |
+| P5b | **Disparador de los avisos push (013).** ¿Máquina siempre encendida (≈ 3,3 $/mes en total, sin terceros, **recomendada**) o QStash (≈ 2 $/mes; Upstash, en EE. UU., conocería las horas de los avisos; probablemente no alcanza el ahorro mínimo exigido)? | Disparador de 013 |
 | P6 | ¿Qué hábito quieres que se premie? Por defecto, **levantarte a tu hora**; también puede ser acostarte a tu hora o simplemente registrar. ¿Te sirve como recompensa una colección de logros con datos personales, sin puntos ni premios canjeables? | Regla de 011 |
 
 ## Factibilidad de smartwatches y bands
@@ -317,9 +318,38 @@ motivar la *constancia*. Es opcional y se puede ocultar (enmienda VIII).
 - Guía "Instalar en tu pantalla de inicio".
 - Tests de actualización tras un despliegue.
 
-**013 · Avisos push con la app cerrada (M).** Condiciones: P5 acepta el coste (≈ 3,1 $/mes de cómputo en total, con la máquina siempre encendida), más 012 solo si es iPhone (Android recibe push sin instalar la app).
+**013 · Avisos push con la app cerrada (M).** Condición: elegir el disparador (P5b). Tus usuarios están en Android, que recibe push sin instalar la app, así que no hace falta 012. Análisis completo: [17-react-H](anexos-2026-09-29/17-react-H-push-programado.md), debate [26](anexos-2026-09-29/26-debate-r3-esceptico.md)/[27](anexos-2026-09-29/27-debate-r3-arquitecto.md) y reflexión [32](anexos-2026-09-29/32-reflexion-r3-push.md).
 
-- **Disparador**: solo la opción (a), una máquina con `min_machines_running = 1` y `setInterval`, más recuperación al arrancar. Se descartan el cron de GitHub y los servicios de ping externos, porque impiden el auto-stop y fallan en silencio.
+- **Disparador**: interfaz `Waker`. Hay dos implementaciones que pasan **la misma suite de contrato**, y se cambia de una a otra solo con configuración.
+  - **Recomendada: `AlwaysOnWaker`**
+    - Cómo funciona: `min_machines_running = 1` y `setInterval` cada 30–60 s.
+    - Coste: ≈ **3,3 $/mes** en total (≈ 3,1 $ de cómputo con 256 MB en gru, más 0,15 $ del volumen).
+    - Por qué es la recomendada:
+      - no hay terceros: las horas de los avisos revelan hábitos de sueño (RGPD art. 9);
+      - nunca hay arranque en frío. Con la alternativa, si tocas el aviso varios minutos después (por ejemplo, el de "prepárate"), la máquina ya se habrá parado y la app tardará unos segundos en abrir;
+      - el rate limit de 004 pasa a ser fiable;
+      - el único secreto nuevo es VAPID.
+    - **Complexity Tracking**: se abandona el auto-stop de R13 a cambio de precisión y privacidad. El coste es de ≈ 1–1,5 $/mes más que la alternativa.
+    - Hay que anotar en R13 que deja de aplicarse el auto-stop.
+  - **Alternativa: `QStashWaker`** (Upstash)
+    - Cómo funciona: **un mensaje por vencimiento**, con horizonte de 48 h y `Deduplication-Id`, sin cadena ni cancelaciones. El tick hace un claim y responde 202. Los vencimientos se gestionan por usuario.
+    - Montaje: la ruta usa `express.raw` antes de `json` y queda fuera de auth/CSRF. La firma JWT se verifica con las claves current/next y comprobando la url y el hash del cuerpo.
+    - Coste: ≈ 2 $/mes, porque se mantiene el auto-stop. El ahorro real es de ~1–1,5 $/mes.
+    - Requisitos:
+      - un spike con el servidor de desarrollo de QStash;
+      - DPA y base legal, porque las horas de los avisos revelan hábitos de sueño (RGPD art. 9);
+      - consentimiento;
+      - la enmienda MINOR del principio V;
+      - un runbook para rotar los 3 secretos;
+      - un **payload con solo un id opaco del vencimiento**, sin `user_id` ni tipo de aviso (X40);
+      - un **vigilante independiente de Upstash**: el workflow diario de respaldo ya despierta la máquina, y la recuperación al arrancar vuelve a armar los vencimientos (X33);
+      - un **test de cambio de proveedor** a `AlwaysOnWaker` solo con configuración, más una alerta si un vencimiento pasa sin tick (E19).
+    - Se vuelve a la opción recomendada si:
+      - más del 5 % de los avisos quedan `skipped` en 7 días;
+      - cambia el plan gratuito;
+      - el **ahorro medido en una semana es menor de 1,5 $/mes** (E15).
+    - **Ojo**: el ahorro estimado (≈ 1,3 $) ya está por debajo de ese umbral, así que lo más probable es que QStash no supere su propia condición.
+  - **Descartadas**: el cron de GitHub, los pings frecuentes, cron-job.org, EventBridge, Cloud Tasks, Cloudflare (sería un segundo servicio), ntfy (obliga a instalar una app), OneSignal y las soluciones solo en el cliente.
 - **Envío**:
   - idempotencia con reclamo previo (`reminder_deliveries`, PK usuario + tipo + fecha de la noche);
   - `TTL` y `Topic`;
@@ -336,7 +366,17 @@ motivar la *constancia*. Es opcional y se puede ocultar (enmienda VIII).
   - podar `reminder_deliveries` a los 90 días;
   - borrar la suscripción al cerrar sesión y excluirla de la exportación;
   - `TICK_TOKEN` con rate limit;
-  - ventana de recuperación de avisos perdidos mayor que la duración de un despliegue.
+  - ventana de recuperación de avisos perdidos mayor que la duración de un despliegue;
+  - **ventanas de descarte por tipo de aviso**: `prepare` y `bedtime` hasta 10 min de retraso, `wake_check` hasta 60 min. Pasado ese tiempo se marcan como `skipped`, porque avisar tarde no sirve;
+  - envío aislado por usuario con concurrencia ≤ 4, para que un 410 o un timeout no bloqueen a los demás;
+  - `/api/health` de administración con `last_tick_at`, `pending_dues` y `skipped_24h`, sin datos personales.
+- **Pruebas** (con cualquier disparador):
+  - suite de contrato común a los dos `Waker`;
+  - exactamente una entrega aunque haya ticks concurrentes;
+  - 20 usuarios, uno con 410 y otro con timeout, sin afectar al resto;
+  - recuperación de avisos tras un despliegue, respetando las ventanas por tipo;
+  - humo en Docker con `--memory=256m` que incluya `web-push`;
+  - E2E con el servicio de push simulado y el botón "aviso de prueba".
 
 **008 · Multiusuario con perfiles (L).** **Condición cumplida** (P1 = sí). Entrada: [`008-multiusuario-perfiles.md`](../features/008-multiusuario-perfiles.md). Añade la historia "Mi perfil": nombre, zona horaria, objetivo y preferencias. Se apoya en 004, que ya
 deja `user_id` en todas las tablas.
