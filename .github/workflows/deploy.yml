@@ -4,6 +4,11 @@ on:
   push:
     branches: [master]
   workflow_dispatch:
+    inputs:
+      simular_fallo:
+        description: 'Prueba de rollback (SC-003): la versión nueva no arranca'
+        type: boolean
+        default: false
 
 # Nunca dos despliegues en paralelo; el siguiente espera al actual
 concurrency:
@@ -63,48 +68,26 @@ jobs:
     environment: production
     env:
       IMAGE_REF: ${{ needs.publish.outputs.image }}
-      RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
-      RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
-      RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
-      APP_URL: ${{ secrets.APP_URL }}
+      FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      APP_URL: https://descanso-sleep.fly.dev
     steps:
-      - name: Lanzar el despliegue en Render
-        id: hook
-        run: |
-          set -euo pipefail
-          sep='?'; [[ "$RENDER_DEPLOY_HOOK_URL" == *\?* ]] && sep='&'
-          code=$(curl -sS -o hook.json -w '%{http_code}' -X POST \
-            "${RENDER_DEPLOY_HOOK_URL}${sep}imgURL=$(jq -rn --arg v "$IMAGE_REF" '$v|@uri')")
-          echo "Deploy hook → HTTP $code"
-          if [[ "$code" == "200" ]]; then
-            id=$(jq -r '.deploy.id // .id // empty' hook.json)
-          elif [[ "$code" == "202" ]]; then
-            # Otro despliegue en curso: Render encola este; se toma el más reciente
-            sleep 10
-            id=$(curl -fsS -H "Authorization: Bearer $RENDER_API_KEY" \
-              "https://api.render.com/v1/services/$RENDER_SERVICE_ID/deploys?limit=1" | jq -r '.[0].deploy.id')
-          else
-            cat hook.json; exit 1
-          fi
-          [[ -n "$id" ]] || { echo "No se obtuvo el id del despliegue"; exit 1; }
-          echo "id=$id" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v4 # fly.toml
 
-      - name: Esperar a que el despliegue esté live
-        env:
-          DEPLOY_ID: ${{ steps.hook.outputs.id }}
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+
+      # Versión en producción antes de desplegar; sirve para el rollback (también despierta la máquina)
+      - name: Versión actual
+        id: prev
         run: |
-          set -euo pipefail
-          for _ in $(seq 1 90); do   # 90 × 10 s = 15 min
-            status=$(curl -fsS -H "Authorization: Bearer $RENDER_API_KEY" \
-              "https://api.render.com/v1/services/$RENDER_SERVICE_ID/deploys/$DEPLOY_ID" | jq -r '.status')
-            echo "$(date -u +%T) $status"
-            case "$status" in
-              live) exit 0 ;;
-              build_failed|update_failed|canceled|deactivated) echo "Despliegue fallido: $status"; exit 1 ;;
-            esac
-            sleep 10
-          done
-          echo "El despliegue no llegó a live en 15 min"; exit 1
+          prev=$(curl -fsS --max-time 30 "$APP_URL/api/health" | jq -r '.version // empty' || true)
+          echo "Versión actual: ${prev:-ninguna}"
+          echo "version=$prev" >> "$GITHUB_OUTPUT"
+
+      - name: Desplegar la imagen por SHA en Fly.io
+        run: |
+          extra=()
+          if [[ "${{ inputs.simular_fallo }}" == "true" ]]; then extra=(--env NODE_OPTIONS=--require=/no-existe.js); fi
+          flyctl deploy --image "$IMAGE_REF" --wait-timeout 5m0s "${extra[@]}"
 
       - name: Verificar salud y versión (≤ 60 s)
         run: |
@@ -120,3 +103,10 @@ jobs:
           done
           echo "El chequeo de salud no devolvió la versión $GITHUB_SHA en 60 s (última: ${version:-sin respuesta})"
           exit 1
+
+      # Fly no vuelve solo a la versión anterior: la redesplegamos para que siga sirviendo (FR-007)
+      - name: Rollback a la versión anterior
+        if: failure() && steps.prev.outputs.version != '' && steps.prev.outputs.version != 'dev'
+        run: |
+          echo "Rollback a ${{ steps.prev.outputs.version }}"
+          flyctl deploy --image "ghcr.io/manuxd270516/descanso:${{ steps.prev.outputs.version }}" --wait-timeout 5m0s

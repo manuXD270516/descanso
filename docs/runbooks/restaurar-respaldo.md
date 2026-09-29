@@ -34,7 +34,7 @@ Abre http://localhost:3000 y comprueba que los datos coinciden con los del respa
 
 > El volumen se llama siempre `descanso-data`, porque tiene un nombre fijo en `compose.yaml`.
 
-## 2b. Restaurar en producción (Render)
+## 2b. Restaurar en producción (Fly.io)
 
 0. **Primero, un respaldo del estado actual.** En GitHub, ve a Actions → **Backup** → *Run
    workflow* y espera a que termine en verde. Así, restaurar nunca pierde los cambios hechos
@@ -43,16 +43,22 @@ Abre http://localhost:3000 y comprueba que los datos coinciden con los del respa
    ```bash
    aws s3 presign "s3://$S3_BUCKET/descanso/<archivo>.db" --expires-in 900 --endpoint-url "$S3_ENDPOINT"
    ```
-2. En el dashboard de Render, abre el servicio **descanso** → **Shell** y ejecuta:
+2. Abre una consola en la máquina. Si está apagada por falta de tráfico, primero abre la app
+   para despertarla:
+   ```bash
+   fly ssh console --app descanso-sleep
+   ```
+   Dentro de la máquina:
    ```sh
    wget -O /data/restore.db "<URL firmada>"
    cd /app/backend && node -e "new (require('better-sqlite3'))('/data/restore.db').backup('/data/sleep.db').then(() => console.log('ok'))"
    rm /data/restore.db
+   exit
    ```
    La API de backup de SQLite copia el contenido respetando los bloqueos de la base abierta. No
    sobrescribas el archivo con `cp` mientras el servicio está corriendo.
-3. En el dashboard: **Manual Deploy → Restart service**.
-4. Comprueba `https://<app>/api/health` y los datos en la app.
+3. Reinicia la app: `fly apps restart descanso-sleep`.
+4. Comprueba https://descanso-sleep.fly.dev/api/health y los datos en la app.
 
 ## Lanzar un respaldo manual
 
@@ -66,4 +72,5 @@ GitHub → Actions → **Backup** → *Run workflow*. Hace lo mismo que la ejecu
 - Si el workflow **Backup** falla, GitHub envía un correo. Un fallo nunca borra respaldos
   anteriores, porque la poda solo se ejecuta tras subir con éxito la copia del día.
 - El endpoint `/api/admin/backup` exige `Authorization: Bearer <BACKUP_TOKEN>`. Si rotas el
-  token, actualízalo **a la vez** en Render (variable de entorno) y en GitHub (secreto).
+  token, actualízalo **a la vez** en Fly (`fly secrets set BACKUP_TOKEN=… --app descanso-sleep`)
+  y en GitHub (secreto `BACKUP_TOKEN`).

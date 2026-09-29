@@ -18,7 +18,8 @@ sleep-tracker/
 │   └── src/routes/   sleep · naps · metrics · stats
 ├── frontend/         proyecto Angular
 ├── Dockerfile
-└── render.yaml       plantilla para desplegar en Render con disco persistente
+├── fly.toml          despliegue en Fly.io (volumen persistente, apagado sin tráfico)
+└── compose.yaml      entorno local en un comando
 ```
 
 ## Ejecutar en local
@@ -96,27 +97,35 @@ tests y el build de producción en cada pull request. Es un check obligatorio pa
 
 ## Desplegar
 
-### Opción A — Pipeline automático a Render (la que se usa)
+### Opción A — Pipeline automático a Fly.io (la que se usa)
 
-Cada merge a `master` ejecuta el workflow **Deploy**:
+La app corre en https://descanso-sleep.fly.dev (región `gru`, São Paulo). Cada merge a `master`
+ejecuta el workflow **Deploy**:
 
 1. lint, tests y build (`quality`);
 2. publica la imagen en GHCR (`ghcr.io/manuxd270516/descanso:<sha>` y `:latest`);
-3. la despliega en Render por su SHA;
-4. verifica que `/api/health` devuelve esa versión en ≤ 60 s. La versión aparece también en el
-   pie de la app.
+3. la despliega en Fly.io por su SHA (`flyctl deploy --image`);
+4. verifica que `/api/health` devuelve esa versión en ≤ 60 s. Si no, **vuelve a desplegar la
+   versión anterior** y el job falla. La versión aparece también en el pie de la app.
 
 Los PR no se pueden fusionar si `quality` falla.
 
-Configuración única:
+Coste: la máquina (`shared-cpu-1x`, 256 MB) **se apaga cuando no hay tráfico** y arranca con la
+primera petición, que tarda unos segundos. Se paga por uso, a mes vencido, más el volumen de
+1 GB. La configuración está en `fly.toml`.
 
-1. En Render, **New → Blueprint** con este repo. `render.yaml` define un servicio basado en
-   imagen, en plan de pago (el gratuito no tiene disco persistente), con un disco de 1 GB en
-   `/data` y el health check en `/api/health`. Define `BACKUP_TOKEN` (`openssl rand -hex 32`).
-2. Carga en GitHub (Settings → Secrets → Actions) los secretos listados en
-   [`specs/002-pipeline-ci-cd/contracts/pipeline.md`](specs/002-pipeline-ci-cd/contracts/pipeline.md).
-3. Tras el primer despliegue, marca como público el paquete `descanso` en GHCR para que Render
-   pueda descargarlo.
+Configuración única (con [`flyctl`](https://fly.io/docs/flyctl/install/)):
+
+```bash
+fly apps create descanso-sleep
+fly volumes create descanso_data --size 1 --region gru --app descanso-sleep
+fly secrets set BACKUP_TOKEN=<token> --stage --app descanso-sleep   # token: openssl rand -hex 32
+fly tokens create deploy --app descanso-sleep                         # → secreto FLY_API_TOKEN en GitHub
+```
+
+Después carga en GitHub (Settings → Secrets → Actions) los secretos listados en
+[`specs/002-pipeline-ci-cd/contracts/pipeline.md`](specs/002-pipeline-ci-cd/contracts/pipeline.md)
+y lanza **Deploy** a mano (Actions → Deploy → *Run workflow*).
 
 ### Respaldos
 

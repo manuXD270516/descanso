@@ -8,11 +8,12 @@ Referencias: [spec](./spec.md), [contrato del pipeline](./contracts/pipeline.md)
 1. Hacer público el repositorio y proteger `master`: exigir el check `quality`, que la rama esté
    al día, e integrar solo por PR (R1).
 2. Crear el bucket privado compatible con S3 y unas credenciales limitadas a él (R8).
-3. Crear o actualizar el servicio en Render desde `render.yaml`, con plan de pago, disco en
-   `/data` y `BACKUP_TOKEN` (R5).
-4. Copiar el deploy hook y crear una API key en Render.
+3. Crear la app en Fly.io y su volumen, y definir `BACKUP_TOKEN` (comandos en el README,
+   "Opción A"; research R13).
+4. Crear un deploy token (`fly tokens create deploy --app descanso-sleep`).
 5. Cargar los secretos de [contracts/pipeline.md](./contracts/pipeline.md) en GitHub.
-6. Tras el primer `publish`, marcar como **público** el paquete de GHCR `descanso` (R2).
+6. Comprobar que el paquete de GHCR `descanso` es **público**. Al serlo el repositorio, lo
+   hereda (verificado tras el primer `publish`).
 
 ## 1. Entorno local en un comando (US4, SC-007)
 
@@ -46,11 +47,12 @@ cd frontend && npx ng test --watch=false --browsers=ChromeHeadless   # pie de p�
 4. El badge del README muestra el estado del último `Deploy`.
 
 **Despliegue fallido (SC-003)**, opcional y sin tocar código:
-1. En Render, definir temporalmente `NODE_OPTIONS=--require=/no-existe.js`, que impide arrancar
-   a Node.
-2. Relanzar `Deploy` y comprobar que el job `deploy` falla en ≤ 60 s + tiempo de arranque, y que
-   la app sigue sirviendo la versión anterior.
-3. Quitar la variable y relanzar.
+1. Ir a Actions → `Deploy` → *Run workflow* y marcar **`simular_fallo`**. La versión nueva se
+   despliega con `NODE_OPTIONS=--require=/no-existe.js`, que impide arrancar a Node.
+2. Comprobar que el job `deploy` queda en rojo y que el paso *Rollback a la versión anterior*
+   se ejecutó.
+3. Comprobar que `https://descanso-sleep.fly.dev/api/health` responde con la versión anterior
+   y que la app funciona.
 
 ## 5. Respaldos y restauración (US3)
 

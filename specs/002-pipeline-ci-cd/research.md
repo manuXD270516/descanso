@@ -72,6 +72,8 @@ producto vienen de las Clarifications de la spec.
 
 ### R5. Despliegue en Render: servicio basado en imagen + deploy hook con `imgURL`
 
+> **Sustituida por R13**: se cambió a Fly.io después del merge de la 002.
+
 - **Decision**:
   - `render.yaml` pasa de `runtime: docker` (build en Render) a `runtime: image` con
     `image.url: ghcr.io/manuxd270516/descanso:latest`.
@@ -93,6 +95,9 @@ producto vienen de las Clarifications de la spec.
   documentación muestra ejemplos como `1c-2g`, y `starter` podría estar renombrado.
 
 ### R6. Verificación de salud en 60 s y comportamiento ante fallos
+
+> **Sustituida por R13** en lo que respecta a Render. El límite de 60 s y la comprobación de
+> `version == sha` se mantienen.
 
 - **Decision**:
   1. El hook responde 200 con el `id` del despliegue.
@@ -223,11 +228,64 @@ producto vienen de las Clarifications de la spec.
 - **Alternatives considered**: un único workflow con condiciones `if:` (más difícil de leer y de
   relanzar por partes).
 
+### R13. Cambio a Fly.io: pago por uso con volumen y apagado sin tráfico
+
+- **Contexto**: tras el merge, el usuario pidió una opción más barata o pagada después del uso.
+
+  | Proveedor | Coste aproximado | Modelo de pago |
+  |-----------|------------------|----------------|
+  | Render con disco | 7,25 $/mes | fijo, por segundo |
+  | Seenode | ≈ 6,50 $/mes (4 $ + 5 GB de almacenamiento mínimo) | créditos prepagados |
+  | Railway | 5 $/mes | cuota fija que incluye el uso |
+  | **Fly.io** | **≈ 2–4 $/mes** | **por uso, a mes vencido** |
+
+  Fuentes: las páginas de precios de cada proveedor, consultadas el 2026-09-29.
+- **Decision**: Fly.io, app `descanso-sleep`, región `gru` (São Paulo).
+  - **`fly.toml`**:
+    - imagen de GHCR;
+    - volumen `descanso_data` de 1 GB montado en `/data`;
+    - `http_service` con `auto_stop_machines = "stop"`, `auto_start_machines = true` y
+      `min_machines_running = 0`;
+    - check `GET /api/health`;
+    - `[[vm]] shared-cpu-1x`, 256 MB;
+    - `[deploy] strategy = "rolling"`: con una sola máquina la actualiza en el sitio, y `flyctl`
+      espera a que pasen los health checks.
+  - **Job `deploy`**:
+    1. `superfly/flyctl-actions/setup-flyctl`;
+    2. lee la versión actual en `/api/health` (lo que además despierta la máquina);
+    3. `flyctl deploy --image ghcr.io/manuxd270516/descanso:<sha> --wait-timeout 5m0s`;
+    4. exige `version == sha` en ≤ 60 s;
+    5. **si falla, redespliega la versión anterior** (`flyctl deploy --image …:<prev>`) y el job
+       queda en rojo.
+  - **Entrada manual `simular_fallo`**: permite validar SC-003. Despliega con
+    `--env NODE_OPTIONS=--require=/no-existe.js`, que impide arrancar; el rollback no lleva ese
+    flag.
+- **Rationale**:
+  - Es la opción más barata y la única pagada a mes vencido.
+  - Una máquina parada solo cuesta su rootfs; el volumen se cobra siempre, a 0,15 $/GB.
+  - La documentación de Fly no garantiza volver a la versión anterior cuando un despliegue
+    falla, y con un solo volumen no se pueden usar `canary` ni `bluegreen`. Por eso el rollback
+    lo hace el pipeline.
+- **Secretos**:
+  - GitHub:
+    - `FLY_API_TOKEN`: un deploy token limitado a la app (`fly tokens create deploy`);
+    - `BACKUP_TOKEN`;
+    - `S3_*` y `AWS_*`.
+  - Fly (`fly secrets set`): `BACKUP_TOKEN`.
+  - `APP_URL` pasa a ser un valor fijo en los workflows (`https://descanso-sleep.fly.dev`): no
+    es secreto.
+- **Consecuencias**:
+  - La primera petición tras un periodo sin uso tarda unos segundos (arranque en frío).
+  - El workflow de respaldo despierta la máquina.
+  - La restauración en producción usa `fly ssh console` (runbook).
+
 ## Deuda técnica o riesgos nuevos
 
 | # | Hallazgo | Impacto | Mitigación |
 |---|----------|---------|------------|
-| R-01 | Unos segundos sin servicio en cada despliegue (disco en Render). | Aceptado por la spec (uso personal). | — |
+| R-01 | Unos segundos sin servicio en cada despliegue (una sola máquina con volumen, actualizada en el sitio). | Aceptado por la spec (uso personal). | — |
 | R-02 | Los workflows programados se desactivan tras 60 días sin actividad. | Dejaría de haber respaldos sin avisar. | Documentado en el runbook; revisar si el repositorio pasa meses inactivo. |
-| R-03 | Coste mensual del plan de pago y del bucket. | Aceptado en la clarificación. | Disco de 1 GB, el mínimo. |
-| R-04 | Cambiar de `runtime: docker` a `runtime: image` en un servicio ya creado puede no aplicarse vía Blueprint. | Habría que recrear el servicio. | Verificarlo en el primer despliegue; si hay que recrearlo, antes se descarga un respaldo manual. |
+| R-03 | Coste por uso de Fly.io y del bucket. | Aceptado en la clarificación. | Máquina que se apaga sin tráfico; volumen de 1 GB, el mínimo. |
+| R-04 | ~~Cambio de runtime en Render~~ | Ya no aplica (Fly.io). | — |
+| R-05 | Arranque en frío: la primera petición tras un periodo sin uso tarda unos segundos. | Aceptado en la spec. | `min_machines_running = 0`; si molesta, subirlo a 1 (coste fijo). |
+| R-06 | Si el despliegue que falla también rompe la base, el rollback no la repara. | Riesgo bajo: esta feature no cambia el esquema. | Respaldo manual antes de cualquier despliegue que incluya migraciones (runbook). |

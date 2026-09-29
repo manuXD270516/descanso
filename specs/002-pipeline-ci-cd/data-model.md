@@ -12,16 +12,17 @@ entidades de abajo son artefactos operativos y viven fuera de SQLite.
 | Etiqueta móvil | `latest` | Apunta al mismo digest que la de versión del último merge. |
 | `APP_VERSION` (env) | SHA completo | Se inyecta como build-arg; ausente → `"dev"`. |
 
-## Despliegue (Render)
+## Despliegue (Fly.io)
 
 | Atributo | Valor |
 |----------|-------|
-| `id` | Lo devuelve el deploy hook (200). Si responde 202 (en cola), no hay id. |
-| `status` | `created` → `build_in_progress` → `update_in_progress` → `live`. Estados de fallo: `build_failed`, `update_failed`, `canceled`, `deactivated`. |
-| Imagen | `ghcr.io/manuxd270516/descanso:<sha>` (parámetro `imgURL`). |
+| App | `descanso-sleep`, región `gru`, una máquina `shared-cpu-1x` de 256 MB con el volumen `descanso_data` en `/data` |
+| Release | La crea `flyctl deploy --image ghcr.io/manuxd270516/descanso:<sha>`. Se da por buena cuando pasan los checks de `fly.toml` (estrategia `rolling`). |
+| Versión anterior | Se lee en `/api/health` antes de desplegar, y se usa para el rollback. |
 
-**Criterio de éxito** (FR-007): `status == live` **y** `GET /api/health` → `{ ok: true, version: <sha> }`
-en ≤ 60 s desde que el despliegue está `live`.
+**Criterio de éxito** (FR-007): `flyctl deploy` termina bien **y** `GET /api/health` →
+`{ ok: true, version: <sha> }` en ≤ 60 s. Si no se cumple, el pipeline redespliega la versión
+anterior y el job termina en rojo.
 
 ## Respaldo
 
@@ -36,7 +37,7 @@ en ≤ 60 s desde que el despliegue está `live`.
 
 | Atributo | Valor | Reglas |
 |----------|-------|--------|
-| `BACKUP_TOKEN` | 64 caracteres hex (`openssl rand -hex 32`) | Se configura en Render (servicio) y en GitHub (secreto). Se compara en tiempo constante. Si no está definido en el servicio, el endpoint no existe (404). |
+| `BACKUP_TOKEN` | 64 caracteres hex (`openssl rand -hex 32`) | Se configura en Fly (`fly secrets set`) y en GitHub (secreto). Se compara en tiempo constante. Si no está definido en el servicio, el endpoint no existe (404). |
 
 ## Versión
 

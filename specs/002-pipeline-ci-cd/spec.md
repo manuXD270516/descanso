@@ -26,6 +26,9 @@ verificada, sin pasos manuales:
   la rama principal exigiendo el check de validación.
 - Q: ¿Dónde se despliega, si el plan gratuito del proveedor actual no tiene disco persistente?
   → A: En el proveedor actual, en un plan de pago con disco persistente.
+  **Revisada el 2026-09-29 (tras el merge):** para pagar solo por lo que se usa y a mes vencido,
+  se cambia a un proveedor de pago por uso con volumen persistente, donde la máquina se apaga
+  cuando no hay tráfico. Se descartó una alternativa con créditos prepagados que salía más cara.
 - Q: ¿Cómo se obtiene el respaldo diario si la base vive en el disco del servicio desplegado?
   → A: El servicio entrega una copia consistente a través de un punto de acceso protegido con un
   token secreto. Una tarea programada del pipeline (que también se puede lanzar a mano) la
@@ -188,8 +191,9 @@ commit desplegado y con el indicador del README.
   servicio con dos etiquetas: el identificador completo del commit y `latest`.
 - **FR-005**: La construcción de la imagen MUST reutilizar las capas que no cambiaron.
 - **FR-006**: Tras publicar, el pipeline MUST desplegar esa imagen exacta (por su identificador
-  de commit) en el proveedor configurado. El proveedor es el actual, en un plan de pago que
-  incluye disco persistente para la base (ver Clarifications).
+  de commit) en el proveedor configurado: pago por uso, volumen persistente para la base y
+  máquina que se apaga sin tráfico (ver Clarifications). Si el proveedor no vuelve solo a la
+  versión anterior tras un fallo, el pipeline MUST redesplegarla (FR-007).
 - **FR-007**: El despliegue MUST considerarse fallido si el chequeo de salud no responde
   correctamente en 60 s; en ese caso MUST notificarse, y la versión anterior MUST seguir
   sirviendo.
@@ -279,4 +283,6 @@ commit desplegado y con el indicador del README.
 - Un tiempo breve sin servicio durante un despliegue es aceptable (es uso personal); lo que no
   es aceptable es perder datos o quedarse con una versión rota.
 - El entorno local requiere tener instalado el motor de contenedores.
-- Se acepta un coste mensual pequeño y fijo de hosting (plan de pago con disco persistente).
+- Se acepta un coste mensual pequeño de hosting, pagado por uso y a mes vencido (máquina que se
+  apaga sin tráfico, más el volumen persistente). Se acepta también que la primera petición tras
+  un periodo sin uso tarde unos segundos en responder.

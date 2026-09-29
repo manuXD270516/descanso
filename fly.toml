@@ -1,0 +1,40 @@
+# Fly.io — servicio único (API + frontend) con SQLite en un volumen persistente.
+# La imagen la publica .github/workflows/deploy.yml en GHCR; el pipeline despliega por SHA.
+app = "descanso-sleep"
+primary_region = "gru"
+
+[build]
+  image = "ghcr.io/manuxd270516/descanso:latest"
+
+[env]
+  DB_PATH = "/data/sleep.db"
+  PORT = "3000"
+
+# Volumen creado una vez con: fly volumes create descanso_data --size 1 --region gru
+[[mounts]]
+  source = "descanso_data"
+  destination = "/data"
+
+# Pago por uso: la máquina se apaga sin tráfico y arranca con la primera petición
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[http_service.checks]]
+  grace_period = "20s"
+  interval = "15s"
+  method = "GET"
+  path = "/api/health"
+  timeout = "5s"
+
+# Una sola máquina con volumen: se actualiza en el sitio y flyctl espera a los health checks.
+# Si la versión nueva no queda sana, el pipeline redespliega la anterior (rollback).
+[deploy]
+  strategy = "rolling"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"

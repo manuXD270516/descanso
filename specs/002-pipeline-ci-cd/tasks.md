@@ -101,14 +101,14 @@ devuelve `version == sha`.
   3. Durante 60 s como máximo, consultar `curl -fsS $APP_URL/api/health` cada 5 s hasta que `jq -r .version` == `$GITHUB_SHA`. Si no llega, `exit 1` (FR-007).
 
   Secretos: `RENDER_DEPLOY_HOOK_URL`, `RENDER_API_KEY`, `RENDER_SERVICE_ID` y `APP_URL`.
-- [X] T009 [P] [US2] Reescribir render.yaml para el servicio `descanso`:
+- [X] T009 [P] [US2] **(sustituida por T023: se pasó a Fly.io)** Reescribir render.yaml para el servicio `descanso`:
   - `type: web`, `runtime: image`, `image: { url: ghcr.io/manuxd270516/descanso:latest }`;
   - `plan`: el plan de pago más pequeño que admita disco, con el nombre que acepte hoy el Blueprint (verificarlo en la documentación de Render; research R5);
   - `healthCheckPath: /api/health`;
   - `disk: { name: descanso-data, mountPath: /data, sizeGB: 1 }`;
   - `envVars`: `DB_PATH=/data/sleep.db` y `BACKUP_TOKEN` con `sync: false`;
   - ~~`autoDeploy: false`~~: no aplica. Según la documentación del Blueprint, los servicios basados en imagen no se redespliegan solos; solo lo hace el deploy hook. Plan usado: `0.5c-512mb`, porque `starter` ya no existe.
-- [ ] T010 [US2] **(manual, usuario)** Guía paso a paso y, con confirmación, apoyo:
+- [X] T010 [US2] **(sustituida por T026: se pasó a Fly.io)** **(manual, usuario)** Guía paso a paso y, con confirmación, apoyo:
   1. crear o actualizar el servicio en Render desde el Blueprint (si el servicio existente es `runtime: docker`, antes descargar un respaldo manual; riesgo R-04);
   2. generar `BACKUP_TOKEN` con `openssl rand -hex 32` y cargarlo en Render;
   3. copiar el deploy hook y crear una API key;
@@ -213,17 +213,48 @@ va en la Fase 8.
 ## Phase 8: Polish & Cross-Cutting Concerns
 
 - [X] T021 Puerta de calidad local: `npm run lint` y `npm test` en backend/; `npm run lint`, `ng test --watch=false --browsers=ChromeHeadless` y `ng build` en frontend/; `docker build .` sin errores
-- [ ] T022 Validación de extremo a extremo con quickstart.md §3–5, una vez hechas T006, T010 y T014:
+- [ ] T022 Validación de extremo a extremo con quickstart.md §3–5, una vez hechas T006, T014 y T026:
   - PR bloqueado en rojo y desbloqueado en verde, con su duración (SC-001);
   - merge → despliegue verificado y versión en el pie (SC-002);
   - `Backup` manual → archivo en el bucket; 401 sin token;
   - restauración local con ese respaldo, cronometrada (SC-006);
   - 3 redespliegues con el dato de control intacto (SC-004);
-  - despliegue fallido provocado con `NODE_OPTIONS=--require=/no-existe.js` en Render: el job `deploy` falla y la app sigue sirviendo la versión anterior; después se quita la variable y se redespliega (SC-003, quickstart §4).
+  - despliegue fallido provocado con `Deploy` → *Run workflow* → `simular_fallo`: el job `deploy` falla, se ejecuta el rollback y la app sigue sirviendo la versión anterior (SC-003, quickstart §4).
 
   Anotar los resultados en el PR.
 
 ---
+
+## Phase 9: Enmienda — despliegue en Fly.io (research R13)
+
+**Purpose**: pagar por uso y a mes vencido en lugar de 7,25 $/mes fijos en Render (decisión del
+usuario tras el merge de la 002). El resto del pipeline no cambia.
+
+- [X] T023 [US2] Crear fly.toml en la raíz, que sustituye a render.yaml (borrado):
+  - `app = "descanso-sleep"`, `primary_region = "gru"`;
+  - `[build] image` de GHCR y `[env] DB_PATH`/`PORT`;
+  - `[[mounts]] descanso_data → /data`;
+  - `[http_service]` con `auto_stop_machines = "stop"`, `auto_start_machines = true` y `min_machines_running = 0`;
+  - check `GET /api/health`;
+  - `[deploy] strategy = "rolling"`;
+  - `[[vm]] shared-cpu-1x` de 256 MB.
+- [X] T024 [US2] Reescribir el job `deploy` de .github/workflows/deploy.yml:
+  1. `setup-flyctl`;
+  2. leer la versión actual en `/api/health`;
+  3. `flyctl deploy --image …:<sha> --wait-timeout 5m0s`;
+  4. exigir `version == sha` en ≤ 60 s;
+  5. si falla, rollback con `flyctl deploy --image …:<prev>`.
+
+  Añadir la entrada `workflow_dispatch.simular_fallo`, que despliega con `--env NODE_OPTIONS=--require=/no-existe.js` (SC-003). El único secreto es `FLY_API_TOKEN`.
+- [X] T025 Fijar `APP_URL: https://descanso-sleep.fly.dev` en deploy.yml y backup.yml (ya no es secreto). Actualizar README (Opción A y árbol), el runbook (restauración en producción con `fly ssh console` y `fly apps restart`) y los artefactos de specs/002: spec (Clarifications y FR-006), research (R13, R5/R6 sustituidas, riesgos), plan, data-model, contracts/pipeline.md y quickstart
+- [ ] T026 [US2] **(manual, usuario)** Con [`flyctl`](https://fly.io/docs/flyctl/install/) y `fly auth login`:
+  1. `fly apps create descanso-sleep`;
+  2. `fly volumes create descanso_data --size 1 --region gru --app descanso-sleep`;
+  3. `fly secrets set BACKUP_TOKEN=<token> --stage --app descanso-sleep`;
+  4. `fly tokens create deploy --app descanso-sleep`;
+  5. en GitHub, `gh secret set FLY_API_TOKEN` y `gh secret set BACKUP_TOKEN`, con los valores que introduce el usuario.
+
+  Si se llegó a crear el servicio en Render, eliminarlo para no pagarlo. Después, relanzar `Deploy` a mano.
 
 ## Dependencies & Execution Order
 
