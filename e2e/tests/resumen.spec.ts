@@ -75,6 +75,15 @@ test.describe('Resumen y cinta (US4)', () => {
     expect((await geometry(nap)).x).toBeCloseTo((2 / 24) * 100, 1); // 14:00 = 2 h después de las 12:00
   });
 
+  test('Borde · dos noches cerradas con la misma fecha se suman en el resumen y la cinta muestra solo una', async ({ page, api }) => {
+    await api.createNight('2026-09-27T01:00', '2026-09-27T05:00'); // 4 h, fecha 27
+    await api.createNight('2026-09-27T23:00', '2026-09-28T03:00'); // 4 h, fecha 27
+    await page.goto('/');
+
+    await expect(stat(page, 'promedio por noche')).toHaveText('8 h'); // un solo día con 480 min
+    await expect(ribbonRow(page, await fmtDateShort(page, '2026-09-27')).locator('.bar.sleep')).toHaveCount(1);
+  });
+
   test('Borde · una noche que termina después de las 12:00 del día siguiente se recorta al final del eje', async ({ page, api }) => {
     await api.createNight('2026-09-27T23:00', '2026-09-28T14:00'); // 15 h: pasaría del final
     await page.goto('/');
