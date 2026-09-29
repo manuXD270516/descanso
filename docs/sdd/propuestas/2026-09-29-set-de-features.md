@@ -20,9 +20,9 @@ las seis áreas que pediste: las cuatro iniciales más gamificación y recordato
 | 008 | Multiusuario con perfiles (invitaciones, aislamiento, perfil, borrar cuenta) | **Multiusuario, paso 2** | L | **Lista para especificar** (P1 = sí) |
 | 009 | Sincronización automática con un reloj o anillo (OAuth) | **Wearables, paso 2** | L | Condicionada: ¿qué dispositivo usas? |
 | 012 | App instalable en el móvil (PWA) | **Recordatorios, paso 2** | S–M | **Descartada por ahora**: usas Android, que recibe push sin instalar la app |
-| 013 | Avisos push con la app cerrada | **Recordatorios, paso 3** | M | Condicionada a que elijas el disparador: **siempre encendida (≈ 3,3 $/mes, recomendada)** o QStash (≈ 2 $/mes, con un tercero) |
+| 013 | Avisos push con la app cerrada | **Recordatorios, paso 3** | M | **Pendiente de construir** (entrada [`013-avisos-push.md`](../features/013-avisos-push.md)). Disparador elegido: máquina siempre encendida (≈ 3,3 $/mes) |
 
-**Orden de ejecución** (actualizado con tus respuestas): 003 → 004 → **008** → 005 → 006 → 010 → 011 → 007 (Huawei) → [009] → [013].
+**Orden de ejecución** (actualizado con tus respuestas): 003 → 004 → **008** → 005 → 006 → 010 → 011 → 007 (Huawei) → 013 (avisos push) → [009].
 
 008 se adelanta para que todo lo posterior nazca aislado por usuario y no haya que reescribir consultas dos veces.
 Los corchetes indican una feature condicionada.
@@ -60,11 +60,12 @@ Las puntuaciones están en [Evaluación](#evaluación).
 |---|-----------|--------|
 | P1 | **Sí**: habrá varios usuarios, con perfiles | 008 lista para especificar (entrada [`008-multiusuario-perfiles.md`](../features/008-multiusuario-perfiles.md)), adelantada tras 004. Enmienda MAJOR de alcance antes de su plan |
 | P2 | **Huawei Band** ("Band Pro 7"; probablemente una Band 7), con la app Huawei Health | **Sí se obtienen horas y fases.** 007 pasa a estar lista, con la importación de Huawei como P1 (anexo [16-react-G-huawei](anexos-2026-09-29/16-react-G-huawei.md)). La sincronización automática solo sería posible vía Health Sync (de pago) → Google Health API (009, opcional) |
-| P5 | **Android** | **012 (PWA) se descarta**. La guía de 010 prioriza Android (Google Calendar web o el calendario del fabricante). Para 013 falta elegir el disparador (P5b) |
+| P5 | **Android** | **012 (PWA) se descarta**. La guía de 010 prioriza Android (Google Calendar web o el calendario del fabricante) |
+| P5b | **Máquina siempre encendida** (`AlwaysOnWaker`) | 013 queda pendiente de construir, con entrada [`013-avisos-push.md`](../features/013-avisos-push.md) y propuesta de código. QStash se descarta: el ahorro (≈ 1,3 $) no alcanza su propio umbral y añadiría un tercero |
 
 ## Tus decisiones pendientes (6 preguntas)
 
-Solo P1, P2 y P5 bloquean. P3, P4 y P6 tienen una respuesta recomendada por defecto.
+P1, P2, P5 y P5b ya están respondidas (ver arriba). P3, P4 y P6 tienen una respuesta recomendada por defecto y se confirman en el clarify de su feature.
 
 | # | Pregunta | Qué decide |
 |---|----------|------------|
@@ -318,7 +319,7 @@ motivar la *constancia*. Es opcional y se puede ocultar (enmienda VIII).
 - Guía "Instalar en tu pantalla de inicio".
 - Tests de actualización tras un despliegue.
 
-**013 · Avisos push con la app cerrada (M).** Condición: elegir el disparador (P5b). Tus usuarios están en Android, que recibe push sin instalar la app, así que no hace falta 012. Análisis completo: [17-react-H](anexos-2026-09-29/17-react-H-push-programado.md), debate [26](anexos-2026-09-29/26-debate-r3-esceptico.md)/[27](anexos-2026-09-29/27-debate-r3-arquitecto.md) y reflexión [32](anexos-2026-09-29/32-reflexion-r3-push.md).
+**013 · Avisos push con la app cerrada (M).** **Disparador elegido: `AlwaysOnWaker`** (P5b). Entrada: [`013-avisos-push.md`](../features/013-avisos-push.md), con los aspectos de código propuestos. Tus usuarios están en Android, que recibe push sin instalar la app, así que no hace falta 012. Análisis completo: [17-react-H](anexos-2026-09-29/17-react-H-push-programado.md), debate [26](anexos-2026-09-29/26-debate-r3-esceptico.md)/[27](anexos-2026-09-29/27-debate-r3-arquitecto.md) y reflexión [32](anexos-2026-09-29/32-reflexion-r3-push.md).
 
 - **Disparador**: interfaz `Waker`. Hay dos implementaciones que pasan **la misma suite de contrato**, y se cambia de una a otra solo con configuración.
   - **Recomendada: `AlwaysOnWaker`**
