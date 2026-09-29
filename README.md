@@ -17,6 +17,7 @@ sleep-tracker/
 │   ├── src/db.js     esquema SQLite (se crea solo al arrancar)
 │   └── src/routes/   sleep · naps · metrics · stats
 ├── frontend/         proyecto Angular
+├── e2e/              pruebas end-to-end con Playwright (docs/testing/e2e-playwright.md)
 ├── Dockerfile
 ├── fly.toml          despliegue en Fly.io (volumen persistente, apagado sin tráfico)
 └── compose.yaml      entorno local en un comando
@@ -91,9 +92,20 @@ cd backend && npm test && npm run lint          # node:test + supertest, base SQ
 cd frontend && npm run lint && npx ng test --watch=false --browsers=ChromeHeadless
 ```
 
+Pruebas end-to-end con Playwright (navegador real contra el servidor real, un servidor con base
+SQLite vacía por test). Requieren las dependencias de `backend/` y `frontend/` instaladas; en
+local usan el Google Chrome instalado:
+
+```bash
+cd e2e && npm ci && npm test        # npm run test:ui para depurar, npm run report para el reporte
+```
+
+Guía paso a paso, mapa escenario → test y decisiones: [`docs/testing/e2e-playwright.md`](docs/testing/e2e-playwright.md).
+
 La especificación, el contrato de la API (`contracts/openapi.yaml`) y la deuda técnica
 conocida están en `specs/001-linea-base/`. CI (`.github/workflows/ci.yml`) ejecuta lint,
-tests y el build de producción en cada pull request. Es un check obligatorio para fusionar.
+tests y el build de producción en cada pull request (job `quality`, check obligatorio para
+fusionar) y, en paralelo, la suite E2E (job `e2e`).
 
 ## Desplegar
 
@@ -102,7 +114,7 @@ tests y el build de producción en cada pull request. Es un check obligatorio pa
 La app corre en https://descanso-sleep.fly.dev (región `gru`, São Paulo). Cada merge a `master`
 ejecuta el workflow **Deploy**:
 
-1. lint, tests y build (`quality`);
+1. lint, tests y build (`quality`) y pruebas E2E (`e2e`), en paralelo;
 2. publica la imagen en GHCR (`ghcr.io/manuxd270516/descanso:<sha>` y `:latest`);
 3. la despliega en Fly.io por su SHA (`flyctl deploy --image`);
 4. verifica que `/api/health` devuelve esa versión en ≤ 60 s. Si no, **vuelve a desplegar la
