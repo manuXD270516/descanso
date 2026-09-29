@@ -8,3 +8,9 @@ backend/data/
 
 .env*
 *.log
+
+# Playwright (e2e/)
+test-results/
+playwright-report/
+blob-report/
+
