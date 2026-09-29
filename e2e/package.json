@@ -1,0 +1,22 @@
+{
+  "name": "descanso-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pruebas end-to-end de Descanso con Playwright (navegador real contra el servidor real)",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed --workers=1",
+    "test:ui": "playwright test --ui",
+    "report": "playwright show-report",
+    "typecheck": "tsc --noEmit",
+    "install:browsers": "playwright install --with-deps chromium"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@types/node": "^22.20.4",
+    "typescript": "~5.9.2"
+  }
+}

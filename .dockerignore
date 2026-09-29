@@ -13,3 +13,4 @@ docs
 .claude
 *.log
 .env*
+e2e
