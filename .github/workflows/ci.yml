@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Backend — instalar
+        working-directory: backend
+        run: npm ci
+      - name: Backend — lint
+        working-directory: backend
+        run: npm run lint
+      - name: Backend — tests
+        working-directory: backend
+        run: npm test
+
+      - name: Frontend — instalar
+        working-directory: frontend
+        run: npm ci
+      - name: Frontend — lint
+        working-directory: frontend
+        run: npm run lint
+      - name: Frontend — tests
+        working-directory: frontend
+        run: npx ng test --watch=false --browsers=ChromeHeadless
+      - name: Frontend — build de producción
+        working-directory: frontend
+        run: npx ng build

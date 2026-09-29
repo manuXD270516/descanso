@@ -19,6 +19,14 @@ export function inputLocalToIso(v: string): string {
   return `${v.length === 16 ? v + ':00' : v}${sign}${pad(Math.floor(abs / 60))}:${pad(abs % 60)}`;
 }
 
+/**
+ * Fecha de la noche (YYYY-MM-DD): el día local en que la persona se acuesta.
+ * El ISO lleva el offset de quien registra, así que su parte de fecha ya es el día local.
+ */
+export function nightDate(iso: string): string {
+  return iso.slice(0, 10);
+}
+
 /** ISO → "YYYY-MM-DDTHH:mm" en hora local */
 export function isoToInputLocal(iso: string): string {
   return toInputLocal(new Date(iso));

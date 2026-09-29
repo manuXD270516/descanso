@@ -1,7 +1,9 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { ApiService, Nap } from '../../core/api.service';
-import { addDays, fmtDateShort, fmtDuration, fmtTime, inputLocalToIso, isoToInputLocal, localDate, toInputLocal } from '../../core/time';
+import { addDays, fmtDateShort, fmtDuration, fmtTime, inputLocalToIso, isoToInputLocal, localDate, nightDate, toInputLocal } from '../../core/time';
 
 @Component({
   selector: 'app-naps',
@@ -36,11 +38,12 @@ export class NapsComponent implements OnInit {
     }));
   });
 
-  readonly formDuration = computed(() => {
+  /** Método y no computed(): `form` es un objeto plano ligado con ngModel, no un signal */
+  formDuration(): number | null {
     if (!this.form.start || !this.form.end) return null;
     const m = Math.round((new Date(this.form.end).getTime() - new Date(this.form.start).getTime()) / 60000);
     return m > 0 ? m : null;
-  });
+  }
 
   ngOnInit() {
     this.presetNow();
@@ -63,7 +66,7 @@ export class NapsComponent implements OnInit {
   save() {
     const start = inputLocalToIso(this.form.start);
     this.run(
-      this.api.createNap({ date: start.slice(0, 10), start_time: start, end_time: inputLocalToIso(this.form.end), notes: this.form.notes || null }),
+      this.api.createNap({ date: nightDate(start), start_time: start, end_time: inputLocalToIso(this.form.end), notes: this.form.notes || null }),
       () => { this.form.notes = ''; this.presetNow(); },
     );
   }
@@ -76,7 +79,7 @@ export class NapsComponent implements OnInit {
   saveEdit(id: number) {
     const start = inputLocalToIso(this.edit.start);
     this.run(
-      this.api.updateNap(id, { date: start.slice(0, 10), start_time: start, end_time: inputLocalToIso(this.edit.end), notes: this.edit.notes || null }),
+      this.api.updateNap(id, { date: nightDate(start), start_time: start, end_time: inputLocalToIso(this.edit.end), notes: this.edit.notes || null }),
       () => this.editingId.set(null),
     );
   }
@@ -86,16 +89,16 @@ export class NapsComponent implements OnInit {
     this.run(this.api.deleteNap(n.id));
   }
 
-  private run(obs: { subscribe: Function }, after?: () => void) {
+  private run(obs: Observable<unknown>, after?: () => void) {
     this.busy.set(true);
     this.error.set(null);
     obs.subscribe({
       next: () => { after?.(); this.busy.set(false); this.reload(); },
-      error: (e: any) => { this.busy.set(false); this.fail(e); },
+      error: (e: HttpErrorResponse) => { this.busy.set(false); this.fail(e); },
     });
   }
 
-  private fail(e: any) {
+  private fail(e: HttpErrorResponse) {
     this.error.set(e?.error?.error || 'No se pudo conectar con el servidor');
   }
 }

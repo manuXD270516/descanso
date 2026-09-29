@@ -29,6 +29,12 @@ function validate(body, partial = false) {
   return out;
 }
 
+// Solo puede haber una noche abierta a la vez (FR-003)
+function assertNoOtherOpen(exceptId = null) {
+  const other = db.prepare('SELECT id FROM sleep_records WHERE wake_time IS NULL AND id IS NOT ? LIMIT 1').get(exceptId);
+  if (other) throw new HttpError(409, 'Ya hay una noche abierta. Ciérrala antes de abrir otra.');
+}
+
 // GET /api/sleep?from=YYYY-MM-DD&to=YYYY-MM-DD
 r.get('/', (req, res) => {
   const { from, to } = req.query;
@@ -50,6 +56,7 @@ r.get('/open', (_req, res) => {
 
 r.post('/', (req, res) => {
   const d = validate(req.body);
+  if (d.wake_time == null) assertNoOtherOpen();
   const info = db
     .prepare('INSERT INTO sleep_records (date, bedtime, wake_time, notes) VALUES (?,?,?,?)')
     .run(d.date, d.bedtime, d.wake_time ?? null, d.notes ?? null);
@@ -71,6 +78,7 @@ r.put('/:id', (req, res) => {
   const existing = db.prepare('SELECT * FROM sleep_records WHERE id = ?').get(req.params.id);
   if (!existing) throw new HttpError(404, 'Registro no encontrado');
   const d = validate({ ...existing, ...req.body }, false);
+  if (d.wake_time == null) assertNoOtherOpen(existing.id);
   db.prepare('UPDATE sleep_records SET date=?, bedtime=?, wake_time=?, notes=? WHERE id=?')
     .run(d.date, d.bedtime, d.wake_time ?? null, d.notes ?? null, existing.id);
   res.json(withDuration(db.prepare('SELECT * FROM sleep_records WHERE id = ?').get(existing.id)));

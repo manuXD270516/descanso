@@ -1,5 +1,7 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { ApiService, Metric, MetricEntry, MetricType } from '../../core/api.service';
 import { addDays, fmtDateShort, localDate } from '../../core/time';
 
@@ -152,16 +154,16 @@ export class MetricsComponent implements OnInit {
     }));
   }
 
-  private run(obs: { subscribe: Function }, after?: () => void) {
+  private run(obs: Observable<unknown>, after?: () => void) {
     this.busy.set(true);
     this.error.set(null);
     obs.subscribe({
       next: () => { after?.(); this.busy.set(false); this.reload(); },
-      error: (e: any) => { this.busy.set(false); this.fail(e); },
+      error: (e: HttpErrorResponse) => { this.busy.set(false); this.fail(e); },
     });
   }
 
-  private fail(e: any) {
+  private fail(e: HttpErrorResponse) {
     this.error.set(e?.error?.error || 'No se pudo conectar con el servidor');
   }
 }

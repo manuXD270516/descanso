@@ -1,0 +1,497 @@
+openapi: 3.1.0
+info:
+  title: Descanso API
+  version: 1.0.0
+  description: |
+    Contrato extraído de backend/src/routes (línea base, feature 001).
+    Todas las fechas/horas son ISO 8601 con offset; las fechas de día son YYYY-MM-DD.
+    Los errores tienen siempre la forma `{ "error": "<mensaje en español>" }`; un 500 devuelve
+    "Error interno".
+    Único cambio respecto al código actual: el 409 de una segunda noche abierta (FR-003).
+servers:
+  - url: /api
+
+tags:
+  - name: health
+  - name: sleep
+  - name: naps
+  - name: metrics
+  - name: stats
+
+paths:
+  /health:
+    get:
+      tags: [health]
+      summary: Chequeo de salud
+      responses:
+        '200':
+          description: Servicio operativo
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, time]
+                properties:
+                  ok: { type: boolean, const: true }
+                  time: { type: string, format: date-time }
+
+  /sleep:
+    get:
+      tags: [sleep]
+      summary: Lista de noches, de la más reciente a la más antigua (por bedtime)
+      parameters:
+        - $ref: '#/components/parameters/From'
+        - $ref: '#/components/parameters/To'
+      responses:
+        '200':
+          description: Noches con duración derivada
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/SleepRecord' } }
+    post:
+      tags: [sleep]
+      summary: Crear una noche (abierta si no se envía wake_time)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SleepInput' }
+      responses:
+        '201':
+          description: Noche creada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SleepRecord' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '409': { $ref: '#/components/responses/OpenNightConflict' }
+
+  /sleep/open:
+    get:
+      tags: [sleep]
+      summary: Noche abierta más reciente, o null
+      responses:
+        '200':
+          description: Noche abierta o null
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/SleepRecord'
+                  - type: 'null'
+
+  /sleep/wake:
+    post:
+      tags: [sleep]
+      summary: Cerrar la noche abierta
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [wake_time]
+              properties:
+                wake_time: { type: string, format: date-time }
+      responses:
+        '200':
+          description: Noche cerrada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SleepRecord' }
+        '400':
+          description: "'wake_time debe ser ISO' o 'La hora de despertar debe ser posterior a la de dormir'"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: 'No hay una noche abierta para cerrar'
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /sleep/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    put:
+      tags: [sleep]
+      summary: Editar una noche (los campos omitidos conservan su valor)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SleepPatch' }
+      responses:
+        '200':
+          description: Noche actualizada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SleepRecord' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/OpenNightConflict' }
+    delete:
+      tags: [sleep]
+      summary: Eliminar una noche
+      responses:
+        '204': { description: Eliminada }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /naps:
+    get:
+      tags: [naps]
+      summary: Lista de siestas, de la más reciente a la más antigua (por start_time)
+      parameters:
+        - $ref: '#/components/parameters/From'
+        - $ref: '#/components/parameters/To'
+      responses:
+        '200':
+          description: Siestas con duración
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Nap' } }
+    post:
+      tags: [naps]
+      summary: Crear una siesta
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/NapInput' }
+      responses:
+        '201':
+          description: Siesta creada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Nap' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+
+  /naps/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    put:
+      tags: [naps]
+      summary: Editar una siesta (los campos omitidos conservan su valor)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/NapPatch' }
+      responses:
+        '200':
+          description: Siesta actualizada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Nap' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [naps]
+      summary: Eliminar una siesta
+      responses:
+        '204': { description: Eliminada }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /metrics:
+    get:
+      tags: [metrics]
+      summary: Métricas ordenadas por sort_order, id (solo activas salvo all=1)
+      parameters:
+        - name: all
+          in: query
+          schema: { type: string, enum: ['1'] }
+      responses:
+        '200':
+          description: Métricas
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Metric' } }
+    post:
+      tags: [metrics]
+      summary: Crear una métrica
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/MetricInput' }
+      responses:
+        '201':
+          description: Métrica creada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Metric' }
+        '400':
+          description: "'El nombre es obligatorio', 'type debe ser uno de: …' o 'Una escala necesita mínimo y máximo (mínimo < máximo)'"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /metrics/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    put:
+      tags: [metrics]
+      summary: Editar, archivar/restaurar o reordenar una métrica (los campos omitidos se conservan)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/MetricPatch' }
+      responses:
+        '200':
+          description: Métrica actualizada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Metric' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [metrics]
+      summary: Eliminar una métrica y todos sus valores
+      responses:
+        '204': { description: Eliminada }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /metrics/entries:
+    get:
+      tags: [metrics]
+      summary: Valores de métricas activas en un rango, del más reciente al más antiguo
+      parameters:
+        - $ref: '#/components/parameters/From'
+        - $ref: '#/components/parameters/To'
+      responses:
+        '200':
+          description: Valores
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/MetricEntry' } }
+
+  /metrics/{id}/entries/{date}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+      - name: date
+        in: path
+        required: true
+        schema: { type: string, format: date }
+    put:
+      tags: [metrics]
+      summary: Crear o reemplazar el valor de un día
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [value]
+              properties:
+                value:
+                  description: boolean/number/string según el tipo de métrica
+      responses:
+        '200':
+          description: Valor guardado (normalizado a texto)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MetricEntry' }
+        '400':
+          description: "'Fecha inválida', 'El valor debe ser numérico', 'Mínimo N' o 'Máximo N'"
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [metrics]
+      summary: Borrar el valor de un día
+      responses:
+        '204': { description: Eliminado }
+        '404':
+          description: 'Registro no encontrado'
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /stats:
+    get:
+      tags: [stats]
+      summary: Resumen diario y promedios del rango
+      description: from y to son obligatorios en la práctica; sin ellos hoy responde 500 (DT-02).
+      parameters:
+        - $ref: '#/components/parameters/From'
+        - $ref: '#/components/parameters/To'
+      responses:
+        '200':
+          description: Resumen
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Stats' }
+
+components:
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema: { type: integer }
+    From:
+      name: from
+      in: query
+      description: Fecha inicial inclusiva (YYYY-MM-DD)
+      schema: { type: string, format: date }
+    To:
+      name: to
+      in: query
+      description: Fecha final inclusiva (YYYY-MM-DD)
+      schema: { type: string, format: date }
+
+  responses:
+    BadRequest:
+      description: Validación fallida (mensaje en español)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: "Recurso no encontrado ('Registro no encontrado', 'Siesta no encontrada', 'Métrica no encontrada')"
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    OpenNightConflict:
+      description: 'Ya hay una noche abierta. Ciérrala antes de abrir otra. (FR-003, nuevo)'
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+
+  schemas:
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string }
+
+    SleepRecord:
+      type: object
+      required: [id, date, bedtime, wake_time, notes, created_at, duration_min]
+      properties:
+        id: { type: integer }
+        date: { type: string, format: date }
+        bedtime: { type: string, format: date-time }
+        wake_time: { type: [string, 'null'], format: date-time }
+        notes: { type: [string, 'null'], maxLength: 500 }
+        created_at: { type: string }
+        duration_min: { type: [integer, 'null'], description: null si la noche está abierta }
+    SleepInput:
+      type: object
+      required: [date, bedtime]
+      properties:
+        date: { type: string, format: date }
+        bedtime: { type: string, format: date-time }
+        wake_time: { type: [string, 'null'], format: date-time, description: debe ser posterior a bedtime }
+        notes: { type: [string, 'null'] }
+    SleepPatch:
+      type: object
+      properties:
+        date: { type: string, format: date }
+        bedtime: { type: string, format: date-time }
+        wake_time: { type: [string, 'null'], format: date-time }
+        notes: { type: [string, 'null'] }
+
+    Nap:
+      type: object
+      required: [id, date, start_time, end_time, notes, created_at, duration_min]
+      properties:
+        id: { type: integer }
+        date: { type: string, format: date }
+        start_time: { type: string, format: date-time }
+        end_time: { type: string, format: date-time }
+        notes: { type: [string, 'null'], maxLength: 500 }
+        created_at: { type: string }
+        duration_min: { type: integer, minimum: 1 }
+    NapInput:
+      type: object
+      required: [date, start_time, end_time]
+      properties:
+        date: { type: string, format: date }
+        start_time: { type: string, format: date-time }
+        end_time: { type: string, format: date-time, description: debe ser posterior a start_time }
+        notes: { type: [string, 'null'] }
+    NapPatch:
+      type: object
+      properties:
+        date: { type: string, format: date }
+        start_time: { type: string, format: date-time }
+        end_time: { type: string, format: date-time }
+        notes: { type: [string, 'null'] }
+
+    MetricType:
+      type: string
+      enum: [number, scale, boolean, text]
+    Metric:
+      type: object
+      required: [id, name, type, unit, min_value, max_value, color, sort_order, archived, created_at]
+      properties:
+        id: { type: integer }
+        name: { type: string, maxLength: 60 }
+        type: { $ref: '#/components/schemas/MetricType' }
+        unit: { type: [string, 'null'], maxLength: 20 }
+        min_value: { type: [number, 'null'] }
+        max_value: { type: [number, 'null'] }
+        color: { type: string, pattern: '^#[0-9a-fA-F]{6}$' }
+        sort_order: { type: integer }
+        archived: { type: integer, enum: [0, 1] }
+        created_at: { type: string }
+    MetricInput:
+      type: object
+      required: [name, type]
+      properties:
+        name: { type: string }
+        type: { $ref: '#/components/schemas/MetricType' }
+        unit: { type: [string, 'null'] }
+        min_value: { type: [number, 'null'], description: obligatorio si type=scale }
+        max_value: { type: [number, 'null'], description: obligatorio si type=scale y > min_value }
+        color: { type: string, description: '#RRGGBB; si no es válido se usa #5b6ee1' }
+        sort_order: { type: integer }
+        archived: { type: [boolean, integer] }
+    MetricPatch:
+      type: object
+      properties:
+        name: { type: string }
+        type: { $ref: '#/components/schemas/MetricType' }
+        unit: { type: [string, 'null'] }
+        min_value: { type: [number, 'null'] }
+        max_value: { type: [number, 'null'] }
+        color: { type: string }
+        sort_order: { type: integer }
+        archived: { type: [boolean, integer] }
+
+    MetricEntry:
+      type: object
+      required: [id, metric_id, date, value, created_at]
+      properties:
+        id: { type: integer }
+        metric_id: { type: integer }
+        date: { type: string, format: date }
+        value: { type: string, description: "'1'/'0' en boolean; número como texto en number/scale" }
+        created_at: { type: string }
+
+    DayStat:
+      type: object
+      required: [date, sleep_min, nap_min, naps, bedtime, wake_time]
+      properties:
+        date: { type: string, format: date }
+        sleep_min: { type: integer }
+        nap_min: { type: integer }
+        naps: { type: integer }
+        bedtime: { type: [string, 'null'], format: date-time }
+        wake_time: { type: [string, 'null'], format: date-time }
+    Stats:
+      type: object
+      required: [days, summary]
+      properties:
+        days: { type: array, items: { $ref: '#/components/schemas/DayStat' } }
+        summary:
+          type: object
+          required: [nights, avg_sleep_min, avg_nap_min, total_naps, avg_bedtime_min, avg_wake_min]
+          properties:
+            nights: { type: integer }
+            avg_sleep_min: { type: integer }
+            avg_nap_min: { type: integer }
+            total_naps: { type: integer }
+            avg_bedtime_min: { type: [integer, 'null'], minimum: 0, maximum: 1440, description: 'media circular; hoy puede valer 1440 en vez de 0 (DT-21)' }
+            avg_wake_min: { type: [integer, 'null'], minimum: 0, maximum: 1440, description: 'media circular; hoy puede valer 1440 en vez de 0 (DT-21)' }
