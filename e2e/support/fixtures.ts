@@ -82,3 +82,22 @@ export function fmtDateShort(page: Page, date: string): Promise<string> {
     return new Date(y, m - 1, day).toLocaleDateString('es', { weekday: 'short', day: 'numeric', month: 'short' });
   }, date);
 }
+
+/**
+ * Responde al próximo confirm() de la página (aceptar o cancelar) y devuelve su mensaje.
+ * Crear la promesa ANTES del clic que abre el diálogo.
+ */
+export function answerNextDialog(page: Page, accept: boolean): Promise<string> {
+  return new Promise((resolve) => {
+    page.once('dialog', async (dialog) => {
+      const message = `${dialog.type()}: ${dialog.message()}`;
+      await (accept ? dialog.accept() : dialog.dismiss());
+      resolve(message);
+    });
+  });
+}
+
+/** Cambia de pestaña con la navegación principal (Noche, Siestas, Métricas). */
+export async function openTab(page: Page, name: 'Noche' | 'Siestas' | 'Métricas'): Promise<void> {
+  await page.getByRole('navigation', { name: 'Secciones' }).getByRole('button', { name }).click();
+}
