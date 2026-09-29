@@ -12,6 +12,13 @@ async function expandTab(page: Page, tab: (typeof TABS)[number]) {
   if (tab === 'Métricas') await page.getByRole('button', { name: 'Nueva métrica' }).click();
 }
 
+/** Espera a que el contenido de la pestaña (con sus secciones plegables abiertas) esté pintado. */
+async function waitForTab(page: Page, tab: (typeof TABS)[number]) {
+  if (tab === 'Noche') await expect(page.getByRole('button', { name: 'Ocultar registro manual' })).toBeVisible();
+  if (tab === 'Siestas') await expect(page.getByRole('heading', { name: 'Últimos 30 días' })).toBeVisible();
+  if (tab === 'Métricas') await expect(page.getByRole('heading', { name: 'Nueva métrica' })).toBeVisible();
+}
+
 /** Estilo del contorno del elemento con el foco. */
 const focusOutline = (page: Page) =>
   page.evaluate(() => {
@@ -29,9 +36,16 @@ test.describe('Accesibilidad básica (servidor compartido, solo lectura)', () =>
     for (const tab of TABS) {
       await openTab(page, tab);
       await expandTab(page, tab);
-      for (const control of await page.locator('button, input').all()) {
-        await expect(control, `control sin nombre en ${tab}`).toHaveAccessibleName(/\S/);
-      }
+      await waitForTab(page, tab);
+      // La lista puede volver a pintarse al llegar los datos: si un índice desaparece,
+      // toPass vuelve a tomar la foto de los controles en lugar de fallar.
+      await expect(async () => {
+        const controls = await page.locator('button, input').all();
+        expect(controls.length, `sin controles en ${tab}`).toBeGreaterThan(0);
+        for (const control of controls) {
+          await expect(control, `control sin nombre en ${tab}`).toHaveAccessibleName(/\S/, { timeout: 1_000 });
+        }
+      }).toPass({ timeout: 10_000 });
     }
   });
 
