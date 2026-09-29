@@ -1,7 +1,7 @@
 # Contrato del pipeline (workflows y secretos)
 
 Interfaces que exponen los workflows de GitHub Actions: disparadores, jobs, entradas y salidas.
-Detalle de las decisiones en [research.md](../research.md) (R1, R3–R8, R12).
+Detalle de las decisiones en [research.md](../research.md) (R1, R3, R4, R7, R8, R12, R13).
 
 ## `ci.yml` — Validación (FR-001 a FR-003)
 
@@ -17,12 +17,12 @@ Detalle de las decisiones en [research.md](../research.md) (R1, R3–R8, R12).
 
 | Aspecto | Valor |
 |---------|-------|
-| Disparadores | `push` a `master` y `workflow_dispatch` (para relanzar) |
+| Disparadores | `push` a `master` y `workflow_dispatch` (para relanzar), con la entrada opcional `simular_fallo` (boolean) para probar el rollback (SC-003) |
 | Concurrencia | `group: deploy-production`, `cancel-in-progress: false` |
 | Permisos | `contents: read`, `packages: write` |
 | Jobs | `quality` (usa `./.github/workflows/ci.yml`) → `publish` → `deploy` |
 | `publish` | Buildx con caché `gha`. Push de `:<sha>` y `:latest`. Build-arg `APP_VERSION=<sha>`. |
-| `deploy` | Llama al hook con `imgURL=…:<sha>`. Sondea `GET /v1/services/$RENDER_SERVICE_ID/deploys/<id>` cada 10 s (máx. 15 min) hasta `live`, y luego exige `/api/health` con `version == <sha>` en ≤ 60 s. Cualquier estado de fallo, o superar el tiempo, termina en exit 1. |
+| `deploy` | Lee la versión actual en `/api/health`. Ejecuta `flyctl deploy --image …:<sha> --wait-timeout 5m0s` con la estrategia `rolling`, que espera a los health checks de `fly.toml`. Luego exige `/api/health` con `version == <sha>` en ≤ 60 s. **Si algo falla, redespliega la versión anterior** y el job termina en rojo (FR-007). |
 
 ## `backup.yml` — Respaldo diario (FR-010 a FR-013)
 
@@ -36,21 +36,19 @@ Detalle de las decisiones en [research.md](../research.md) (R1, R3–R8, R12).
 
 | Secreto | Usado por | Descripción |
 |---------|-----------|-------------|
-| `RENDER_DEPLOY_HOOK_URL` | deploy | URL del deploy hook del servicio (contiene su propia clave). |
-| `RENDER_API_KEY` | deploy | Para consultar el estado del despliegue. |
-| `RENDER_SERVICE_ID` | deploy | `srv-…` |
-| `APP_URL` | deploy, backup | URL pública, por ejemplo `https://descanso.onrender.com`. |
-| `BACKUP_TOKEN` | backup | El mismo valor que la variable de entorno del servicio en Render. |
+| `FLY_API_TOKEN` | deploy | Deploy token limitado a la app: `fly tokens create deploy --app descanso-sleep`. |
+| `BACKUP_TOKEN` | backup | El mismo valor que el secreto `BACKUP_TOKEN` de la app en Fly. |
 | `S3_ENDPOINT`, `S3_BUCKET` | backup | Bucket privado compatible con S3. |
 | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` | backup | Credenciales limitadas a ese bucket (lectura, escritura, listado y borrado). |
 
-`GITHUB_TOKEN` (automático) publica en GHCR. Ningún secreto se escribe en el repositorio
+`GITHUB_TOKEN` (automático) publica en GHCR. `APP_URL` no es secreto: está fijo en los workflows como `https://descanso-sleep.fly.dev`. Ningún secreto se escribe en el repositorio
 (FR-019).
 
-## Variables de entorno del servicio (Render)
+## Variables de entorno del servicio (Fly.io, `fly.toml` y `fly secrets`)
 
 | Variable | Valor |
 |----------|-------|
 | `DB_PATH` | `/data/sleep.db` |
-| `BACKUP_TOKEN` | Secreto (`sync: false` en el Blueprint) |
-| `APP_VERSION` | Viene en la imagen; no se define en Render. |
+| `PORT` | `3000` (`[env]` de `fly.toml`) |
+| `BACKUP_TOKEN` | Secreto: `fly secrets set BACKUP_TOKEN=… --app descanso-sleep` |
+| `APP_VERSION` | Viene en la imagen; no se define en Fly. |
