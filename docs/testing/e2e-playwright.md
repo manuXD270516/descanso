@@ -281,6 +281,7 @@ Leyenda: ✅ cubierto · ⚠️ `test.fixme` (bug abierto) · — fuera del alca
 | US5-3, FR-017 | navegacion › 002 US5-3 · FR-017 · sin versión inyectada el pie muestra "Versión dev" | ✅ |
 | US3-7, FR-021 | operacion › 002 US3-7 · FR-021 · sin token o con uno inválido responde 401…; con el válido entrega la base | ✅ |
 | FR-021 (deshabilitado) | operacion › FR-021 · sin BACKUP_TOKEN el endpoint de respaldo no existe (404) | ✅ |
+| Arranque con puerto ocupado (relacionado con FR-007) | operacion › un puerto ocupado hace fallar el arranque con código distinto de 0… | ⚠️ |
 | US1–US4 (pipeline, imagen, despliegue, respaldos, entorno local) | se verifican en GitHub Actions y en los runbooks, no en el navegador | — |
 
 ## 8. CI
@@ -315,6 +316,14 @@ Se valoraron tres opciones:
 El coste es bajo (la suite completa tarda ~30 s) y elimina toda una clase de fallos intermitentes
 por orden de ejecución. El `webServer` se mantiene como servidor compartido de solo lectura y como
 comprobación temprana de que la app arranca con el build actual.
+
+**Puertos.** Cada worker usa un rango propio de 20 puertos (`20000 + 20 × parallelIndex`), por
+debajo de los rangos efímeros de Windows y Linux, y elige el primero libre. La primera versión
+pedía el puerto 0 al sistema, y en ~1 de cada 200 tests dos workers recibían el mismo puerto
+recién liberado. Como `server.js` no detecta el puerto ocupado (ver §10), el segundo proceso
+terminaba con código 0 y el test podía hablar con el servidor de otro worker. Con rangos
+disjuntos, además de comprobar que el proceso sigue vivo cuando responde `/api/health`, la suite
+pasó 5 repeticiones seguidas (255 ejecuciones) sin fallos.
 
 **Fechas deterministas.** La app calcula "hoy" y la fecha de la noche con el reloj y la zona
 horaria del navegador. Por eso:
@@ -361,3 +370,7 @@ ignorarse. En local, sin reintentos.
   `<input type="date">` solo limita el calendario desplegable y `setDate()` no lo valida (la API
   tampoco). El test está como `test.fixme` en `metricas.spec.ts`; al corregirlo, cambiar
   `test.fixme` por `test`.
+- **Bug abierto (operación):** si el puerto está ocupado, `node backend/src/server.js` imprime
+  "escuchando en …" y termina con código 0. Con Express 5, `app.listen()` pasa el error
+  (`EADDRINUSE`) al callback, y `server.js` no lo comprueba. El test está como `test.fixme` en
+  `operacion.spec.ts`.
