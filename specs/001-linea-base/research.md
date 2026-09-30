@@ -124,3 +124,6 @@ las decisiones de pruebas y de ajustes mínimos, y el inventario de deuda técni
 DT-02 y DT-03 (validación de rangos), DT-04 (fecha de la noche validada en el servicio), DT-08
 (sí/no estricto), DT-11 (la cinta dibuja todas las noches) y DT-21 (`% 1440`). DT-05 sigue abierta;
 003 solo garantiza en la base que hay como máximo una noche abierta.
+
+**Resuelta por la feature 004** (`specs/004-acceso-protegido/`): DT-17 (la API exige sesión; CORS
+eliminado; CSRF por origen; límite de intentos y cabeceras de seguridad).

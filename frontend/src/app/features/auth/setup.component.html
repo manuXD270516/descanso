@@ -1,0 +1,33 @@
+<section class="panel auth-card">
+  <h2>Crea tu contraseña</h2>
+  <p class="safe">
+    @if (auth.nights() === 1) { Tu noche está a salvo. } @else { Tus {{ auth.nights() }} noches están a salvo. }
+    Crea tu cuenta para volver a verlas.
+  </p>
+  <p class="muted small">Pega el código de alta que configuraste en Fly (el secreto <code>OWNER_SETUP_TOKEN</code>).</p>
+
+  @if (error()) {
+    <p class="error" role="alert" tabindex="-1" #errorMsg>{{ error() }}</p>
+  }
+
+  <form (ngSubmit)="submit()" class="auth-form">
+    <label class="field"><span>Código de alta</span>
+      <input type="password" name="token" [(ngModel)]="token" autocomplete="off" required>
+    </label>
+    <label class="field"><span>Email</span>
+      <input type="email" name="email" [(ngModel)]="email" autocomplete="username" required>
+    </label>
+    <label class="field"><span>Contraseña nueva</span>
+      <input type="password" name="password" [(ngModel)]="password" autocomplete="new-password"
+             aria-describedby="password-hint" required>
+      <small id="password-hint" class="muted small">
+        Al menos {{ minLength }} caracteres. Usa una frase de 3–4 palabras.
+        @if (password && passwordLength() < minLength) { (llevas {{ passwordLength() }}) }
+      </small>
+    </label>
+    <button class="btn btn-moon" type="submit"
+            [disabled]="busy() || !token || !email || passwordLength() < minLength">
+      {{ busy() ? 'Creando…' : 'Crear cuenta' }}
+    </button>
+  </form>
+</section>

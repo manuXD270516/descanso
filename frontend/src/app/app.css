@@ -59,3 +59,43 @@
   font-size: 0.75rem;
   text-align: center;
 }
+
+/* Menú de cuenta (feature 004): <details> nativo, accesible por teclado */
+.account { position: relative; }
+.account > summary {
+  cursor: pointer;
+  list-style: none;
+  color: var(--ink-dim);
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 999px;
+}
+.account > summary::-webkit-details-marker { display: none; }
+.account > summary:hover, .account[open] > summary { color: var(--ink); background: var(--night-2); }
+.account > summary:focus-visible { outline: 2px solid var(--moon); outline-offset: 2px; }
+.account-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.4rem);
+  z-index: 10;
+  min-width: 220px;
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.8rem;
+  background: var(--night-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.account-email { overflow-wrap: anywhere; }
+.account-title { font-weight: 600; }
+.account-exports { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.3rem; }
+.account-exports a { color: var(--moon); }
+.account-menu .btn { justify-self: start; }
+
+.unavailable, .loading { max-width: 460px; margin: 2rem auto 0; }
+.unavailable { display: grid; gap: 0.6rem; }
+
+@media (max-width: 480px) {
+  .account { align-self: flex-end; }
+}

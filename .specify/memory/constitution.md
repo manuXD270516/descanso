@@ -15,8 +15,13 @@ mantener.
 ### II. Persistencia segura
 
 - Los datos viven en un único archivo SQLite, ubicado por la variable `DB_PATH`.
-- Todo cambio de esquema MUST hacerse con migraciones versionadas e idempotentes.
+- Todo cambio de esquema MUST hacerse con migraciones versionadas e idempotentes, aplicadas por el
+  runner de migraciones, que guarda un respaldo previo.
 - NUNCA se hace DROP de datos del usuario.
+  - Aclaración: reconstruir una tabla dentro de una misma migración (crear la tabla nueva, copiar
+    las filas, verificar recuentos y contenido, y solo entonces sustituir la antigua; patrón de
+    12 pasos de SQLite) no es un DROP de datos, siempre que la verificación preceda a la
+    sustitución y la migración sea atómica.
 
 **Razón**: los registros de sueño son historia personal irrecuperable; las migraciones
 repetibles evitan pérdidas y estados inconsistentes.
@@ -90,4 +95,10 @@ especifican las nuevas features.
   - PATCH: aclaraciones y cambios de redacción sin efecto semántico.
 - Las revisiones de planes y PRs MUST comprobar el cumplimiento de esta constitución.
 
-**Version**: 1.0.0 | **Ratified**: 2026-09-29 | **Last Amended**: 2026-09-29
+### Historial de enmiendas
+
+| Versión | Fecha | Tipo | Cambio |
+|---------|-------|------|--------|
+| 1.0.1 | 2026-09-30 | PATCH | Principio II: toda migración pasa por el runner con respaldo previo (feature 003); reconstruir una tabla con copia verificada en la misma migración no es DROP de datos. Necesaria antes del plan de 004. |
+
+**Version**: 1.0.1 | **Ratified**: 2026-09-29 | **Last Amended**: 2026-09-30

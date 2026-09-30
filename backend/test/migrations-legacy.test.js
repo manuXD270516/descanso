@@ -11,6 +11,8 @@ const { makeLegacyDb, hashTables } = require('./fixtures/make-legacy-db');
 // Línea base sobre bases reales creadas por la versión anterior (US1, US3-8).
 let tmp;
 const silent = { info() {}, warn() {} };
+// Todas las versiones existentes (crece con cada feature que añade migraciones)
+const ALL = fs.readdirSync(path.join(__dirname, '..', 'src', 'migrations')).map((f) => Number(f.slice(0, 3))).sort((a, b) => a - b);
 const backend = path.join(__dirname, '..');
 
 before(() => { tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'descanso-legacy-')); });
@@ -23,16 +25,16 @@ const versions = (file) => {
   return v;
 };
 
-test('base legacy: la huella de todas las filas es idéntica y quedan registradas 1 y 2 (SC-001, FR-005)', () => {
+test('base legacy: la huella de todas las filas es idéntica y quedan registradas todas las versiones (SC-001, FR-005)', () => {
   const file = makeLegacyDb(path.join(tmp, 'legacy.db'));
   const before = hashTables(file);
   const db = new Database(file);
   const r = migrate(db, { backupDir: path.join(tmp, 'backups'), log: silent });
   db.close();
-  assert.deepEqual(r.applied, [1, 2]);
+  assert.deepEqual(r.applied, ALL);
   assert.equal(r.backup, path.join(tmp, 'backups', 'pre-001.db'));
   assert.deepEqual(hashTables(file), before);
-  assert.deepEqual(versions(file), [1, 2]);
+  assert.deepEqual(versions(file), ALL);
   assert.deepEqual(hashTables(r.backup), before, 'el respaldo previo es una copia fiel');
   const copy = new Database(r.backup, { readonly: true });
   const hasMigrations = copy.prepare("SELECT 1 FROM sqlite_master WHERE name = 'schema_migrations'").get();
@@ -73,7 +75,7 @@ test('base nueva vía db.js: esquema completo y las 3 métricas iniciales (FR-00
     { cwd: backend, env: { ...process.env, DB_PATH: file }, encoding: 'utf8' },
   );
   assert.deepEqual(JSON.parse(out.trim().split('\n').pop()).map((m) => m.name), ['Calidad del sueño', 'Energía al despertar', 'Cafés']);
-  assert.deepEqual(versions(file), [1, 2]);
+  assert.deepEqual(versions(file), ALL);
   assert.equal(fs.existsSync(path.join(tmp, 'nueva', 'backups')), false, 'base nueva: sin respaldo');
 });
 

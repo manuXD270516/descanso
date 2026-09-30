@@ -3,12 +3,13 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { createServer } from 'node:net';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
+import { SETUP_TOKEN } from './env';
 
 /** `node backend/src/server.js`: el mismo punto de entrada que en producción. */
 export const SERVER_JS = resolve(__dirname, '..', '..', 'backend', 'src', 'server.js');
 
 /** Variables del backend que nunca deben filtrarse desde el entorno de quien ejecuta. */
-const BACKEND_VARS = ['PORT', 'DB_PATH', 'APP_VERSION', 'BACKUP_TOKEN', 'FRONTEND_DIST'];
+const BACKEND_VARS = ['PORT', 'DB_PATH', 'APP_VERSION', 'BACKUP_TOKEN', 'FRONTEND_DIST', 'OWNER_SETUP_TOKEN', 'NODE_ENV'];
 
 /**
  * Puertos de cada worker: un rango propio y disjunto (20000 + 20 × índice del worker), por
@@ -72,7 +73,8 @@ export class AppServer {
   private async boot(): Promise<void> {
     const env: NodeJS.ProcessEnv = { ...process.env };
     for (const k of BACKEND_VARS) delete env[k];
-    Object.assign(env, this.env, { PORT: String(this.port), DB_PATH: this.dbPath });
+    // Código de alta de prueba (feature 004); un test puede sobrescribirlo con serverEnv
+    Object.assign(env, { OWNER_SETUP_TOKEN: SETUP_TOKEN }, this.env, { PORT: String(this.port), DB_PATH: this.dbPath });
 
     this.output = '';
     const child = spawn(process.execPath, [SERVER_JS], { env, stdio: ['ignore', 'pipe', 'pipe'] });

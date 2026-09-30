@@ -58,7 +58,7 @@ test.describe('Persistencia (US6)', () => {
     expect(await snapshot(api)).toEqual(before);
   });
 
-  test('US6-2 · los datos registrados en un navegador se ven en otro', async ({ page, browser, server }) => {
+  test('US6-2 · los datos registrados en un navegador se ven en otro', async ({ page, browser, server, api }) => {
     await setNow(page, NOW);
     await page.goto('/');
     await recordFromUi(page);
@@ -66,6 +66,8 @@ test.describe('Persistencia (US6)', () => {
     // Otro navegador: contexto nuevo, sin estado compartido con el primero
     const other = await browser.newContext({ baseURL: server.url, timezoneId: TIMEZONE, locale: 'es-ES' });
     await other.route(/^https:\/\/fonts\.(googleapis|gstatic)\.com\//, (route) => route.abort());
+    // Feature 004: en el otro dispositivo también has entrado con tu cuenta
+    await other.addCookies((await api.request.storageState()).cookies);
     try {
       const page2 = await other.newPage();
       await setNow(page2, NOW);

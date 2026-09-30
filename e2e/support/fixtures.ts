@@ -1,4 +1,4 @@
-import { test as base, expect, type Page } from '@playwright/test';
+import { test as base, expect, request as playwrightRequest, type Page } from '@playwright/test';
 import { Api, iso } from './api';
 import { SHARED_URL } from './env';
 import { AppServer } from './server';
@@ -24,6 +24,11 @@ interface Options {
   isolate: boolean;
   /** Variables de entorno extra para el servidor aislado (p. ej. APP_VERSION, BACKUP_TOKEN). */
   serverEnv: Record<string, string>;
+  /**
+   * true (por defecto): antes del test se da de alta al propietario (si hace falta) y se entra,
+   * y la sesión se comparte entre el navegador y `api` (feature 004). false: sin sesión.
+   */
+  authenticated: boolean;
 }
 
 interface Fixtures {
@@ -35,6 +40,7 @@ interface Fixtures {
 export const test = base.extend<Options & Fixtures>({
   isolate: [true, { option: true }],
   serverEnv: [{}, { option: true }],
+  authenticated: [true, { option: true }],
 
   server: async ({ isolate, serverEnv }, use, testInfo) => {
     if (!isolate) {
@@ -55,13 +61,22 @@ export const test = base.extend<Options & Fixtures>({
   // page.goto('/') y el fixture `request` apuntan al servidor del test
   baseURL: async ({ server }, use) => use(server.url),
 
-  // La app pide una fuente a Google Fonts: se bloquea para no depender de la red externa
-  context: async ({ context }, use) => {
+  // La app pide una fuente a Google Fonts: se bloquea para no depender de la red externa.
+  // Con sesión, el navegador recibe la misma cookie que `api`.
+  context: async ({ context, api, authenticated }, use) => {
     await context.route(/^https:\/\/fonts\.(googleapis|gstatic)\.com\//, (route) => route.abort());
+    if (authenticated) await context.addCookies((await api.request.storageState()).cookies);
     await use(context);
   },
 
-  api: async ({ request }, use) => use(new Api(request)),
+  // Cliente de la API con Origin del propio servidor (defensa CSRF de la feature 004)
+  api: async ({ server, authenticated }, use) => {
+    const request = await playwrightRequest.newContext({ baseURL: server.url, extraHTTPHeaders: { Origin: server.url } });
+    const api = new Api(request);
+    if (authenticated) await api.signIn();
+    await use(api);
+    await request.dispose();
+  },
 });
 
 export { expect };

@@ -1,22 +1,59 @@
 <header class="top">
   <h1 class="wordmark">Descanso</h1>
-  <nav class="tabs" aria-label="Secciones">
-    @for (t of tabs; track t.id) {
-      <button
-        type="button"
-        class="tab"
-        [class.active]="tab() === t.id"
-        [attr.aria-current]="tab() === t.id ? 'page' : null"
-        (click)="tab.set(t.id)">{{ t.label }}</button>
-    }
-  </nav>
+  @if (auth.state() === 'authenticated') {
+    <nav class="tabs" aria-label="Secciones">
+      @for (t of tabs; track t.id) {
+        <button
+          type="button"
+          class="tab"
+          [class.active]="tab() === t.id"
+          [attr.aria-current]="tab() === t.id ? 'page' : null"
+          (click)="tab.set(t.id)">{{ t.label }}</button>
+      }
+    </nav>
+    <details class="account">
+      <summary>Cuenta</summary>
+      <div class="account-menu">
+        <p class="small muted account-email">{{ auth.email() }}</p>
+        <p class="small account-title">Exportar mis datos</p>
+        <ul class="account-exports">
+          @for (e of exports; track e.href) {
+            <li><a [href]="e.href" download>{{ e.label }}</a></li>
+          }
+        </ul>
+        <button type="button" class="btn btn-ghost btn-sm" (click)="auth.logout()">Cerrar sesión</button>
+      </div>
+    </details>
+  }
 </header>
 
 <main class="content">
-  @switch (tab()) {
-    @case ('night') { <app-night /> }
-    @case ('naps') { <app-naps /> }
-    @case ('metrics') { <app-metrics /> }
+  @switch (auth.state()) {
+    @case ('authenticated') {
+      @switch (tab()) {
+        @case ('night') { <app-night /> }
+        @case ('naps') { <app-naps /> }
+        @case ('metrics') { <app-metrics /> }
+      }
+    }
+    @case ('login') { <app-login /> }
+    @case ('setup') { <app-setup /> }
+    @case ('setup-unavailable') {
+      <section class="panel unavailable" role="status">
+        <h2>Falta configurar el código de alta</h2>
+        <p class="muted">
+          Tus datos están protegidos. Para crear tu cuenta, configura el secreto
+          <code>OWNER_SETUP_TOKEN</code> en Fly y vuelve a abrir la app.
+        </p>
+      </section>
+    }
+    @case ('offline') {
+      <section class="panel unavailable">
+        <p class="error" role="alert">No se pudo conectar con el servidor</p>
+        <button type="button" class="btn btn-sm" (click)="auth.refresh()">Reintentar</button>
+      </section>
+    }
+    @default { <p class="muted loading" role="status">Cargando…</p> }
   }
 </main>
 

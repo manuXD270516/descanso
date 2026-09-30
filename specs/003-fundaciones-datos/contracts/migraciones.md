@@ -42,6 +42,18 @@ Orden de operaciones:
    versión y la causa; las anteriores ya aplicadas quedan aplicadas.
 7. `log.info('[migraciones] aplicadas: 1, 2')`.
 
+## Extensión 004: `foreignKeys: false`
+
+Una migración `.js` puede exportar `foreignKeys: false` para reconstruir tablas referenciadas
+(patrón de 12 pasos, constitución v1.0.1):
+
+1. `PRAGMA foreign_keys = OFF` antes de abrir la transacción;
+2. dentro de la transacción: `up(db)` → `PRAGMA foreign_key_check` (si devuelve filas, error y
+   rollback) → registro en `schema_migrations`;
+3. `PRAGMA foreign_keys` vuelve a su valor anterior en un `finally`.
+
+La propiedad forma parte del archivo, así que la cubre el checksum.
+
 ## Errores y salida del proceso
 
 - `db.js` no captura el error: el `require` falla, `server.js` no llega a `listen()` y Node sale con
