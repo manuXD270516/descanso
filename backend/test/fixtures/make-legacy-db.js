@@ -56,12 +56,20 @@ function makeLegacyDb(file, { realista = false, dosAbiertas = false } = {}) {
   return file;
 }
 
-/** Huella por tabla de usuario: SHA-256 de todas sus filas en orden de rowid. */
+// Columnas de la versión legacy: las migraciones posteriores pueden añadir otras (p. ej. user_id en 004)
+const LEGACY_COLUMNS = {
+  sleep_records: 'id, date, bedtime, wake_time, notes, created_at',
+  naps: 'id, date, start_time, end_time, notes, created_at',
+  metrics: 'id, name, type, unit, min_value, max_value, color, sort_order, archived, created_at',
+  metric_entries: 'id, metric_id, date, value, created_at',
+};
+
+/** Huella por tabla de usuario: SHA-256 de sus filas (columnas legacy) en orden de id. */
 function hashTables(file) {
   const db = new Database(file, { readonly: true });
   const out = {};
-  for (const t of ['sleep_records', 'naps', 'metrics', 'metric_entries']) {
-    const rows = db.prepare(`SELECT * FROM ${t} ORDER BY rowid`).all();
+  for (const [t, cols] of Object.entries(LEGACY_COLUMNS)) {
+    const rows = db.prepare(`SELECT ${cols} FROM ${t} ORDER BY id`).all();
     out[t] = crypto.createHash('sha256').update(JSON.stringify(rows)).digest('hex');
   }
   db.close();

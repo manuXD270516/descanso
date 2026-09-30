@@ -14,8 +14,8 @@
 
 ## Phase 1: Setup
 
-- [ ] T001 Quitar la dependencia `cors` de `backend/package.json` y su uso en `backend/src/app.js` (R9); `npm install --ignore-scripts` para actualizar el lockfile
-- [ ] T002 [P] En `frontend/angular.json`, configuración `production`: `optimization.styles.inlineCritical: false` (R9); comprobar que `dist/.../index.html` ya no contiene `onload=`
+- [X] T001 Quitar la dependencia `cors` de `backend/package.json` y su uso en `backend/src/app.js` (R9); `npm install --ignore-scripts` para actualizar el lockfile
+- [X] T002 [P] En `frontend/angular.json`, configuración `production`: `optimization.styles.inlineCritical: false` (R9); comprobar que `dist/.../index.html` ya no contiene `onload=`
 
 ---
 
@@ -23,11 +23,11 @@
 
 **Purpose**: esquema de usuarios y la extensión del runner que necesitan todas las historias.
 
-- [ ] T003 Tests de la extensión del runner en `backend/test/migrate.test.js`: una migración `.js` con `foreignKeys: false` puede reconstruir una tabla referenciada con `ON DELETE CASCADE` sin borrar las filas hijas; si deja una FK rota, `foreign_key_check` provoca error y rollback; tras la migración (con éxito o con fallo) `PRAGMA foreign_keys` vuelve a ser 1
-- [ ] T004 Implementar `foreignKeys: false` en `backend/src/migrate.js` (R6) y documentarlo en `docs/sdd/guia-migraciones.md` y en `specs/003-fundaciones-datos/contracts/migraciones.md` (sección "Extensión 004")
-- [ ] T005 Crear `backend/src/migrations/003_usuarios_y_sesiones.sql` según data-model.md: `users` (fila `1, NULL, NULL, 'owner'`; `email` "NULL hasta el alta", `COLLATE NOCASE UNIQUE`; `role CHECK (role IN ('owner'))`), `sessions` y `auth_setup` (`CHECK (id = 1)`, fila inicial)
-- [ ] T006 [P] Tests de la migración 004 en `backend/test/migrations-004.test.js`: sobre la base legacy (fixture de 003 con valores de métricas) → recuentos y huella de columnas originales idénticos en las 3 tablas, `metric_entries` intacta, todas las filas con `user_id = 1`, `foreign_key_check` vacío, `ux_sleep_one_open` por usuario (dos noches abiertas del mismo usuario → UNIQUE; de usuarios distintos → permitido); con la base realista, < 20 s
-- [ ] T007 Crear `backend/src/migrations/004_user_id_en_datos.js` (`foreignKeys: false`): reconstrucción en 12 pasos de `sleep_records`, `naps` y `metrics` con `user_id INTEGER NOT NULL DEFAULT 1 REFERENCES users(id) ON DELETE CASCADE`, verificación de recuento y huella antes de `DROP`, y recreación de índices (`idx_sleep_date`, `idx_naps_date`, `ux_sleep_one_open ON sleep_records(user_id) WHERE wake_time IS NULL`) (R6)
+- [X] T003 Tests de la extensión del runner en `backend/test/migrate.test.js`: una migración `.js` con `foreignKeys: false` puede reconstruir una tabla referenciada con `ON DELETE CASCADE` sin borrar las filas hijas; si deja una FK rota, `foreign_key_check` provoca error y rollback; tras la migración (con éxito o con fallo) `PRAGMA foreign_keys` vuelve a ser 1
+- [X] T004 Implementar `foreignKeys: false` en `backend/src/migrate.js` (R6) y documentarlo en `docs/sdd/guia-migraciones.md` y en `specs/003-fundaciones-datos/contracts/migraciones.md` (sección "Extensión 004")
+- [X] T005 Crear `backend/src/migrations/003_usuarios_y_sesiones.sql` según data-model.md: `users` (fila `1, NULL, NULL, 'owner'`; `email` "NULL hasta el alta", `COLLATE NOCASE UNIQUE`; `role CHECK (role IN ('owner'))`), `sessions` y `auth_setup` (`CHECK (id = 1)`, fila inicial)
+- [X] T006 [P] Tests de la migración 004 en `backend/test/migrations-004.test.js`: sobre la base legacy (fixture de 003 con valores de métricas) → recuentos y huella de columnas originales idénticos en las 3 tablas, `metric_entries` intacta, todas las filas con `user_id = 1`, `foreign_key_check` vacío, `ux_sleep_one_open` por usuario (dos noches abiertas del mismo usuario → UNIQUE; de usuarios distintos → permitido); con la base realista, < 20 s
+- [X] T007 Crear `backend/src/migrations/004_user_id_en_datos.js` (`foreignKeys: false`): reconstrucción en 12 pasos de `sleep_records`, `naps` y `metrics` con `user_id INTEGER NOT NULL DEFAULT 1 REFERENCES users(id) ON DELETE CASCADE`, verificación de recuento y huella antes de `DROP`, y recreación de índices (`idx_sleep_date`, `idx_naps_date`, `ux_sleep_one_open ON sleep_records(user_id) WHERE wake_time IS NULL`) (R6)
 
 **Checkpoint**: esquema listo; la suite existente sigue en verde (todavía sin autenticación).
 
@@ -39,9 +39,9 @@
 
 **Independent Test**: `compat-previous-004.test.js` y la imagen de master sobre una base migrada.
 
-- [ ] T008 [P] [US4] Crear `backend/test/fixtures/legacy-003-statements.js` con las sentencias SQL de las rutas de 003 (crear, abrir, cerrar, editar y borrar noche con `writeNight`; siestas; métricas y valores; listados con rango; stats), extraídas de `backend/src/routes/*` en master
-- [ ] T009 [US4] Crear `backend/test/compat-previous-004.test.js`: base migrada hasta 004 → ejecutar esas sentencias sin errores; las filas nuevas tienen `user_id = 1`; una segunda noche abierta da `SQLITE_CONSTRAINT_UNIQUE` con el nombre `ux_sleep_one_open` (FR-020, SC-004)
-- [ ] T010 [US4] Verificar con Docker que la imagen de master (003) arranca y opera sobre una base migrada por 004 (quickstart §2) y anotar el resultado para el PR
+- [X] T008 [P] [US4] Crear `backend/test/fixtures/legacy-003-statements.js` con las sentencias SQL de las rutas de 003 (crear, abrir, cerrar, editar y borrar noche con `writeNight`; siestas; métricas y valores; listados con rango; stats), extraídas de `backend/src/routes/*` en master
+- [X] T009 [US4] Crear `backend/test/compat-previous-004.test.js`: base migrada hasta 004 → ejecutar esas sentencias sin errores; las filas nuevas tienen `user_id = 1`; una segunda noche abierta da `SQLITE_CONSTRAINT_UNIQUE` con el nombre `ux_sleep_one_open` (FR-020, SC-004)
+- [X] T010 [US4] Verificar con Docker que la imagen de master (003) arranca y opera sobre una base migrada por 004 (quickstart §2) y anotar el resultado para el PR
 
 **Checkpoint**: el rollback automático sigue siendo seguro.
 

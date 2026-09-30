@@ -188,3 +188,52 @@ test('dos procesos arrancando a la vez sobre la misma base: cada versión se apl
   assert.deepEqual(versions(db), [1, 2]);
   db.close();
 });
+
+// --- Extensión 004: migraciones con foreignKeys: false (patrón de 12 pasos de SQLite) ---
+
+function parentChild() {
+  write('001_base.sql', `
+    CREATE TABLE parent (id INTEGER PRIMARY KEY, name TEXT);
+    CREATE TABLE child (id INTEGER PRIMARY KEY, parent_id INTEGER NOT NULL REFERENCES parent(id) ON DELETE CASCADE);
+  `);
+  const db = open();
+  db.pragma('foreign_keys = ON');
+  migrate(db, { dir, log: silent });
+  db.prepare("INSERT INTO parent (id, name) VALUES (1, 'a'), (2, 'b')").run();
+  db.prepare('INSERT INTO child (parent_id) VALUES (1), (1), (2)').run();
+  return db;
+}
+
+const REBUILD = `
+  db.exec('CREATE TABLE parent_new (id INTEGER PRIMARY KEY, name TEXT, extra INTEGER NOT NULL DEFAULT 0)');
+  db.exec('INSERT INTO parent_new (id, name) SELECT id, name FROM parent');
+  db.exec('DROP TABLE parent');
+  db.exec('ALTER TABLE parent_new RENAME TO parent');`;
+
+test('foreignKeys: false permite reconstruir una tabla referenciada sin borrar en cascada las hijas', () => {
+  const db = parentChild();
+  write('002_rebuild.js', `module.exports = { foreignKeys: false, up(db) {${REBUILD}} };`);
+  migrate(db, { dir, log: silent });
+  assert.equal(db.prepare('SELECT COUNT(*) AS c FROM child').get().c, 3, 'las hijas siguen ahí');
+  assert.ok(db.prepare('SELECT extra FROM parent WHERE id = 1').get());
+  assert.equal(db.pragma('foreign_keys', { simple: true }), 1, 'FK reactivadas');
+  assert.deepEqual(db.pragma('foreign_key_check'), []);
+});
+
+test('sin foreignKeys: false, esa misma reconstrucción borraría las hijas (motivo de la extensión)', () => {
+  const db = parentChild();
+  write('002_rebuild.js', `module.exports = { up(db) {${REBUILD}} };`);
+  migrate(db, { dir, log: silent });
+  assert.equal(db.prepare('SELECT COUNT(*) AS c FROM child').get().c, 0);
+});
+
+test('foreignKeys: false con una FK rota al final: foreign_key_check la detecta, se deshace y las FK vuelven a 1', () => {
+  const db = parentChild();
+  write('002_rompe.js', `module.exports = { foreignKeys: false, up(db) {
+    db.exec('DELETE FROM parent WHERE id = 2');
+  } };`);
+  assert.throws(() => migrate(db, { dir, log: silent }), (e) => e instanceof MigrationError && /002_rompe/.test(e.message) && /clave/i.test(e.message));
+  assert.equal(db.prepare('SELECT COUNT(*) AS c FROM parent').get().c, 2, 'se deshizo');
+  assert.deepEqual(versions(db), [1]);
+  assert.equal(db.pragma('foreign_keys', { simple: true }), 1);
+});

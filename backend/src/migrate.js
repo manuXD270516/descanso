@@ -97,17 +97,31 @@ function migrate(db, { dir = DEFAULT_DIR, backupDir = null, log = console } = {}
   const isApplied = db.prepare('SELECT 1 FROM schema_migrations WHERE version = ?');
   const record = db.prepare('INSERT INTO schema_migrations (version, name, checksum, applied_at) VALUES (?,?,?,?)');
   for (const m of pending) {
+    const mod = m.ext === 'js' ? require(m.full) : null;
+    // foreignKeys: false (extensión 004): reconstruir tablas referenciadas sin borrados en cascada.
+    // El PRAGMA no tiene efecto dentro de una transacción, así que se cambia antes y se restaura después.
+    const fkOff = mod?.foreignKeys === false;
+    const fkBefore = db.pragma('foreign_keys', { simple: true });
     const run = db.transaction(() => {
       if (isApplied.get(m.version)) return false; // otro proceso la aplicó mientras esperábamos
-      if (m.ext === 'sql') db.exec(m.content);
-      else require(m.full).up(db);
+      if (mod) mod.up(db);
+      else db.exec(m.content);
+      if (fkOff) {
+        const broken = db.pragma('foreign_key_check');
+        if (broken.length) {
+          throw new Error(`deja ${broken.length} referencias de clave foránea rotas (p. ej. ${broken[0].table} → ${broken[0].parent})`);
+        }
+      }
       record.run(m.version, m.name, m.checksum, new Date().toISOString());
       return true;
     });
     try {
+      if (fkOff) db.pragma('foreign_keys = OFF');
       if (run.immediate()) done.push(m.version);
     } catch (e) {
       throw new MigrationError(`La migración ${m.name} falló y se deshizo: ${e.message}`, { cause: e });
+    } finally {
+      if (fkOff) db.pragma(`foreign_keys = ${fkBefore ? 'ON' : 'OFF'}`);
     }
   }
 

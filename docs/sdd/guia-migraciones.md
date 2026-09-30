@@ -53,9 +53,20 @@ Ejemplo de renombrado de `notes` a `comment` en noches:
 - **Nunca edites una migración ya aplicada.** Su huella (checksum) está registrada y el arranque
   se detendría. Para corregir algo, escribe una migración nueva.
 - **Sin `BEGIN`/`COMMIT`:** el runner abre la transacción.
-- **`PRAGMA foreign_keys`** no se puede cambiar dentro de una transacción. Si una migración
-  necesita recrear una tabla con claves foráneas, documenta en el plan cómo se hará antes de
-  escribirla.
+- **Reconstruir una tabla** (patrón de 12 pasos de SQLite, permitido por la constitución v1.0.1)
+  se hace en una migración `.js` con `foreignKeys: false`:
+  ```js
+  module.exports = { foreignKeys: false, up(db) { /* crear x_new, copiar, VERIFICAR, DROP x, RENAME */ } };
+  ```
+  El runner desactiva las FK **antes** de la transacción (dentro no tiene efecto), ejecuta
+  `PRAGMA foreign_key_check` antes del commit y las restaura después. **Sin esta opción,
+  `DROP TABLE` de una tabla referenciada con `ON DELETE CASCADE` borra las filas hijas** (p. ej.
+  `metrics` → `metric_entries`). Verifica recuento y contenido antes del `DROP`, y recrea los
+  índices y el contador `sqlite_sequence`. Ejemplo: `004_user_id_en_datos.js`.
+- **Índices únicos cuyo error lee el código**: SQLite nombra el índice en el mensaje solo si el
+  índice contiene una expresión; sobre columnas simples nombra las columnas. Si el código (actual
+  o anterior) reconoce el error por el nombre del índice, consérvalo con una expresión (ver
+  `ux_sleep_one_open`).
 - **Nunca borres ni modifiques datos del usuario** para que una migración "encaje". Si los datos
   no cumplen la precondición, aborta con un mensaje que explique cómo resolverlo.
 - **Mensajes en español**, pensados para quien lee `flyctl logs`.

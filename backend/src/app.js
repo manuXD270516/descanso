@@ -1,5 +1,4 @@
 const express = require('express');
-const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 
@@ -7,7 +6,6 @@ require('./db'); // aplica las migraciones pendientes antes de crear la app
 const { storageStatus } = require('./storage');
 
 const app = express();
-app.use(cors());
 app.use(express.json());
 
 app.get('/api/health', (_req, res) =>
