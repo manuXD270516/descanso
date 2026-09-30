@@ -117,3 +117,10 @@ las decisiones de pruebas y de ajustes mínimos, y el inventario de deuda técni
 | DT-21 | Resumen | La media circular puede devolver `1440` en lugar de `0` (p. ej. 23:30 y 00:30), por un residuo de coma flotante en `atan2`. Detectado al implementar. | Ninguno visible: `fmtMinutesOfDay` muestra 00:00. Sí rompe el rango 0–1439 del contrato. | Aplicar `% 1440` al resultado de `circularAvg`. |
 | DT-22 | Siestas | `formDuration` era un `computed()` sobre `form`, que es un objeto plano y no un signal: se calculaba una vez y no se actualizaba al editar. Detectado por el test de US3-2. | La validación de fin > inicio no funcionaba en la UI. | **Corregido en esta feature**: ahora es un método. |
 | DT-20 | Frontend | La fuente se carga desde Google Fonts. | Dependencia externa; sin fuente si no hay red. | Alojar la fuente localmente (opcional). |
+| DT-23 | Resumen | `/api/stats` agrega por fecha y conserva solo la última `bedtime`/`wake_time` del día. Detectado en 003. | Con dos noches en una fecha, la hora media ignora una. | Agregar por noche, no por día, en una feature de métricas (005). |
+| DT-24 | Validación | `isIso` acepta cualquier cadena que `Date.parse` entienda (p. ej. `Sep 7 2026`). Detectado en 003. | Desde 003 esas horas se rechazan de hecho en `bedtime`/`start_time`, pero no en `wake_time`/`end_time`. | Exigir ISO 8601 con desfase en todas las horas. |
+
+**Resueltas por la feature 003** (`specs/003-fundaciones-datos/`): DT-01 (migraciones versionadas),
+DT-02 y DT-03 (validación de rangos), DT-04 (fecha de la noche validada en el servicio), DT-08
+(sí/no estricto), DT-11 (la cinta dibuja todas las noches) y DT-21 (`% 1440`). DT-05 sigue abierta;
+003 solo garantiza en la base que hay como máximo una noche abierta.

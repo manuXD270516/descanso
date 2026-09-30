@@ -46,7 +46,7 @@ Abre http://localhost:3000 y comprueba que los datos coinciden con los del respa
 2. Abre una consola en la máquina. Si está apagada por falta de tráfico, primero abre la app
    para despertarla:
    ```bash
-   fly ssh console --app descanso-sleep
+   flyctl ssh console --app descanso-sleep
    ```
    Dentro de la máquina:
    ```sh
@@ -57,7 +57,7 @@ Abre http://localhost:3000 y comprueba que los datos coinciden con los del respa
    ```
    La API de backup de SQLite copia el contenido respetando los bloqueos de la base abierta. No
    sobrescribas el archivo con `cp` mientras el servicio está corriendo.
-3. Reinicia la app: `fly apps restart descanso-sleep`.
+3. Reinicia la app: `flyctl apps restart descanso-sleep`.
 4. Comprueba https://descanso-sleep.fly.dev/api/health y los datos en la app.
 
 ## Lanzar un respaldo manual
@@ -72,5 +72,5 @@ GitHub → Actions → **Backup** → *Run workflow*. Hace lo mismo que la ejecu
 - Si el workflow **Backup** falla, GitHub envía un correo. Un fallo nunca borra respaldos
   anteriores, porque la poda solo se ejecuta tras subir con éxito la copia del día.
 - El endpoint `/api/admin/backup` exige `Authorization: Bearer <BACKUP_TOKEN>`. Si rotas el
-  token, actualízalo **a la vez** en Fly (`fly secrets set BACKUP_TOKEN=… --app descanso-sleep`)
+  token, actualízalo **a la vez** en Fly (`flyctl secrets set BACKUP_TOKEN=… --app descanso-sleep`)
   y en GitHub (secreto `BACKUP_TOKEN`).

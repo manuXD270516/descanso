@@ -11,7 +11,8 @@ Son idénticas a las de `backend/src/db.js` antes de 003 (ver `specs/001-linea-b
 
 ## Nueva: `schema_migrations`
 
-La crea el runner (no una migración) antes de leer el historial, con `CREATE TABLE IF NOT EXISTS`.
+La crea el runner (no una migración) con `CREATE TABLE IF NOT EXISTS`, **después** del respaldo previo,
+para que el respaldo sea una copia exacta del estado anterior.
 
 | Columna | Tipo | Reglas |
 |---------|------|--------|

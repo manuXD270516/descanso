@@ -13,7 +13,7 @@ const RANGE_DAYS = 14;
 interface Ribbon {
   date: string;
   label: string;
-  sleep: { x: number; w: number; text: string } | null;
+  sleeps: { x: number; w: number; text: string }[];
   naps: { x: number; w: number; text: string }[];
 }
 
@@ -39,7 +39,7 @@ export class NightComponent implements OnInit {
   readonly showManual = signal(false);
   manual = { bedtime: '', wake: '', notes: '' };
   readonly editingId = signal<number | null>(null);
-  edit = { date: '', bedtime: '', wake: '', notes: '' };
+  edit = { bedtime: '', wake: '', notes: '' };
 
   readonly today = localDate();
   readonly from = addDays(this.today, -(RANGE_DAYS - 1));
@@ -56,7 +56,7 @@ export class NightComponent implements OnInit {
     const byDate = new Map<string, Ribbon>();
     for (let i = 0; i < RANGE_DAYS; i++) {
       const date = addDays(this.from, i);
-      byDate.set(date, { date, label: fmtDateShort(date), sleep: null, naps: [] });
+      byDate.set(date, { date, label: fmtDateShort(date), sleeps: [], naps: [] });
     }
     const pos = (iso: string) => {
       const m = minutesOfDay(iso);
@@ -67,7 +67,7 @@ export class NightComponent implements OnInit {
       if (!row || !r.wake_time) continue;
       const x = pos(r.bedtime);
       const w = Math.max(0.5, (r.duration_min! / 1440) * 100);
-      row.sleep = { x, w: Math.min(w, 100 - x), text: `${fmtTime(r.bedtime)} → ${fmtTime(r.wake_time)}, ${fmtDuration(r.duration_min)}` };
+      row.sleeps.push({ x, w: Math.min(w, 100 - x), text: `${fmtTime(r.bedtime)} → ${fmtTime(r.wake_time)}, ${fmtDuration(r.duration_min)}` });
     }
     for (const n of this.naps()) {
       const row = byDate.get(n.date);
@@ -108,13 +108,18 @@ export class NightComponent implements OnInit {
 
   startEdit(r: SleepRecord) {
     this.editingId.set(r.id);
-    this.edit = { date: r.date, bedtime: isoToInputLocal(r.bedtime), wake: r.wake_time ? isoToInputLocal(r.wake_time) : '', notes: r.notes ?? '' };
+    this.edit = { bedtime: isoToInputLocal(r.bedtime), wake: r.wake_time ? isoToInputLocal(r.wake_time) : '', notes: r.notes ?? '' };
+  }
+
+  /** La fecha de la noche sale siempre de "Me dormí" (principio III); el servicio rechaza otra. */
+  editNightDate(): string {
+    return this.edit.bedtime ? nightDate(inputLocalToIso(this.edit.bedtime)) : '';
   }
 
   saveEdit(id: number) {
     this.run(
       this.api.updateSleep(id, {
-        date: this.edit.date,
+        date: this.editNightDate(),
         bedtime: inputLocalToIso(this.edit.bedtime),
         wake_time: this.edit.wake ? inputLocalToIso(this.edit.wake) : null,
         notes: this.edit.notes || null,

@@ -136,7 +136,31 @@ describe('NightComponent', () => {
     const req = http.expectOne('/api/sleep/7');
     expect(req.request.method).toBe('PUT');
     expect(req.request.body.wake_time).toBeNull();
-    expect(req.request.body.date).toBe('2026-09-07');
+    expect(req.request.body.date).toBe(nightDate(req.request.body.bedtime));
+    req.flush(record({ id: 7 }));
+    flushLoad();
+  });
+
+  it('al editar, la fecha de la noche se calcula de "Me dormí" y no se edita por separado (FR-025, DT-04)', () => {
+    const closed = record({ id: 7, wake_time: '2026-09-08T07:10:00-04:00', duration_min: 450 });
+    flushLoad({ records: [closed] });
+    button('Editar').click();
+    fixture.detectChanges();
+
+    const dateInput = Array.from(el.querySelectorAll('label.field'))
+      .find((l) => l.textContent!.includes('Fecha de la noche'))!
+      .querySelector('input')!;
+    expect(dateInput.readOnly).toBeTrue();
+
+    fixture.componentInstance.edit.bedtime = '2026-09-06T22:30';
+    fixture.componentInstance.edit.wake = '2026-09-07T06:30';
+    fixture.detectChanges();
+    expect(dateInput.value).toBe('2026-09-06');
+
+    button('Guardar cambios').click();
+    const req = http.expectOne('/api/sleep/7');
+    expect(req.request.body.date).toBe('2026-09-06');
+    expect(req.request.body.date).toBe(nightDate(req.request.body.bedtime));
     req.flush(record({ id: 7 }));
     flushLoad();
   });
@@ -200,10 +224,26 @@ describe('NightComponent', () => {
     expect(ribbons[13].date).toBe(from);
 
     const row = ribbons.find((r) => r.date === yesterday)!;
-    expect(row.sleep!.x).toBeCloseTo(45.83, 1);
-    expect(row.sleep!.w).toBeCloseTo(33.33, 1);
+    expect(row.sleeps.length).toBe(1);
+    expect(row.sleeps[0].x).toBeCloseTo(45.83, 1);
+    expect(row.sleeps[0].w).toBeCloseTo(33.33, 1);
     expect(row.naps.length).toBe(1);
     expect(row.naps[0].x).toBeCloseTo(12.5, 1);
+  });
+
+  it('la cinta muestra todas las noches de una misma fecha (DT-11)', () => {
+    const yesterday = addDays(today, -1);
+    const iso = (d: string, t: string) => new Date(`${d}T${t}`).toISOString();
+    flushLoad({
+      records: [
+        record({ id: 1, date: yesterday, bedtime: iso(yesterday, '13:00'), wake_time: iso(yesterday, '15:00'), duration_min: 120 }),
+        record({ id: 2, date: yesterday, bedtime: iso(yesterday, '23:00'), wake_time: iso(today, '07:00'), duration_min: 480 }),
+      ],
+    });
+    const row = fixture.componentInstance.ribbons().find((r) => r.date === yesterday)!;
+    expect(row.sleeps.length).toBe(2);
+    const rowEl = Array.from(el.querySelectorAll('.ribbon-row'))[1];
+    expect(rowEl.querySelectorAll('.bar.sleep').length).toBe(2);
   });
 
   it('pide los datos de los últimos 14 días', () => {

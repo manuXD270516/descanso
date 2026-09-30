@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const db = require('../db');
-const { isIso, isDate, durationMinutes, HttpError } = require('../util');
+const { isIso, isDate, durationMinutes, localDateOf, parseRange, HttpError } = require('../util');
 
 const r = Router();
 const withDuration = (row) => row && { ...row, duration_min: durationMinutes(row.start_time, row.end_time) };
@@ -9,6 +9,10 @@ function validate(body) {
   if (!isDate(body.date)) throw new HttpError(400, 'date debe tener formato YYYY-MM-DD');
   if (!isIso(body.start_time) || !isIso(body.end_time)) throw new HttpError(400, 'start_time y end_time deben ser ISO');
   if (durationMinutes(body.start_time, body.end_time) <= 0) throw new HttpError(400, 'La siesta debe terminar después de empezar');
+  // Igual que las noches: la fecha es el día (local) en que empezó (principio III, DT-04)
+  if (body.date !== localDateOf(body.start_time)) {
+    throw new HttpError(400, `La fecha de la siesta debe ser ${localDateOf(body.start_time) ?? 'el día de su inicio'} (el día en que empezó)`);
+  }
   return {
     date: body.date,
     start_time: body.start_time,
@@ -18,7 +22,7 @@ function validate(body) {
 }
 
 r.get('/', (req, res) => {
-  const { from, to } = req.query;
+  const { from, to } = parseRange(req.query);
   let sql = 'SELECT * FROM naps';
   const params = [];
   const where = [];

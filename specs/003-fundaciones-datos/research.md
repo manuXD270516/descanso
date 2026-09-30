@@ -69,8 +69,8 @@ Cada decisión sigue el formato Decisión / Razón / Alternativas. Los DT-xx rem
   caminos distintos que probar y un riesgo de divergencia.
 - **Siembra**: sale de `db.js` y pasa a la migración. Diferencia de comportamiento aceptada: hoy, si
   alguien borrara todas las métricas, se resembrarían en cada arranque; con 003 solo se siembran al
-  aplicar la versión 1. La interfaz no permite borrar métricas (solo archivarlas), así que no es
-  observable.
+  aplicar la versión 1. Sí es observable (las métricas se pueden eliminar), y se considera
+  una mejora: si eliminas las métricas de ejemplo, ya no reaparecen al reiniciar.
 
 ## R6. Respaldo previo con `VACUUM INTO`
 
@@ -97,9 +97,10 @@ Cada decisión sigue el formato Decisión / Razón / Alternativas. Los DT-xx rem
      app anterior (o con `flyctl ssh console`) y vuelve a desplegar";
   2. si no, `CREATE UNIQUE INDEX ux_sleep_one_open ON sleep_records(wake_time IS NULL) WHERE
      wake_time IS NULL`.
-  - Las rutas conservan `assertNoOtherOpen()` (mensaje claro en el caso normal) y además traducen
-    el error `SQLITE_CONSTRAINT_UNIQUE` de ese índice a 409 con el mismo mensaje, por si dos
-    escrituras llegaran a competir.
+  - **Revisado al implementar:** las rutas ya no usan `assertNoOtherOpen()`. El índice es la
+    única garantía y `writeNight()` traduce su error `SQLITE_CONSTRAINT_UNIQUE` a 409 con el
+    mismo mensaje. Con better-sqlite3 (síncrono, un proceso) la comprobación previa hacía
+    inalcanzable esa traducción; así hay menos código y el camino queda probado por HTTP.
 - **Razón**: índice parcial sobre una expresión constante para las filas abiertas: SQLite lo
   admite desde 3.9. Es un cambio **aditivo** (expand): la versión anterior ya respeta la regla en
   código, así que no la rompe.

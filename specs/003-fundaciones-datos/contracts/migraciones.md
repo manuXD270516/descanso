@@ -27,15 +27,16 @@ migrate(db, {
 
 Orden de operaciones:
 
-1. `CREATE TABLE IF NOT EXISTS schema_migrations (…)`.
-2. Lee los archivos, calcula las huellas y valida la numeración.
-3. Compara con `schema_migrations`:
+1. Lee los archivos, calcula las huellas y valida la numeración.
+2. Lee `schema_migrations` **si existe**, sin crear nada todavía, y compara:
    - huella distinta en una versión aplicada → lanza `MigrationError` (FR-004);
    - versiones registradas sin archivo → `log.warn` y continúa.
-4. Si no hay pendientes → devuelve `{ applied: [], backup: null }` sin escribir nada (FR-006).
-5. Si hay pendientes, `backupDir` no es null y la base tiene `sleep_records` →
+3. Si no hay pendientes → devuelve `{ applied: [], backup: null }` sin escribir nada (FR-006).
+4. Si hay pendientes, `backupDir` no es null y la base tiene `sleep_records` →
    `VACUUM INTO backupDir/pre-NNN.db` (borrando antes una copia previa de la misma versión) y poda a los 3 más recientes. Si falla, lanza (FR-007,
-   FR-008).
+   FR-008). El respaldo es el estado exacto anterior (todavía sin `schema_migrations` si es la
+   primera vez).
+5. `CREATE TABLE IF NOT EXISTS schema_migrations (…)`.
 6. Por cada pendiente, en orden: `db.transaction(() => { recomprueba; ejecuta; INSERT en
    schema_migrations })().immediate()` (FR-002, FR-009). Si falla, lanza `MigrationError` con la
    versión y la causa; las anteriores ya aplicadas quedan aplicadas.
