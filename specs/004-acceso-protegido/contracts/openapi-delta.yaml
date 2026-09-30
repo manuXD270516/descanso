@@ -1,0 +1,185 @@
+openapi: 3.1.0
+info:
+  title: Descanso API — cambios de la feature 004
+  version: 1.3.0
+  description: |
+    Cambios sobre los contratos de 001, 002 y 003.
+
+    **Regla general (FR-003):** todas las rutas `/api/*` exigen sesión (`cookieAuth`) salvo
+    `GET /health`, `/auth/*` y `/admin/*` (Bearer). Sin sesión → 401
+    `{ "error": "Necesitas iniciar sesión" }`.
+
+    **CSRF (FR-013):** los métodos distintos de GET/HEAD/OPTIONS se rechazan con 403
+    `{ "error": "Petición rechazada: origen no permitido" }` salvo que `Sec-Fetch-Site` sea
+    `same-origin`/`none`, o que falte y `Origin` coincida con el host. `/admin/*` está exento.
+
+    **Cabeceras (FR-017)** en todas las respuestas: Content-Security-Policy, X-Frame-Options: DENY,
+    X-Content-Type-Options: nosniff, Referrer-Policy: same-origin y, en HTTPS,
+    Strict-Transport-Security. Sin cabeceras CORS (FR-014).
+servers:
+  - url: /api
+
+paths:
+  /auth/status:
+    get:
+      tags: [auth]
+      summary: Estado de acceso para decidir qué pantalla mostrar
+      security: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    required: [state, nights]
+                    properties:
+                      state: { const: setup }
+                      nights: { type: integer, minimum: 0, description: 'Para "Tus N noches están a salvo"' }
+                  - type: object
+                    required: [state]
+                    properties: { state: { const: setup-unavailable } }
+                  - type: object
+                    required: [state]
+                    properties: { state: { const: login } }
+                  - type: object
+                    required: [state, email]
+                    properties:
+                      state: { const: authenticated }
+                      email: { type: string }
+
+  /auth/setup:
+    post:
+      tags: [auth]
+      summary: Alta del propietario con el código de alta (FR-008, FR-009, FR-011)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, email, password]
+              properties:
+                token: { type: string, description: 'Valor de OWNER_SETUP_TOKEN; se recortan espacios' }
+                email: { type: string, format: email, maxLength: 254 }
+                password: { type: string, minLength: 12, maxLength: 128 }
+      responses:
+        '201':
+          description: Cuenta creada y sesión iniciada
+          headers:
+            Set-Cookie: { $ref: '#/components/headers/SessionCookie' }
+          content:
+            application/json:
+              schema: { type: object, properties: { email: { type: string } } }
+        '400':
+          description: 'Email inválido o contraseña fuera de 12..128 ("La contraseña necesita al menos 12 caracteres. Prueba con una frase.")'
+        '401':
+          description: 'Código de alta incorrecto o ya usado ("Código de alta no válido"); cuenta para el límite de intentos'
+        '409':
+          description: 'El alta no está abierta (ya hay contraseña o no hay código configurado)'
+        '429': { $ref: '#/components/responses/TooManyAttempts' }
+
+  /auth/login:
+    post:
+      tags: [auth]
+      summary: Entrar (FR-001, FR-005, FR-015, FR-016)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string }
+                password: { type: string }
+      responses:
+        '200':
+          description: Sesión iniciada
+          headers:
+            Set-Cookie: { $ref: '#/components/headers/SessionCookie' }
+          content:
+            application/json:
+              schema: { type: object, properties: { email: { type: string } } }
+        '401':
+          description: Credenciales incorrectas (mismo mensaje y tiempo exista o no el email)
+          content:
+            application/json:
+              example: { error: 'Email o contraseña incorrectos' }
+        '429': { $ref: '#/components/responses/TooManyAttempts' }
+
+  /auth/logout:
+    post:
+      tags: [auth]
+      summary: Cerrar sesión e invalidarla en el servidor (FR-004)
+      responses:
+        '204':
+          description: Sesión borrada y cookie expirada (también si ya no era válida)
+
+  /export.json:
+    get:
+      tags: [export]
+      summary: Todos mis datos en JSON versionado (FR-022, FR-024)
+      security: [{ cookieAuth: [] }]
+      responses:
+        '200':
+          headers:
+            Content-Disposition:
+              schema: { type: string }
+              description: attachment; filename="descanso-AAAA-MM-DD.json"
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [format, version, exported_at, sleep_records, naps, metrics, metric_entries]
+                properties:
+                  format: { const: descanso-export }
+                  version: { const: 1 }
+                  exported_at: { type: string, format: date-time }
+                  sleep_records: { type: array, items: { type: object } }
+                  naps: { type: array, items: { type: object } }
+                  metrics: { type: array, items: { type: object } }
+                  metric_entries: { type: array, items: { type: object } }
+
+  /export/{tipo}.csv:
+    get:
+      tags: [export]
+      summary: Un CSV por tipo de dato (FR-023)
+      security: [{ cookieAuth: [] }]
+      parameters:
+        - name: tipo
+          in: path
+          required: true
+          schema: { enum: [noches, siestas, metricas, valores] }
+      responses:
+        '200':
+          description: 'CSV RFC 4180, UTF-8 con BOM, cabeceras en español'
+          headers:
+            Content-Disposition:
+              schema: { type: string }
+              description: attachment; filename="descanso-<tipo>-AAAA-MM-DD.csv"
+          content:
+            text/csv: { schema: { type: string } }
+        '404': { description: Tipo desconocido }
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: __Host-sid
+      description: En HTTP local la cookie se llama `sid` (sin Secure). Caducidad deslizante de 30 días.
+  headers:
+    SessionCookie:
+      schema: { type: string }
+      description: '__Host-sid=<id>; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000'
+  responses:
+    TooManyAttempts:
+      description: 5 fallos en 15 min por IP o por email
+      headers:
+        Retry-After: { schema: { type: integer }, description: Segundos hasta poder reintentar }
+      content:
+        application/json:
+          example: { error: 'Demasiados intentos. Vuelve a intentarlo en 12 min.' }
