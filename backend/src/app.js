@@ -3,14 +3,15 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 
-require('./db'); // inicializa tablas
+require('./db'); // aplica las migraciones pendientes antes de crear la app
+const { storageStatus } = require('./storage');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 app.get('/api/health', (_req, res) =>
-  res.json({ ok: true, time: new Date().toISOString(), version: process.env.APP_VERSION || 'dev' }));
+  res.json({ ok: true, time: new Date().toISOString(), version: process.env.APP_VERSION || 'dev', storage: storageStatus() }));
 app.use('/api/sleep', require('./routes/sleep'));
 app.use('/api/naps', require('./routes/naps'));
 app.use('/api/metrics', require('./routes/metrics'));

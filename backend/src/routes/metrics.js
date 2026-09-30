@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const db = require('../db');
-const { isDate, HttpError } = require('../util');
+const { isDate, parseRange, HttpError } = require('../util');
 
 const r = Router();
 const TYPES = ['number', 'scale', 'boolean', 'text'];
@@ -30,7 +30,10 @@ function validateMetric(body) {
 function validateValue(metric, raw) {
   switch (metric.type) {
     case 'boolean':
-      return raw === true || raw === 'true' || raw === 1 || raw === '1' ? '1' : '0';
+      // Solo sí o no: antes cualquier otro valor se guardaba como "No" (DT-08)
+      if (raw === true || raw === 'true' || raw === 1 || raw === '1') return '1';
+      if (raw === false || raw === 'false' || raw === 0 || raw === '0') return '0';
+      throw new HttpError(400, 'El valor debe ser sí o no');
     case 'number':
     case 'scale': {
       const n = Number(raw);
@@ -75,7 +78,7 @@ r.delete('/:id', (req, res) => {
 
 // Registros de todas las métricas en un rango: GET /api/metrics/entries?from&to
 r.get('/entries', (req, res) => {
-  const { from, to } = req.query;
+  const { from, to } = parseRange(req.query);
   let sql = 'SELECT e.* FROM metric_entries e JOIN metrics m ON m.id = e.metric_id WHERE m.archived = 0';
   const params = [];
   if (from) { sql += ' AND e.date >= ?'; params.push(from); }

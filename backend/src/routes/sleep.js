@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const db = require('../db');
-const { isIso, isDate, durationMinutes, HttpError } = require('../util');
+const { isIso, isDate, durationMinutes, localDateOf, parseRange, HttpError } = require('../util');
 
 const r = Router();
 
@@ -26,18 +26,29 @@ function validate(body, partial = false) {
   if (out.bedtime && out.wake_time && durationMinutes(out.bedtime, out.wake_time) <= 0) {
     throw new HttpError(400, 'La hora de despertar debe ser posterior a la de dormir');
   }
+  // La fecha de la noche es el día (local) en que te acostaste: principio III, DT-04
+  if (!partial && out.date !== localDateOf(out.bedtime)) {
+    throw new HttpError(400, `La fecha de la noche debe ser ${localDateOf(out.bedtime) ?? 'el día de la hora de dormir'} (el día en que te acostaste)`);
+  }
   return out;
 }
 
-// Solo puede haber una noche abierta a la vez (FR-003)
-function assertNoOtherOpen(exceptId = null) {
-  const other = db.prepare('SELECT id FROM sleep_records WHERE wake_time IS NULL AND id IS NOT ? LIMIT 1').get(exceptId);
-  if (other) throw new HttpError(409, 'Ya hay una noche abierta. Ciérrala antes de abrir otra.');
+// Solo puede haber una noche abierta a la vez (FR-003): lo garantiza el índice ux_sleep_one_open
+// (migración 002); aquí se traduce su error a 409.
+function writeNight(fn) {
+  try {
+    return fn();
+  } catch (e) {
+    if (e.code === 'SQLITE_CONSTRAINT_UNIQUE' && e.message.includes('ux_sleep_one_open')) {
+      throw new HttpError(409, 'Ya hay una noche abierta. Ciérrala antes de abrir otra.');
+    }
+    throw e;
+  }
 }
 
 // GET /api/sleep?from=YYYY-MM-DD&to=YYYY-MM-DD
 r.get('/', (req, res) => {
-  const { from, to } = req.query;
+  const { from, to } = parseRange(req.query);
   let sql = 'SELECT * FROM sleep_records';
   const params = [];
   const where = [];
@@ -56,10 +67,11 @@ r.get('/open', (_req, res) => {
 
 r.post('/', (req, res) => {
   const d = validate(req.body);
-  if (d.wake_time == null) assertNoOtherOpen();
-  const info = db
-    .prepare('INSERT INTO sleep_records (date, bedtime, wake_time, notes) VALUES (?,?,?,?)')
-    .run(d.date, d.bedtime, d.wake_time ?? null, d.notes ?? null);
+  const info = writeNight(() =>
+    db
+      .prepare('INSERT INTO sleep_records (date, bedtime, wake_time, notes) VALUES (?,?,?,?)')
+      .run(d.date, d.bedtime, d.wake_time ?? null, d.notes ?? null),
+  );
   res.status(201).json(withDuration(db.prepare('SELECT * FROM sleep_records WHERE id = ?').get(info.lastInsertRowid)));
 });
 
@@ -78,9 +90,10 @@ r.put('/:id', (req, res) => {
   const existing = db.prepare('SELECT * FROM sleep_records WHERE id = ?').get(req.params.id);
   if (!existing) throw new HttpError(404, 'Registro no encontrado');
   const d = validate({ ...existing, ...req.body }, false);
-  if (d.wake_time == null) assertNoOtherOpen(existing.id);
-  db.prepare('UPDATE sleep_records SET date=?, bedtime=?, wake_time=?, notes=? WHERE id=?')
-    .run(d.date, d.bedtime, d.wake_time ?? null, d.notes ?? null, existing.id);
+  writeNight(() =>
+    db.prepare('UPDATE sleep_records SET date=?, bedtime=?, wake_time=?, notes=? WHERE id=?')
+      .run(d.date, d.bedtime, d.wake_time ?? null, d.notes ?? null, existing.id),
+  );
   res.json(withDuration(db.prepare('SELECT * FROM sleep_records WHERE id = ?').get(existing.id)));
 });
 

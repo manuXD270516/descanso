@@ -59,7 +59,7 @@
           @for (n of r.naps; track $index) {
             <span class="bar nap" [style.left.%]="n.x" [style.width.%]="n.w" [title]="n.text"></span>
           }
-          @if (r.sleep; as s) {
+          @for (s of r.sleeps; track $index) {
             <span class="bar sleep" [style.left.%]="s.x" [style.width.%]="s.w" [title]="s.text"></span>
           }
         </div>
@@ -78,7 +78,7 @@
     <article class="panel record">
       @if (editingId() === r.id) {
         <div class="grid-2">
-          <label class="field"><span>Fecha de la noche</span><input type="date" [(ngModel)]="edit.date"></label>
+          <label class="field"><span>Fecha de la noche</span><input type="date" readonly [value]="editNightDate()" aria-describedby="edit-date-hint"><small id="edit-date-hint" class="muted small">Se calcula con la hora en que te dormiste</small></label>
           <label class="field"><span>Notas</span><input type="text" [(ngModel)]="edit.notes"></label>
           <label class="field"><span>Me dormí</span><input type="datetime-local" [(ngModel)]="edit.bedtime"></label>
           <label class="field"><span>Desperté</span><input type="datetime-local" [(ngModel)]="edit.wake"></label>

@@ -54,7 +54,7 @@ cd ../backend && npm start        # sirve frontend/dist/frontend/browser
 | Variable        | Por defecto                         | Descripción                              |
 |-----------------|-------------------------------------|------------------------------------------|
 | `PORT`          | `3000`                              | Puerto HTTP                              |
-| `DB_PATH`       | `backend/data/sleep.db`             | Ruta del archivo SQLite                  |
+| `DB_PATH`       | `backend/data/sleep.db`             | Ruta del archivo SQLite (los respaldos previos a cada migración van a `backups/` junto a él) |
 | `FRONTEND_DIST` | `frontend/dist/frontend/browser`    | Carpeta del build de Angular a servir    |
 | `APP_VERSION`   | `dev`                               | Versión desplegada (la inyecta el pipeline en la imagen) |
 | `BACKUP_TOKEN`  | —                                   | Habilita `GET /api/admin/backup` (Bearer); sin definir, el endpoint no existe |
@@ -65,25 +65,27 @@ cd ../backend && npm start        # sirve frontend/dist/frontend/browser
 |--------|---------------------------------------|----------------------------------------------------|
 | GET    | `/api/sleep?from&to`                  | Noches (con `duration_min`)                        |
 | GET    | `/api/sleep/open`                     | Noche abierta (me acosté, aún no despierto)        |
-| POST   | `/api/sleep`                          | `{date, bedtime, wake_time?, notes?}` · 409 si ya hay una noche abierta y no se envía `wake_time` |
+| POST   | `/api/sleep`                          | `{date, bedtime, wake_time?, notes?}` · `date` = día local de `bedtime` · 409 si ya hay una noche abierta y no se envía `wake_time` |
 | POST   | `/api/sleep/wake`                     | `{wake_time}` cierra la noche abierta              |
 | PUT    | `/api/sleep/:id` · DELETE             | Editar / eliminar                                  |
 | GET    | `/api/naps?from&to`                   | Siestas                                            |
-| POST   | `/api/naps`                           | `{date, start_time, end_time, notes?}`             |
+| POST   | `/api/naps`                           | `{date, start_time, end_time, notes?}` · `date` = día local de `start_time` |
 | PUT    | `/api/naps/:id` · DELETE              | Editar / eliminar                                  |
 | GET    | `/api/metrics?all=1`                  | Métricas (activas, o todas con `all=1`)            |
 | POST   | `/api/metrics`                        | `{name, type, unit?, min_value?, max_value?, color?}` |
 | PUT    | `/api/metrics/:id` · DELETE           | Editar (incl. `archived`, `sort_order`) / eliminar |
 | GET    | `/api/metrics/entries?from&to`        | Valores registrados                                |
-| PUT    | `/api/metrics/:id/entries/:date`      | `{value}` — crea o actualiza el valor del día      |
+| PUT    | `/api/metrics/:id/entries/:date`      | `{value}` — crea o actualiza el valor del día (sí/no: solo `true`/`false`, `1`/`0`) |
 | DELETE | `/api/metrics/:id/entries/:date`      | Borra el valor del día                             |
-| GET    | `/api/stats?from&to`                  | Resumen diario + promedios (sueño, siestas, horas medias) |
-| GET    | `/api/health`                         | `{ok, time, version}` — healthcheck y versión desplegada |
+| GET    | `/api/stats?from&to`                  | Resumen diario + promedios (sueño, siestas, horas medias); `from` y `to` obligatorios |
+| GET    | `/api/health`                         | `{ok, time, version, storage}` — healthcheck, versión desplegada y ocupación del volumen (`warn` por encima del 70 %) |
 | GET    | `/api/admin/backup`                   | Copia SQLite consistente; requiere `Authorization: Bearer <BACKUP_TOKEN>` |
 
 Las horas se guardan en ISO 8601 **con offset** (ej. `2026-09-11T23:15:00-04:00`), así los
 promedios de "hora de dormir/despertar" respetan tu zona horaria sin importar dónde
 corra el servidor. El frontend lo hace automáticamente.
+
+Los filtros `from`/`to` deben ser fechas reales `AAAA-MM-DD` con `from ≤ to`; si no, la API responde 400.
 
 ## Tests y lint
 
@@ -129,10 +131,10 @@ primera petición, que tarda unos segundos. Se paga por uso, a mes vencido, más
 Configuración única (con [`flyctl`](https://fly.io/docs/flyctl/install/)):
 
 ```bash
-fly apps create descanso-sleep
-fly volumes create descanso_data --size 1 --region gru --app descanso-sleep
-fly secrets set BACKUP_TOKEN=<token> --stage --app descanso-sleep   # token: openssl rand -hex 32
-fly tokens create deploy --app descanso-sleep                         # → secreto FLY_API_TOKEN en GitHub
+flyctl apps create descanso-sleep
+flyctl volumes create descanso_data --size 1 --region gru --app descanso-sleep
+flyctl secrets set BACKUP_TOKEN=<token> --stage --app descanso-sleep   # token: openssl rand -hex 32
+flyctl tokens create deploy --app descanso-sleep                         # → secreto FLY_API_TOKEN en GitHub
 ```
 
 Después carga en GitHub (Settings → Secrets → Actions) los secretos listados en
@@ -150,6 +152,16 @@ El workflow **Backup** corre a diario (03:17 UTC) y también se puede lanzar a m
 4. borra las copias de más de 14 días.
 
 Para restaurar, sigue [`docs/runbooks/restaurar-respaldo.md`](docs/runbooks/restaurar-respaldo.md).
+
+### Migraciones
+
+El esquema de la base se versiona en `backend/src/migrations/` y se aplica **solo al arrancar**,
+antes de atender peticiones. Antes de aplicar migraciones pendientes se guarda una copia en
+`backups/pre-NNN.db` junto a la base (en Fly, `/data/backups/`); se conservan las 3 últimas. Si
+una migración falla, se deshace, el servicio no arranca y el pipeline vuelve a la imagen anterior.
+
+- Cómo escribir una migración (regla expand/contract): [`docs/sdd/guia-migraciones.md`](docs/sdd/guia-migraciones.md).
+- Qué hacer si una migración deja la base mal: [`docs/runbooks/rollback-migracion.md`](docs/runbooks/rollback-migracion.md).
 
 ### Opción B — Railway / Fly.io / VPS con Docker
 
@@ -170,6 +182,6 @@ cd ../backend && npm ci && PORT=80 DB_PATH=/var/lib/descanso/sleep.db npm start
 ## Notas
 
 - La "fecha de la noche" es el día en que te acostaste (una noche del 11 al 12 se guarda como `2026-09-11`).
-- Solo puede haber una noche abierta a la vez (la API responde 409 si se intenta abrir otra); "Ya desperté" la cierra.
-- Al primer arranque se crean tres métricas de ejemplo (Calidad del sueño, Energía al despertar, Cafés). Puedes editarlas, archivarlas o eliminarlas desde el panel.
+- Solo puede haber una noche abierta a la vez (lo garantiza la base; la API responde 409 si se intenta abrir otra); "Ya desperté" la cierra.
+- Al crear la base se añaden tres métricas de ejemplo (Calidad del sueño, Energía al despertar, Cafés). Puedes editarlas, archivarlas o eliminarlas desde el panel.
 - Archivar una métrica la oculta sin borrar el historial; eliminar borra también sus registros.

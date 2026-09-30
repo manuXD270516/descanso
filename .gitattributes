@@ -1,0 +1,2 @@
+# Las migraciones se versionan con huella (checksum): mismo contenido en Windows y Linux
+backend/src/migrations/* text eol=lf

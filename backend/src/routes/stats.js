@@ -1,12 +1,12 @@
 const { Router } = require('express');
 const db = require('../db');
-const { durationMinutes } = require('../util');
+const { durationMinutes, parseRange, circularAvg } = require('../util');
 
 const r = Router();
 
 // GET /api/stats?from=YYYY-MM-DD&to=YYYY-MM-DD  → resumen diario + promedios
 r.get('/', (req, res) => {
-  const { from, to } = req.query;
+  const { from, to } = parseRange(req.query, { required: true });
   const sleep = db.prepare('SELECT * FROM sleep_records WHERE wake_time IS NOT NULL AND date >= ? AND date <= ?').all(from, to);
   const naps = db.prepare('SELECT * FROM naps WHERE date >= ? AND date <= ?').all(from, to);
 
@@ -34,16 +34,6 @@ r.get('/', (req, res) => {
     const m = iso.match(/T(\d{2}):(\d{2})/);
     return m ? Number(m[1]) * 60 + Number(m[2]) : null;
   };
-  const circularAvg = (values) => {
-    if (!values.length) return null;
-    const rad = values.map((v) => (v / 1440) * 2 * Math.PI);
-    const x = rad.reduce((s, a) => s + Math.cos(a), 0) / rad.length;
-    const y = rad.reduce((s, a) => s + Math.sin(a), 0) / rad.length;
-    let ang = Math.atan2(y, x);
-    if (ang < 0) ang += 2 * Math.PI;
-    return Math.round((ang / (2 * Math.PI)) * 1440);
-  };
-
   res.json({
     days: list,
     summary: {

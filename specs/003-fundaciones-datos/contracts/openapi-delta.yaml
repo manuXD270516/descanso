@@ -1,0 +1,189 @@
+openapi: 3.1.0
+info:
+  title: Descanso API — cambios de la feature 003
+  version: 1.2.0
+  description: |
+    Cambios sobre specs/001-linea-base/contracts/openapi.yaml y
+    specs/002-pipeline-ci-cd/contracts/openapi-delta.yaml. Todo lo demás no cambia.
+    Todos los cambios son compatibles hacia atrás para clientes correctos: solo se añaden campos
+    de respuesta y se rechazan entradas que antes se guardaban mal o daban 500.
+servers:
+  - url: /api
+
+paths:
+  /health:
+    get:
+      tags: [health]
+      summary: Chequeo de salud con versión y estado del almacenamiento (FR-023, FR-024)
+      description: Siempre 200 mientras el servicio atiende; el aviso de almacenamiento no lo hace fallar.
+      responses:
+        '200':
+          description: Servicio operativo
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, time, version, storage]
+                properties:
+                  ok: { type: boolean, const: true }
+                  time: { type: string, format: date-time }
+                  version: { type: string }
+                  storage:
+                    type: object
+                    required: [status, used_pct]
+                    properties:
+                      status: { type: string, enum: [ok, warn, unknown] }
+                      used_pct:
+                        type: [integer, 'null']
+                        minimum: 0
+                        maximum: 100
+                        description: Porcentaje de uso del volumen donde vive la base; null si no se puede medir.
+              examples:
+                aviso:
+                  value: { ok: true, time: '2026-09-29T12:00:00.000Z', version: 'dev', storage: { status: warn, used_pct: 74 } }
+
+  /stats:
+    get:
+      tags: [stats]
+      summary: Resumen del rango — from y to pasan a ser obligatorios (DT-02, FR-013)
+      parameters:
+        - $ref: '#/components/parameters/FromRequired'
+        - $ref: '#/components/parameters/ToRequired'
+      responses:
+        '200':
+          description: Igual que en 001. `summary.avg_bedtime_min` y `summary.avg_wake_min` están siempre en 0..1439 o null (DT-21, FR-018).
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /sleep:
+    get:
+      tags: [sleep]
+      summary: Lista de noches — from/to validados (DT-03, FR-014)
+      parameters:
+        - $ref: '#/components/parameters/FromOptional'
+        - $ref: '#/components/parameters/ToOptional'
+      responses:
+        '400': { $ref: '#/components/responses/BadRequest' }
+    post:
+      tags: [sleep]
+      summary: Crear noche — date debe ser el día local de bedtime (DT-04, FR-015)
+      responses:
+        '400':
+          description: Además de los casos de 001, `date` distinta del día local de `bedtime`.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+              example: { error: 'La fecha de la noche debe ser 2026-09-05 (el día en que te acostaste)' }
+        '409':
+          description: |
+            Ya hay una noche abierta (sin cambios de mensaje). Ahora también lo garantiza la base
+            con un índice único parcial (FR-019).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+              example: { error: 'Ya hay una noche abierta. Ciérrala antes de abrir otra.' }
+
+  /sleep/{id}:
+    put:
+      tags: [sleep]
+      summary: Editar noche — mismas reglas de date y noche abierta que POST
+      responses:
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /naps:
+    get:
+      tags: [naps]
+      summary: Lista de siestas — from/to validados (DT-03)
+      parameters:
+        - $ref: '#/components/parameters/FromOptional'
+        - $ref: '#/components/parameters/ToOptional'
+      responses:
+        '400': { $ref: '#/components/responses/BadRequest' }
+    post:
+      tags: [naps]
+      summary: Crear siesta — date debe ser el día local de start_time (DT-04)
+      responses:
+        '400':
+          description: Además de los casos de 001, `date` distinta del día local de `start_time`.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+              example: { error: 'La fecha de la siesta debe ser 2026-09-06 (el día en que empezó)' }
+
+  /naps/{id}:
+    put:
+      tags: [naps]
+      summary: Editar siesta — misma regla de date que POST
+      responses:
+        '400': { $ref: '#/components/responses/BadRequest' }
+
+  /metrics/entries:
+    get:
+      tags: [metrics]
+      summary: Valores de métricas — from/to validados (DT-03)
+      parameters:
+        - $ref: '#/components/parameters/FromOptional'
+        - $ref: '#/components/parameters/ToOptional'
+      responses:
+        '400': { $ref: '#/components/responses/BadRequest' }
+
+  /metrics/{id}/entries/{date}:
+    put:
+      tags: [metrics]
+      summary: Guardar valor — en métricas sí/no solo se aceptan valores sí/no (DT-08, FR-016)
+      description: |
+        Sí: true, "true", 1, "1" → se guarda "1". No: false, "false", 0, "0" → se guarda "0".
+        Cualquier otro valor → 400. `date` debe ser una fecha real de calendario.
+      responses:
+        '400':
+          description: Valor no booleano en una métrica sí/no, o fecha inválida.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+              example: { error: 'El valor debe ser sí o no' }
+
+components:
+  parameters:
+    FromOptional:
+      name: from
+      in: query
+      required: false
+      schema: { type: string, format: date }
+      description: Fecha real de calendario AAAA-MM-DD (se rechaza 2026-02-30). Debe ser ≤ to.
+    ToOptional:
+      name: to
+      in: query
+      required: false
+      schema: { type: string, format: date }
+    FromRequired:
+      name: from
+      in: query
+      required: true
+      schema: { type: string, format: date }
+    ToRequired:
+      name: to
+      in: query
+      required: true
+      schema: { type: string, format: date }
+  schemas:
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string, description: Mensaje en español para el usuario }
+  responses:
+    BadRequest:
+      description: Petición inválida (nunca 500 por parámetros mal formados)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+          examples:
+            rango: { value: { error: 'from y to son obligatorios (AAAA-MM-DD)' } }
+            fecha: { value: { error: 'from debe ser una fecha AAAA-MM-DD válida' } }
+            orden: { value: { error: 'from no puede ser posterior a to' } }
+    Conflict:
+      description: Ya hay una noche abierta
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }

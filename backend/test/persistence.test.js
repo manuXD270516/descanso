@@ -12,7 +12,9 @@ const dbModule = path.join(__dirname, '..', 'src', 'db.js');
 function run(body) {
   const script = `const db = require(${JSON.stringify(dbModule)});\n${body}`;
   const out = execFileSync(process.execPath, ['-e', script], { env: { ...process.env, DB_PATH: dbFile }, encoding: 'utf8' });
-  return out.trim() ? JSON.parse(out) : null;
+  // La última línea es el JSON; antes puede aparecer el log de migraciones
+  const last = out.trim().split('\n').pop();
+  return last ? JSON.parse(last) : null;
 }
 
 const READ_ALL = `process.stdout.write(JSON.stringify({
