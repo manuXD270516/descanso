@@ -12,9 +12,10 @@ const params = () => (process.env.NODE_ENV === 'test' ? TESTING : PRODUCTION);
 
 // Semáforo de concurrencia 1: cola de promesas
 let queue = Promise.resolve();
-const stats = { active: 0, maxActive: 0 };
+const stats = { active: 0, maxActive: 0, calls: 0, lastParams: null };
 function serial(fn) {
   const run = queue.then(async () => {
+    stats.calls++;
     stats.active++;
     stats.maxActive = Math.max(stats.maxActive, stats.active);
     try {
@@ -30,9 +31,10 @@ function serial(fn) {
 const scrypt = (password, salt, { N, r, p }) =>
   serial(
     () =>
-      new Promise((resolve, reject) =>
-        crypto.scrypt(password.normalize('NFC'), salt, KEYLEN, { N, r, p, maxmem: MAXMEM }, (err, key) => (err ? reject(err) : resolve(key))),
-      ),
+      new Promise((resolve, reject) => {
+        stats.lastParams = { N, r, p };
+        crypto.scrypt(password.normalize('NFC'), salt, KEYLEN, { N, r, p, maxmem: MAXMEM }, (err, key) => (err ? reject(err) : resolve(key)));
+      }),
   );
 
 async function hashPassword(password) {

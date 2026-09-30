@@ -36,12 +36,18 @@ test('nunca se calcula más de un hash a la vez (semáforo)', async () => {
   assert.equal(_stats.maxActive, 1);
 });
 
-test('verifyDummy devuelve false y tarda del orden de un verify real (no revela emails)', async () => {
+// Determinista (medir milisegundos es inestable en CI): verifyDummy hace el mismo trabajo que un
+// verify real, un único scrypt con los mismos parámetros, así que tarda lo mismo.
+test('verifyDummy devuelve false y hace el mismo trabajo que un verify real (no revela emails)', async () => {
   const h = await hashPassword('una frase bastante larga');
-  await verifyDummy('calentar');
-  const time = async (fn) => { const t = performance.now(); await fn(); return performance.now() - t; };
-  const real = await time(() => verifyPassword('una frase bastante larga', h));
-  const fake = await time(() => verifyDummy('una frase bastante larga'));
+  const work = async (fn) => {
+    const before = _stats.calls;
+    await fn();
+    return { calls: _stats.calls - before, params: _stats.lastParams };
+  };
+  const real = await work(() => verifyPassword('una frase bastante larga', h));
+  const fake = await work(() => verifyDummy('una frase bastante larga'));
+  assert.deepEqual(fake, real);
+  assert.equal(real.calls, 1);
   assert.equal(await verifyDummy('lo que sea'), false);
-  assert.ok(fake > real * 0.5 && fake < real * 2 + 5, `real ${real.toFixed(1)} ms, ficticio ${fake.toFixed(1)} ms`);
 });
