@@ -58,11 +58,21 @@ cd ../backend && npm start        # sirve frontend/dist/frontend/browser
 | `FRONTEND_DIST` | `frontend/dist/frontend/browser`    | Carpeta del build de Angular a servir    |
 | `APP_VERSION`   | `dev`                               | Versión desplegada (la inyecta el pipeline en la imagen) |
 | `BACKUP_TOKEN`  | —                                   | Habilita `GET /api/admin/backup` (Bearer); sin definir, el endpoint no existe |
+| `OWNER_SETUP_TOKEN` | —                               | Código de alta del propietario. Si cambia al arrancar, reabre el alta y cierra las sesiones ([recuperar acceso](docs/runbooks/recuperar-acceso.md)) |
 
 ## API
 
+**Toda la API exige sesión** (cookie `__Host-sid` en HTTPS, `sid` en local) salvo `/api/health`,
+`/api/auth/*` y `/api/admin/*` (token Bearer). Sin sesión responde 401. Las peticiones que
+modifican datos deben venir del propio sitio (`Sec-Fetch-Site`/`Origin`); si no, 403.
+
 | Método | Ruta                                  | Descripción                                        |
 |--------|---------------------------------------|----------------------------------------------------|
+| GET    | `/api/auth/status`                    | `setup` · `setup-unavailable` · `login` · `authenticated` |
+| POST   | `/api/auth/setup`                     | `{token, email, password}` alta del propietario (contraseña de 12 a 128 caracteres) |
+| POST   | `/api/auth/login` · `/api/auth/logout` | Entrar (5 fallos en 15 min → 429) / cerrar sesión   |
+| GET    | `/api/export.json`                    | Todos mis datos en JSON versionado                 |
+| GET    | `/api/export/{noches,siestas,metricas,valores}.csv` | Un CSV por tipo (UTF-8 con BOM)      |
 | GET    | `/api/sleep?from&to`                  | Noches (con `duration_min`)                        |
 | GET    | `/api/sleep/open`                     | Noche abierta (me acosté, aún no despierto)        |
 | POST   | `/api/sleep`                          | `{date, bedtime, wake_time?, notes?}` · `date` = día local de `bedtime` · 409 si ya hay una noche abierta y no se envía `wake_time` |
@@ -134,8 +144,13 @@ Configuración única (con [`flyctl`](https://fly.io/docs/flyctl/install/)):
 flyctl apps create descanso-sleep
 flyctl volumes create descanso_data --size 1 --region gru --app descanso-sleep
 flyctl secrets set BACKUP_TOKEN=<token> --stage --app descanso-sleep   # token: openssl rand -hex 32
+flyctl secrets set OWNER_SETUP_TOKEN=<código> --stage --app descanso-sleep   # código de alta del propietario
 flyctl tokens create deploy --app descanso-sleep                         # → secreto FLY_API_TOKEN en GitHub
 ```
+
+**Primer acceso**: tras el despliegue, abre la app → "Crea tu contraseña" → pega el código de alta,
+tu email y una contraseña (mínimo 12 caracteres). Si la olvidas, sigue
+[`docs/runbooks/recuperar-acceso.md`](docs/runbooks/recuperar-acceso.md).
 
 Después carga en GitHub (Settings → Secrets → Actions) los secretos listados en
 [`specs/002-pipeline-ci-cd/contracts/pipeline.md`](specs/002-pipeline-ci-cd/contracts/pipeline.md)

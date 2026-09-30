@@ -89,7 +89,7 @@
 - [X] T027 [P] [US3] Tests de `backend/src/auth/rate-limit.js` en `backend/test/rate-limit.test.js` (reloj inyectable): 5 fallos por IP (`Fly-Client-IP`) o por email → el 6.º intento es 429 con `Retry-After`, aunque la contraseña sea correcta; pasados 15 min se libera; un acierto limpia el email; límite de 10.000 claves
 - [X] T028 [US3] Implementar `backend/src/auth/rate-limit.js` (R5) y aplicarlo en `/login` y `/setup`
 - [X] T029 [US3] Implementar `csrf` y `securityHeaders` en `backend/src/auth/middleware.js` (R8, R9), montarlos en `backend/src/app.js` y activar `app.set('trust proxy', 1)`
-- [ ] T030 [US3] Crear `scripts/smoke-login-mem.mjs`: construye la imagen, `docker run --memory=256m` con `OWNER_SETUP_TOKEN`, alta, 10 logins concurrentes, pico de `docker stats` < 200 MB y todas las respuestas recibidas (SC-005); además, con `--cpus=1`, mide 5 logins secuenciales y comprueba que cada uno tarda < 1 s (SC-006); ejecutarlo y anotar el resultado
+- [X] T030 [US3] Crear `scripts/smoke-login-mem.mjs`: construye la imagen, `docker run --memory=256m` con `OWNER_SETUP_TOKEN`, alta, 10 logins concurrentes, pico de `docker stats` < 200 MB y todas las respuestas recibidas (SC-005); además, con `--cpus=1`, mide 5 logins secuenciales y comprueba que cada uno tarda < 1 s (SC-006); ejecutarlo y anotar el resultado
 
 ---
 
@@ -105,10 +105,10 @@
 
 ## Phase 8: Polish & Cross-Cutting Concerns
 
-- [ ] T034 [P] `docs/runbooks/recuperar-acceso.md`: generar un código (`openssl rand -hex 32`), `flyctl secrets set OWNER_SETUP_TOKEN=… --app descanso-sleep` (o el panel web), reinicio y alta; efecto (se cierran todas las sesiones)
-- [ ] T035 [P] Actualizar `README.md`: autenticación, `OWNER_SETUP_TOKEN` en variables de entorno, rutas `/api/auth/*` y `/api/export*`, 401 por defecto, primer despliegue (configurar el secreto antes de fusionar) y enlace al runbook
-- [ ] T036 [P] Marcar DT-17 como resuelta por 004 en `specs/001-linea-base/research.md`
-- [ ] T037 Ejecutar quickstart §1–§5 y las puertas de calidad; anotar resultados en el PR. Tras el despliegue (quickstart §6): medir el tiempo de login en producción (SC-006) y ensayar la recuperación con el runbook de T034, cronometrada (< 5 min, SC-008)
+- [X] T034 [P] `docs/runbooks/recuperar-acceso.md`: generar un código (`openssl rand -hex 32`), `flyctl secrets set OWNER_SETUP_TOKEN=… --app descanso-sleep` (o el panel web), reinicio y alta; efecto (se cierran todas las sesiones)
+- [X] T035 [P] Actualizar `README.md`: autenticación, `OWNER_SETUP_TOKEN` en variables de entorno, rutas `/api/auth/*` y `/api/export*`, 401 por defecto, primer despliegue (configurar el secreto antes de fusionar) y enlace al runbook
+- [X] T036 [P] Marcar DT-17 como resuelta por 004 en `specs/001-linea-base/research.md`
+- [X] T037 Ejecutar quickstart §1–§5 y las puertas de calidad; anotar resultados en el PR. Tras el despliegue (quickstart §6): medir el tiempo de login en producción (SC-006) y ensayar la recuperación con el runbook de T034, cronometrada (< 5 min, SC-008)
 
 ---
 
