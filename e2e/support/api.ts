@@ -1,5 +1,5 @@
 import { expect, type APIRequestContext, type APIResponse } from '@playwright/test';
-import { OFFSET } from './env';
+import { OFFSET, OWNER_EMAIL, OWNER_PASSWORD, SETUP_TOKEN } from './env';
 
 /** "2026-09-07T23:40" → "2026-09-07T23:40:00-04:00" (hora local de los tests con su offset). */
 export const iso = (local: string) => `${local}:00${OFFSET}`;
@@ -54,6 +54,20 @@ async function json<T>(res: APIResponse): Promise<T> {
  */
 export class Api {
   constructor(readonly request: APIRequestContext) {}
+
+  /** Alta del propietario con el código de alta (409 si ya existía, y se ignora). */
+  async setupOwner(email = OWNER_EMAIL, password = OWNER_PASSWORD, token = SETUP_TOKEN) {
+    const res = await this.request.post('/api/auth/setup', { data: { token, email, password } });
+    expect([201, 409], `${res.status()} ${await res.text()}`).toContain(res.status());
+  }
+  /** Da de alta al propietario si hace falta y entra: la cookie queda en este cliente. */
+  async signIn(email = OWNER_EMAIL, password = OWNER_PASSWORD) {
+    await this.setupOwner(email, password);
+    await this.request.post('/api/auth/login', { data: { email, password } }).then(json<{ email: string }>);
+  }
+  status() {
+    return this.request.get('/api/auth/status').then(json<{ state: string; nights?: number; email?: string }>);
+  }
 
   /** Noche con horas locales "YYYY-MM-DDTHH:mm"; la fecha de noche es el día de acostarse. */
   createNight(bed: string, wake?: string, notes?: string) {

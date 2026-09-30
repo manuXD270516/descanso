@@ -40,7 +40,8 @@ test.describe('Accesibilidad básica (servidor compartido, solo lectura)', () =>
       // La lista puede volver a pintarse al llegar los datos: si un índice desaparece,
       // toPass vuelve a tomar la foto de los controles en lugar de fallar.
       await expect(async () => {
-        const controls = await page.locator('button, input').all();
+        // Solo los visibles: los del menú Cuenta cerrado no están en el árbol de accesibilidad
+        const controls = await page.locator('button:visible, input:visible').all();
         expect(controls.length, `sin controles en ${tab}`).toBeGreaterThan(0);
         for (const control of controls) {
           await expect(control, `control sin nombre en ${tab}`).toHaveAccessibleName(/\S/, { timeout: 1_000 });
@@ -66,6 +67,9 @@ test.describe('Accesibilidad básica (servidor compartido, solo lectura)', () =>
     // El foco sigue al contenido: Métricas y luego el primer campo del formulario
     await page.keyboard.press('Tab');
     await expect(nav.getByRole('button', { name: 'Métricas' })).toBeFocused();
+    await page.keyboard.press('Tab');
+    // Feature 004: el menú Cuenta va tras las pestañas
+    await expect(page.getByText('Cuenta', { exact: true })).toBeFocused();
     await page.keyboard.press('Tab');
     await expect(page.getByLabel('Inicio', { exact: true })).toBeFocused();
     expect(await focusOutline(page)).toBe('solid 2px');

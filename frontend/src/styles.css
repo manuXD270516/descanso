@@ -46,7 +46,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   outline-offset: 2px;
 }
 
-input[type="datetime-local"], input[type="date"], input[type="text"], input[type="number"], select, textarea {
+input[type="datetime-local"], input[type="date"], input[type="text"], input[type="number"], input[type="email"], input[type="password"], select, textarea {
   width: 100%;
   background: var(--night);
   border: 1px solid var(--line);

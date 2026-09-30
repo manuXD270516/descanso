@@ -1,0 +1,20 @@
+<section class="panel auth-card">
+  <h2>Entrar</h2>
+  <p class="muted small">Tus datos de sueño son privados: entra con tu cuenta.</p>
+
+  @if (error()) {
+    <p class="error" role="alert" tabindex="-1" #errorMsg>{{ error() }}</p>
+  }
+
+  <form (ngSubmit)="submit()" class="auth-form">
+    <label class="field"><span>Email</span>
+      <input type="email" name="email" [(ngModel)]="email" autocomplete="username" required>
+    </label>
+    <label class="field"><span>Contraseña</span>
+      <input type="password" name="password" [(ngModel)]="password" autocomplete="current-password" required>
+    </label>
+    <button class="btn btn-moon" type="submit" [disabled]="busy() || !email || !password">
+      {{ busy() ? 'Entrando…' : 'Entrar' }}
+    </button>
+  </form>
+</section>

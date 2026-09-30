@@ -16,6 +16,7 @@ app.get('/api/health', (_req, res) =>
   res.json({ ok: true, time: new Date().toISOString(), version: process.env.APP_VERSION || 'dev', storage: storageStatus() }));
 // Respaldo para el pipeline: deshabilitado (404) si no hay token configurado
 if (process.env.BACKUP_TOKEN) app.use('/api/admin', require('./routes/admin'));
+else app.use('/api/admin', (_req, res) => res.status(404).json({ error: 'No encontrado' })); // contrato de 002, también sin sesión
 
 // El resto de la API: escrituras solo desde el propio sitio y, salvo /auth, con sesión (feature 004)
 app.use('/api', csrf);

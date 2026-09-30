@@ -71,11 +71,11 @@
 - [X] T017 [US1] Implementar `backend/src/auth/sessions.js` (R2, R3) y `POST /login` + `POST /logout` en `backend/src/routes/auth.js`
 - [X] T018 [US1] Implementar `requireAuth` en `backend/src/auth/middleware.js` y montarlo en `backend/src/app.js` para `/api/*` excepto `/api/health`, `/api/auth/*` y `/api/admin/*`; `req.user` = `{ id, email }`
 - [X] T019 [US1] Adaptar `backend/test/helpers.js`: `OWNER_SETUP_TOKEN=test-token`, `NODE_ENV=test`, `bootstrap()` + alta una vez por proceso; `api` = `supertest.agent` con la cookie y `Sec-Fetch-Site: same-origin`; `anon` sin sesión. Confirmar que los 103 tests existentes pasan sin cambios de expectativas
-- [ ] T021 [P] [US1] Frontend: `core/auth.service.ts` (+ spec) con `status` signal, `login`, `setup`, `logout`; `core/auth.interceptor.ts` que marca `login` ante un 401 de `/api/*` salvo `/api/auth/*`; registrarlo en `app.config.ts` con `withInterceptors`
-- [ ] T022 [P] [US1] Frontend: `features/auth/login.component.*` (+ spec) con `autocomplete="username"`/`current-password`, error `role="alert"` con foco, botón deshabilitado mientras envía; y `features/auth/setup.component.*` (+ spec) con código (`autocomplete="off"`, tipo password), email, contraseña (`new-password`, mínimo 12, texto de ayuda "Usa una frase de 3–4 palabras"), "Tus N noches están a salvo" y la pantalla `setup-unavailable` con instrucciones sin datos
-- [ ] T023 [US1] Frontend: en `app.ts/app.html/app.css`, compuerta según `status` (setup / no disponible / login / app), conservar la pestaña al volver de "Entrar" (Noche por defecto), y menú "Cuenta" (`<details>`) con email, exportaciones (US5) y "Cerrar sesión"; actualizar `app.spec.ts`
-- [ ] T024 [US1] E2E: `e2e/support/server.ts` pasa `OWNER_SETUP_TOKEN`; `e2e/support/fixtures.ts` y `api.ts` hacen el alta o entran por API enviando `Origin` y añaden la cookie al contexto del navegador; la suite existente pasa sin cambios de expectativas
-- [ ] T025 [US1] E2E `e2e/tests/acceso.spec.ts`: alta desde la UI en un servidor aislado; entrar y salir; sin sesión no se ven datos; con sesión, "Me voy a dormir" y "Ya desperté" funcionan sin pedir contraseña (FR-006); con una noche abierta y la sesión caducada (borrar la cookie) → tras entrar se ve "Ya desperté" (US1-4)
+- [X] T021 [P] [US1] Frontend: `core/auth.service.ts` (+ spec) con `status` signal, `login`, `setup`, `logout`; `core/auth.interceptor.ts` que marca `login` ante un 401 de `/api/*` salvo `/api/auth/*`; registrarlo en `app.config.ts` con `withInterceptors`
+- [X] T022 [P] [US1] Frontend: `features/auth/login.component.*` (+ spec) con `autocomplete="username"`/`current-password`, error `role="alert"` con foco, botón deshabilitado mientras envía; y `features/auth/setup.component.*` (+ spec) con código (`autocomplete="off"`, tipo password), email, contraseña (`new-password`, mínimo 12, texto de ayuda "Usa una frase de 3–4 palabras"), "Tus N noches están a salvo" y la pantalla `setup-unavailable` con instrucciones sin datos
+- [X] T023 [US1] Frontend: en `app.ts/app.html/app.css`, compuerta según `status` (setup / no disponible / login / app), conservar la pestaña al volver de "Entrar" (Noche por defecto), y menú "Cuenta" (`<details>`) con email, exportaciones (US5) y "Cerrar sesión"; actualizar `app.spec.ts`
+- [X] T024 [US1] E2E: `e2e/support/server.ts` pasa `OWNER_SETUP_TOKEN`; `e2e/support/fixtures.ts` y `api.ts` hacen el alta o entran por API enviando `Origin` y añaden la cookie al contexto del navegador; la suite existente pasa sin cambios de expectativas
+- [X] T025 [US1] E2E `e2e/tests/acceso.spec.ts`: alta desde la UI en un servidor aislado; entrar y salir; sin sesión no se ven datos; con sesión, "Me voy a dormir" y "Ya desperté" funcionan sin pedir contraseña (FR-006); con una noche abierta y la sesión caducada (borrar la cookie) → tras entrar se ve "Ya desperté" (US1-4)
 
 **Checkpoint**: MVP; la app ya no es pública.
 
@@ -99,7 +99,7 @@
 
 - [X] T031 [P] [US5] Crear `backend/test/fixtures/import-export.js` (`importExport(db, json)`) y `backend/test/export.test.js`: el JSON tiene `format`, `version: 1`, `exported_at` y las 4 colecciones; no contiene `password`, `session`, `token` ni `users`; reconstruir una base vacía desde él da recuentos idénticos (SC-007); cada CSV empieza por BOM, tiene cabeceras en español, escapa comas, comillas y saltos de línea (RFC 4180) y tiene tantas filas como registros; tipo desconocido → 404; sin sesión → 401; 10 años en < 5 s
 - [X] T032 [US5] Implementar `backend/src/routes/export.js` (R10) y montarlo en `/api`
-- [ ] T033 [US5] Frontend: enlaces de exportación en el menú Cuenta (`download`), con test de componente de sus `href`
+- [X] T033 [US5] Frontend: enlaces de exportación en el menú Cuenta (`download`), con test de componente de sus `href`
 
 ---
 

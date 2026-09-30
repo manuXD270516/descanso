@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { SHARED_PORT, SHARED_URL, TIMEZONE } from './support/env';
+import { SETUP_TOKEN, SHARED_PORT, SHARED_URL, TIMEZONE } from './support/env';
 
 const CI = !!process.env.CI;
 
@@ -59,6 +59,7 @@ export default defineConfig({
       // Vacías = sin versión inyectada ("dev") y sin endpoint de respaldo
       APP_VERSION: '',
       BACKUP_TOKEN: '',
+      OWNER_SETUP_TOKEN: SETUP_TOKEN, // feature 004: el fixture da de alta al propietario
     },
   },
 });
