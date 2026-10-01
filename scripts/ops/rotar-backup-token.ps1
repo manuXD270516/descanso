@@ -7,7 +7,8 @@
   Pasos trazados (consola + log con marca de tiempo):
     1. requisitos: fly/flyctl, gh y curl instalados y con sesión iniciada
     2. genera 32 bytes aleatorios en hexadecimal (equivale a `openssl rand -hex 32`)
-    3. Fly:    `fly secrets import` (reinicia la máquina para aplicarlo)
+    3. Fly:    `fly secrets import` (reinicia la máquina para aplicarlo; reintenta si el host no
+               tiene capacidad)
     4. GitHub: `gh secret set --env-file -`
     5. verifica GET /api/admin/backup con el token (reintenta mientras la máquina arranca)
        y comprueba que la copia descargada es un SQLite
@@ -22,10 +23,14 @@ param(
   [string]$App = 'descanso-sleep',
   [string]$Repo = 'manuXD270516/descanso',
   [string]$Url = 'https://descanso-sleep.fly.dev',
-  [int]$VerifyTimeoutSec = 90
+  [int]$VerifyTimeoutSec = 90,
+  [int]$FlyAttempts = 4,
+  [int]$FlyRetryDelaySec = 30
 )
 
 $ErrorActionPreference = 'Stop'
+# flyctl y gh escriben UTF-8: sin esto PowerShell muestra "Γ£û" en lugar de "✖"
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 $LogFile = Join-Path ([System.IO.Path]::GetTempPath()) "rotar-backup-token-$stamp.log"
 $CheckFile = Join-Path ([System.IO.Path]::GetTempPath()) "descanso-check-$stamp.db"
@@ -64,8 +69,17 @@ try {
   Log 'OK' "Token generado ($($token.Length) caracteres hex; no se muestra)"
 
   Step "3/5 Cargar en Fly ($App) · reinicia la máquina"
-  "BACKUP_TOKEN=$token" | & $fly.Source secrets import --app $App 2>&1 | ForEach-Object { Log 'INFO' "  fly: $_" }
-  if ($LASTEXITCODE -ne 0) { Fail 'fly secrets import falló: no se cambió nada en GitHub.' }
+  # Si el host no tiene capacidad para reiniciar la máquina, Fly deja el secreto en "Staged" y suele
+  # migrarla a otro host: se reintenta con el mismo token para que Fly y GitHub no queden distintos.
+  for ($attempt = 1; ; $attempt++) {
+    "BACKUP_TOKEN=$token" | & $fly.Source secrets import --app $App 2>&1 | ForEach-Object { Log 'INFO' "  fly: $_" }
+    if ($LASTEXITCODE -eq 0) { break }
+    if ($attempt -ge $FlyAttempts) {
+      Fail "fly secrets import falló $attempt veces: el token nuevo puede quedar como Staged en Fly, GitHub no cambió y la app sigue con el anterior. Vuelve a ejecutar el script."
+    }
+    Log 'WARN' "Intento $attempt de $FlyAttempts falló; reintento en $FlyRetryDelaySec s con el mismo token"
+    Start-Sleep -Seconds $FlyRetryDelaySec
+  }
   Log 'OK' 'Fly actualizado'
 
   Step "4/5 Cargar en GitHub ($Repo)"

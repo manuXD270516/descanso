@@ -4,7 +4,8 @@
 # Pasos trazados (consola + log con marca de tiempo):
 #   1. requisitos: fly/flyctl, gh, curl y openssl instalados y con sesión iniciada
 #   2. genera 32 bytes aleatorios en hexadecimal (openssl rand -hex 32)
-#   3. Fly:    `fly secrets import` (reinicia la máquina para aplicarlo)
+#   3. Fly:    `fly secrets import` (reinicia la máquina para aplicarlo; reintenta si el host no
+#              tiene capacidad)
 #   4. GitHub: `gh secret set --env-file -`
 #   5. verifica GET /api/admin/backup con el token (reintenta mientras la máquina arranca)
 #      y comprueba que la copia descargada es un SQLite
@@ -13,13 +14,15 @@
 # Si falla a mitad, vuelve a ejecutarlo: genera otro token y deja ambos lados iguales.
 #
 # Uso: scripts/ops/rotar-backup-token.sh
-# Variables opcionales: APP, REPO, URL, VERIFY_TIMEOUT_SEC
+# Variables opcionales: APP, REPO, URL, VERIFY_TIMEOUT_SEC, FLY_ATTEMPTS, FLY_RETRY_DELAY_SEC
 set -euo pipefail
 
 APP="${APP:-descanso-sleep}"
 REPO="${REPO:-manuXD270516/descanso}"
 URL="${URL:-https://descanso-sleep.fly.dev}"
 VERIFY_TIMEOUT_SEC="${VERIFY_TIMEOUT_SEC:-90}"
+FLY_ATTEMPTS="${FLY_ATTEMPTS:-4}"
+FLY_RETRY_DELAY_SEC="${FLY_RETRY_DELAY_SEC:-30}"
 
 stamp="$(date +%Y%m%d-%H%M%S)"
 tmp="${TMPDIR:-/tmp}"
@@ -60,11 +63,19 @@ token="$(openssl rand -hex 32)"
 log OK "Token generado (${#token} caracteres hex; no se muestra)"
 
 step "3/5 Cargar en Fly ($APP) · reinicia la máquina"
-if ! out="$(printf 'BACKUP_TOKEN=%s\n' "$token" | "$FLY" secrets import --app "$APP" 2>&1)"; then
+# Si el host no tiene capacidad para reiniciar la máquina, Fly deja el secreto en "Staged" y suele
+# migrarla a otro host: se reintenta con el mismo token para que Fly y GitHub no queden distintos.
+attempt=1
+while :; do
+  rc=0
+  out="$(printf 'BACKUP_TOKEN=%s\n' "$token" | "$FLY" secrets import --app "$APP" 2>&1)" || rc=$?
   while IFS= read -r l; do log INFO "  fly: $l"; done <<<"$out"
-  fail 'fly secrets import falló: no se cambió nada en GitHub.'
-fi
-while IFS= read -r l; do log INFO "  fly: $l"; done <<<"$out"
+  (( rc == 0 )) && break
+  (( attempt >= FLY_ATTEMPTS )) && fail "fly secrets import falló $attempt veces: el token nuevo puede quedar como Staged en Fly, GitHub no cambió y la app sigue con el anterior. Vuelve a ejecutar el script."
+  log WARN "Intento $attempt de $FLY_ATTEMPTS falló; reintento en $FLY_RETRY_DELAY_SEC s con el mismo token"
+  sleep "$FLY_RETRY_DELAY_SEC"
+  attempt=$((attempt + 1))
+done
 log OK 'Fly actualizado'
 
 step "4/5 Cargar en GitHub ($REPO)"
