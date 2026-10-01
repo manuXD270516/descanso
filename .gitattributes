@@ -1,2 +1,4 @@
 # Las migraciones se versionan con huella (checksum): mismo contenido en Windows y Linux
 backend/src/migrations/* text eol=lf
+# Bash no tolera CRLF: los scripts .sh se mantienen en LF también en checkouts de Windows
+*.sh text eol=lf
