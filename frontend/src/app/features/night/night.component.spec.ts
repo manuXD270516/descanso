@@ -246,6 +246,23 @@ describe('NightComponent', () => {
     expect(rowEl.querySelectorAll('.bar.sleep').length).toBe(2);
   });
 
+  it('la cinta es una imagen con descripción en frases y una tabla con las 14 noches (feature 005, FR-011)', () => {
+    const yesterday = addDays(today, -1);
+    const iso = (d: string, t: string) => new Date(`${d}T${t}`).toISOString();
+    flushLoad({
+      records: [record({ date: yesterday, bedtime: iso(yesterday, '23:00'), wake_time: iso(today, '07:00'), duration_min: 480 })],
+      naps: [{ id: 1, date: yesterday, start_time: iso(yesterday, '15:00'), end_time: iso(yesterday, '15:30'), notes: null, duration_min: 30 }],
+    });
+    const img = el.querySelector('.ribbons')!;
+    expect(img.getAttribute('role')).toBe('img');
+    expect(el.querySelector(`#${img.getAttribute('aria-describedby')}`)!.textContent)
+      .toContain('1 con sueño registrado, 13 sin dato y 1 siesta');
+    const rows = Array.from(el.querySelectorAll('app-chart-table tbody tr'));
+    expect(rows.length).toBe(14);
+    expect(rows[1].textContent).toContain('8 h');
+    expect(rows[0].textContent).toContain('Sin dato');
+  });
+
   it('pide los datos de los últimos 14 días', () => {
     http.expectOne('/api/sleep/open').flush(null);
     const sleep = http.expectOne((r) => r.url === '/api/sleep' && r.method === 'GET');

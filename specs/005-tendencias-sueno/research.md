@@ -32,7 +32,7 @@ UX-06, UX-13) en `docs/sdd/propuestas/2026-09-29-set-de-features.md`.
 - **Alternativas**: varios endpoints (más peticiones); calcular en el cliente (duplica la lógica y
   complica las pruebas de aislamiento).
 
-## R3. Objetivo de 7 h, `goal_customized` y bienvenida: migración `007_objetivo_y_bienvenida.sql`
+## R3. Objetivo de 7 h, `goal_customized` y bienvenida: migración `007_objetivo_y_bienvenida.js`
 
 - **Decisión**: reconstruir `user_settings` (hoja sin referencias entrantes, así que no hace falta
   `foreignKeys: false`):

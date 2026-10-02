@@ -50,10 +50,9 @@ Ejemplo de renombrado de `notes` a `comment` en noches:
   o es hija justificada de una que lo tenga. El meta-test `backend/test/schema-isolation.test.js`
   falla si añades una tabla sin clasificar.
 - El código accede a esos datos solo por `backend/src/repo/`, con `userId` obligatorio.
-- **Contracción pendiente**: `sleep_records`, `naps` y `metrics` aún tienen `DEFAULT 1` en `user_id`
-  (expand de 004). La primera feature que se despliegue **después** de 008 debe quitarlo con una
-  reconstrucción verificada (`foreignKeys: false`), cuando ninguna imagen desplegable inserte sin
-  `user_id`.
+- **Contracción hecha (005)**: la migración `006_contraer_user_id.js` quitó el `DEFAULT 1` de
+  `user_id` en `sleep_records`, `naps` y `metrics` (expand de 004) con una reconstrucción verificada
+  (`foreignKeys: false`, recuento y hash de todas las columnas). Toda inserción debe llevar `user_id`.
 - **Rollback**: no se vuelve manualmente por debajo de 008 con otros usuarios registrados (ver
   `docs/runbooks/rollback-migracion.md`).
 

@@ -77,7 +77,7 @@ backend/src/
 ├── routes/dashboard.js                  # NUEVO: GET /api/dashboard (R2)
 ├── routes/me.js                         # POST /me/onboarding; objetivo personalizado
 ├── routes/auth.js                       # onboarded en status/login
-└── migrations/006_contraer_user_id.js · 007_objetivo_y_bienvenida.sql
+└── migrations/006_contraer_user_id.js · 007_objetivo_y_bienvenida.js
 backend/test/
 ├── analytics.test.js · dashboard.test.js · migrations-006-007.test.js · compat-previous-005.test.js
 └── isolation.test.js                    # + /api/dashboard

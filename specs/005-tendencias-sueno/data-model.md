@@ -16,7 +16,7 @@ user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE   -- sin DEFAULT
   `ux_sleep_one_open ON sleep_records(user_id, (wake_time IS NULL)) WHERE wake_time IS NULL`.
 - Efecto: un `INSERT` sin `user_id` falla con NOT NULL (antes asignaba al propietario en silencio).
 
-## Migración `007_objetivo_y_bienvenida.sql` (copia verificada de una hoja)
+## Migración `007_objetivo_y_bienvenida.js` (copia verificada de una hoja)
 
 `user_settings` reconstruida:
 

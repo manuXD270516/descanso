@@ -1,6 +1,8 @@
 <header class="top">
   <h1 class="wordmark">Descanso</h1>
   @if (auth.state() === 'authenticated' && !publicView()) {
+    <!-- Feature 005: durante la bienvenida no hay pestañas (solo el menú Cuenta) -->
+    @if (auth.onboarded()) {
     <nav class="tabs" aria-label="Secciones">
       @for (t of tabs; track t.id) {
         <button
@@ -11,6 +13,7 @@
           (click)="selectTab(t.id)">{{ t.label }}</button>
       }
     </nav>
+    }
     <details class="account" #menu>
       <summary>Cuenta</summary>
       <div class="account-menu">
@@ -66,6 +69,9 @@
     @default {
       @switch (auth.state()) {
         @case ('authenticated') {
+          @if (!auth.onboarded()) {
+            <app-welcome />
+          } @else {
           @switch (accountView()) {
             @case ('profile') { <app-profile (deleted)="accountView.set(null)" /> }
             @case ('people') { <app-people /> }
@@ -73,10 +79,12 @@
             @default {
               @switch (tab()) {
                 @case ('night') { <app-night /> }
+                @case ('trends') { <app-trends /> }
                 @case ('naps') { <app-naps /> }
                 @case ('metrics') { <app-metrics /> }
               }
             }
+          }
           }
         }
         @case ('login') {

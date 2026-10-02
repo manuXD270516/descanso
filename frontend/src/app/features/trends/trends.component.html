@@ -1,0 +1,51 @@
+@if (error()) { <p class="error" role="alert">{{ error() }}</p> }
+
+@if (data(); as d) {
+  <section class="summary" aria-label="Resumen">
+    <div>
+      <span class="num tabular">{{ d.summary.avg_min === null ? '—' : fmtDuration(d.summary.avg_min) }}</span>
+      <span class="lbl">media diaria</span>
+    </div>
+    <div>
+      <span class="num tabular">{{ d.summary.goal_met }} de {{ d.summary.days_with_data }}</span>
+      <span class="lbl">días con tus horas objetivo</span>
+    </div>
+    <div>
+      <span class="num tabular pending">{{ d.pending14.net_min === null ? '—' : fmtDuration(d.pending14.net_min > 0 ? d.pending14.net_min : 0) }}</span>
+      <span class="lbl">sueño pendiente (14 días)</span>
+    </div>
+  </section>
+  <p class="pending-text small" role="status">{{ pendingText() }}</p>
+
+  <section class="panel trends-panel">
+    <div class="row between wrap">
+      <h2>Horas dormidas</h2>
+      <div class="periods" role="group" aria-label="Periodo">
+        @for (p of periods; track p) {
+          <button type="button" class="btn btn-sm" [class.btn-moon]="period() === p" [attr.aria-pressed]="period() === p" (click)="select(p)">{{ p }} días</button>
+        }
+      </div>
+    </div>
+    <app-daily-bars [days]="d.days" [goalMin]="d.goal_min" [title]="title()" />
+    <div class="row between wrap">
+      <span class="small muted">Objetivo: {{ fmtDuration(d.goal_min) }}. Cuenta la noche más las siestas de cada día.</span>
+      <button type="button" class="btn btn-ghost btn-sm" [attr.aria-expanded]="editing()" (click)="editing.set(!editing())">
+        {{ editing() ? 'Cerrar' : 'Editar objetivo' }}
+      </button>
+    </div>
+    @if (editing()) { <app-goal-editor [goalMin]="d.goal_min" (changed)="load()" /> }
+  </section>
+
+  <details class="panel regularity">
+    <summary><h2>Regularidad</h2></summary>
+    @if (d.regularity; as r) {
+      <p>Tu hora de dormir varía <strong>±{{ r.bedtime.spread_min }} min</strong> (media {{ fmtMinutesOfDay(r.bedtime.mean_min) }}).</p>
+      <p>Tu hora de despertar varía <strong>±{{ r.wake.spread_min }} min</strong> (media {{ fmtMinutesOfDay(r.wake.mean_min) }}).</p>
+      <p class="small muted">Con {{ r.nights }} noches de este periodo. Cuanto menor sea la variación, más regular es tu horario.</p>
+    } @else {
+      <p class="muted">Aún no hay datos suficientes: hacen falta al menos 7 noches en este periodo.</p>
+    }
+  </details>
+} @else if (!error()) {
+  <p class="muted" role="status">Cargando tus tendencias…</p>
+}

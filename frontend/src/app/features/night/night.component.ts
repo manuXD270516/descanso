@@ -7,6 +7,7 @@ import {
   addDays, fmtDateShort, fmtDuration, fmtMinutesOfDay, fmtTime,
   inputLocalToIso, isoToInputLocal, localDate, minutesOfDay, nightDate, toInputLocal,
 } from '../../core/time';
+import { ChartTableComponent, TableColumn } from '../../shared/charts/chart-table.component';
 
 const RANGE_DAYS = 14;
 
@@ -19,7 +20,7 @@ interface Ribbon {
 
 @Component({
   selector: 'app-night',
-  imports: [FormsModule],
+  imports: [FormsModule, ChartTableComponent],
   templateUrl: './night.component.html',
   styleUrl: './night.component.css',
 })
@@ -76,6 +77,29 @@ export class NightComponent implements OnInit {
       row.naps.push({ x, w: Math.max(0.5, (n.duration_min / 1440) * 100), text: `Siesta ${fmtTime(n.start_time)} → ${fmtTime(n.end_time)}` });
     }
     return [...byDate.values()].reverse();
+  });
+
+  // Accesibilidad de la cinta (feature 005, FR-011): descripción en frases y tabla alternativa
+  readonly ribbonColumns: TableColumn[] = [
+    { key: 'date', label: 'Noche' },
+    { key: 'sleep', label: 'Sueño' },
+    { key: 'naps', label: 'Siestas' },
+  ];
+
+  readonly ribbonRows = computed(() =>
+    this.ribbons().map((r) => ({
+      date: r.label,
+      sleep: r.sleeps.length ? r.sleeps.map((s) => s.text).join('; ') : 'Sin dato',
+      naps: r.naps.length ? r.naps.map((n) => n.text.replace(/^Siesta /, '')).join('; ') : '—',
+    })),
+  );
+
+  readonly ribbonDescription = computed(() => {
+    const rows = this.ribbons();
+    const withSleep = rows.filter((r) => r.sleeps.length).length;
+    const naps = rows.reduce((s, r) => s + r.naps.length, 0);
+    return `Últimas ${rows.length} noches, de 12:00 a 12:00: ${withSleep} con sueño registrado, ` +
+      `${rows.length - withSleep} sin dato y ${naps} ${naps === 1 ? 'siesta' : 'siestas'}.`;
   });
 
   ngOnInit() { this.reload(); }

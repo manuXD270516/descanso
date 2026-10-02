@@ -1,17 +1,21 @@
 import { expect, openTab, test } from '../support/fixtures';
 
-// FR-027 (001): tres pestañas en español · FR-017 / US5 (002): versión en el pie de página
+// FR-027 (001): pestañas en español (005 añade Tendencias) · FR-017 / US5 (002): versión en el pie de página
 
 test.describe('Pestañas y pie de versión (servidor compartido, solo lectura)', () => {
   test.use({ isolate: false });
 
-  test('FR-027 · la app abre en "Noche" y navega entre Noche, Siestas y Métricas', async ({ page }) => {
+  test('FR-027 · la app abre en "Noche" y navega entre Noche, Tendencias, Siestas y Métricas', async ({ page }) => {
     await page.goto('/');
     await expect(page).toHaveTitle('Descanso');
     const nav = page.getByRole('navigation', { name: 'Secciones' });
-    await expect(nav.getByRole('button')).toHaveText(['Noche', 'Siestas', 'Métricas']);
+    await expect(nav.getByRole('button')).toHaveText(['Noche', 'Tendencias', 'Siestas', 'Métricas']);
     await expect(nav.getByRole('button', { name: 'Noche' })).toHaveAttribute('aria-current', 'page');
     await expect(page.getByRole('heading', { name: 'Últimas 14 noches' })).toBeVisible();
+
+    await openTab(page, 'Tendencias');
+    await expect(nav.getByRole('button', { name: 'Tendencias' })).toHaveAttribute('aria-current', 'page');
+    await expect(page.getByRole('heading', { name: 'Horas dormidas' })).toBeVisible();
 
     await openTab(page, 'Siestas');
     await expect(nav.getByRole('button', { name: 'Siestas' })).toHaveAttribute('aria-current', 'page');

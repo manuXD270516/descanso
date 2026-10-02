@@ -37,7 +37,8 @@ test.describe('Acceso protegido (004)', () => {
 
     await page.getByLabel('Contraseña').fill(OWNER_PASSWORD);
     await page.getByRole('button', { name: 'Entrar' }).click();
-    await expect(page.getByRole('navigation', { name: 'Secciones' })).toBeVisible();
+    // Feature 005: la primera entrada pasa por la bienvenida, con el menú Cuenta disponible
+    await expect(page.getByRole('heading', { name: '¿Cuántas horas quieres dormir?' })).toBeVisible();
 
     await page.getByText('Cuenta', { exact: true }).click();
     // Feature 008: el menú muestra el nombre visible (al dar de alta: la parte local del email)
@@ -54,6 +55,8 @@ test.describe('Acceso protegido (004)', () => {
     await page.getByLabel('Email').fill(OWNER_EMAIL);
     await page.getByLabel('Contraseña').fill(OWNER_PASSWORD);
     await page.getByRole('button', { name: 'Entrar' }).click();
+    // Feature 005: la primera entrada pasa por la bienvenida
+    await page.getByRole('button', { name: 'Saltar (7 h)' }).click();
 
     await page.getByRole('button', { name: 'Me voy a dormir' }).click();
     await expect(page.getByRole('button', { name: 'Ya desperté' })).toBeVisible();

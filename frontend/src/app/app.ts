@@ -13,8 +13,10 @@ import { ForgotComponent } from './features/account/forgot.component';
 import { PrivacyComponent } from './features/account/privacy.component';
 import { ProfileComponent } from './features/account/profile.component';
 import { PeopleComponent } from './features/account/people.component';
+import { TrendsComponent } from './features/trends/trends.component';
+import { WelcomeComponent } from './features/onboarding/welcome.component';
 
-type Tab = 'night' | 'naps' | 'metrics';
+type Tab = 'night' | 'trends' | 'naps' | 'metrics';
 /** Vistas del menú Cuenta (feature 008). */
 type AccountView = 'profile' | 'people' | 'privacy';
 /** Pantallas sin sesión que se abren desde un enlace o desde "Entrar". */
@@ -25,6 +27,7 @@ type PublicView = 'register' | 'reset' | 'forgot' | 'privacy';
   imports: [
     NightComponent, NapsComponent, MetricsComponent, LoginComponent, SetupComponent,
     RegisterComponent, ResetPasswordComponent, ForgotComponent, PrivacyComponent, ProfileComponent, PeopleComponent,
+    TrendsComponent, WelcomeComponent,
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',
@@ -42,6 +45,7 @@ export class App implements OnInit {
 
   readonly tabs: { id: Tab; label: string }[] = [
     { id: 'night', label: 'Noche' },
+    { id: 'trends', label: 'Tendencias' },
     { id: 'naps', label: 'Siestas' },
     { id: 'metrics', label: 'Métricas' },
   ];

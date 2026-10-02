@@ -29,6 +29,11 @@ interface Options {
    * y la sesión se comparte entre el navegador y `api` (feature 004). false: sin sesión.
    */
   authenticated: boolean;
+  /**
+   * true (por defecto): con sesión, la bienvenida de la feature 005 queda vista (objetivo de 7 h),
+   * así los tests entran directo a las pestañas. false: la primera entrada muestra la bienvenida.
+   */
+  onboarded: boolean;
 }
 
 interface Fixtures {
@@ -46,6 +51,7 @@ export const test = base.extend<Options & Fixtures>({
   isolate: [true, { option: true }],
   serverEnv: [{}, { option: true }],
   authenticated: [true, { option: true }],
+  onboarded: [true, { option: true }],
 
   server: async ({ isolate, serverEnv }, use, testInfo) => {
     if (!isolate) {
@@ -75,20 +81,24 @@ export const test = base.extend<Options & Fixtures>({
   },
 
   // Cliente de la API con Origin del propio servidor (defensa CSRF de la feature 004)
-  api: async ({ server, authenticated }, use) => {
+  api: async ({ server, authenticated, onboarded }, use) => {
     const request = await playwrightRequest.newContext({ baseURL: server.url, extraHTTPHeaders: { Origin: server.url } });
     const api = new Api(request);
-    if (authenticated) await api.signIn();
+    if (authenticated) {
+      await api.signIn();
+      if (onboarded) await api.completeOnboarding();
+    }
     await use(api);
     await request.dispose();
   },
 
-  guest: async ({ server, api, browser }, use) => {
+  guest: async ({ server, api, browser, onboarded }, use) => {
     await api.signIn(); // el propietario (aunque el test empiece sin sesión) es quien invita
     const invite = await api.createInvite();
     const request = await playwrightRequest.newContext({ baseURL: server.url, extraHTTPHeaders: { Origin: server.url } });
     const guestApi = new Api(request);
     await guestApi.register(invite.token, 'Invitada', GUEST_EMAIL, GUEST_PASSWORD);
+    if (onboarded) await guestApi.completeOnboarding();
     const id = (await api.people()).find((p) => p.email === GUEST_EMAIL)!.id;
 
     const context = await browser.newContext({ baseURL: server.url, timezoneId: TIMEZONE, locale: 'es-ES' });
@@ -134,7 +144,7 @@ export function answerNextDialog(page: Page, accept: boolean): Promise<string> {
   });
 }
 
-/** Cambia de pestaña con la navegación principal (Noche, Siestas, Métricas). */
-export async function openTab(page: Page, name: 'Noche' | 'Siestas' | 'Métricas'): Promise<void> {
+/** Cambia de pestaña con la navegación principal (Noche, Tendencias, Siestas, Métricas). */
+export async function openTab(page: Page, name: 'Noche' | 'Tendencias' | 'Siestas' | 'Métricas'): Promise<void> {
   await page.getByRole('navigation', { name: 'Secciones' }).getByRole('button', { name }).click();
 }
