@@ -39,7 +39,7 @@ function loadSession(db, req, now = Date.now()) {
   if (!id) return null;
   const hash = sha256(id);
   const row = db
-    .prepare('SELECT s.id_hash, s.user_id, s.last_seen_at, s.expires_at, u.email FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.id_hash = ?')
+    .prepare('SELECT s.id_hash, s.user_id, s.last_seen_at, s.expires_at, u.email, u.role, u.display_name FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.id_hash = ?')
     .get(hash);
   if (!row) return null;
   if (Date.parse(row.expires_at) <= now) {
@@ -51,7 +51,7 @@ function loadSession(db, req, now = Date.now()) {
     db.prepare('UPDATE sessions SET last_seen_at = ?, expires_at = ? WHERE id_hash = ?').run(iso(now), iso(now + TTL), hash);
     refreshed = true;
   }
-  return { id, user: { id: row.user_id, email: row.email }, refreshed };
+  return { id, user: { id: row.user_id, email: row.email, role: row.role, display_name: row.display_name }, refreshed };
 }
 
 function destroySession(db, req) {

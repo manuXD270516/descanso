@@ -40,9 +40,9 @@
 
 **Independent Test**: `invites.test.js` + e2e.
 
-- [ ] T011 [P] [US1] Tests `backend/test/invites.test.js`: solo el propietario crea, lista y revoca (otro usuario → 403); token solo como huella; registro con invitación válida → 201, sesión, `role = 'user'`, `consent_version`/`consent_at`, 3 métricas propias y `user_settings`; sin `accept_policy` o con `policy_version` distinta → 400; invitación usada, revocada, caducada (reloj inyectable, 72 h) o inventada → 403 sin crear nada; email existente (NOCASE) → 409 sin gastar la invitación; dos registros simultáneos con el mismo token → uno 201 y otro 403; con sesión abierta → 409; los fallos cuentan para el rate limit
-- [ ] T012 [US1] Implementar `backend/src/auth/tokens.js` (crear token y huella, canje atómico), `backend/src/policy.js` (`POLICY_VERSION = '2026-10-01'`), `repo/users.js` e `repo/invites.js`
-- [ ] T013 [US1] Implementar `backend/src/routes/people.js` (`GET /people`, `GET/POST /people/invites`, `DELETE /people/invites/:id`) con `requireOwner` en `auth/middleware.js`, y `POST /api/auth/register` en `routes/auth.js`; `status` y `login` devuelven `role` y `display_name`
+- [X] T011 [P] [US1] Tests `backend/test/invites.test.js`: solo el propietario crea, lista y revoca (otro usuario → 403); token solo como huella; registro con invitación válida → 201, sesión, `role = 'user'`, `consent_version`/`consent_at`, 3 métricas propias y `user_settings`; sin `accept_policy` o con `policy_version` distinta → 400; invitación usada, revocada, caducada (reloj inyectable, 72 h) o inventada → 403 sin crear nada; email existente (NOCASE) → 409 sin gastar la invitación; dos registros simultáneos con el mismo token → uno 201 y otro 403; con sesión abierta → 409; los fallos cuentan para el rate limit
+- [X] T012 [US1] Implementar `backend/src/auth/tokens.js` (crear token y huella, canje atómico), `backend/src/policy.js` (`POLICY_VERSION = '2026-10-01'`), `repo/users.js` e `repo/invites.js`
+- [X] T013 [US1] Implementar `backend/src/routes/people.js` (`GET /people`, `GET/POST /people/invites`, `DELETE /people/invites/:id`) con `requireOwner` en `auth/middleware.js`, y `POST /api/auth/register` en `routes/auth.js`; `status` y `login` devuelven `role` y `display_name`
 - [ ] T014 [P] [US1] Frontend: `core/link-tokens.ts` (lee y borra `#invitacion=` / `#restablecer=`), `core/privacy.ts` (texto de la política + `POLICY_VERSION` igual al backend; test que compara ambas constantes leyendo `backend/src/policy.js`), `features/account/register.component.*` (+ spec: texto de transparencia, casilla de aceptación obligatoria, errores 403/409 en `role="alert"`)
 - [ ] T015 [US1] Frontend: `features/account/people.component.*` (+ spec): lista de personas, "Invitar a alguien" con enlace copiable (`/#invitacion=…`), estado de las invitaciones y revocar; visible solo para el propietario en el menú Cuenta
 
@@ -52,8 +52,8 @@
 
 **Independent Test**: `me.test.js`.
 
-- [ ] T016 [P] [US3] Tests `backend/test/me.test.js`: `GET /me`; `PUT /me` con nombre 0/61 caracteres → 400, zona `Mars/Base` → 400, `Europe/Madrid` y `UTC` → 200, objetivo 239/721 → 400 y 450 → 200 (en `user_settings`); `PUT /me/email` sin la contraseña correcta → 401 y con email de otro → 409 sin revelar de quién; `PUT /me/password` cierra las demás sesiones del usuario pero no la actual ni las de otros; los fallos de contraseña cuentan en el rate limit
-- [ ] T017 [US3] Implementar `backend/src/routes/me.js` (`GET/PUT /me`, `PUT /me/email`, `PUT /me/password`) con `repo/users.js` (R6)
+- [X] T016 [P] [US3] Tests `backend/test/me.test.js`: `GET /me`; `PUT /me` con nombre 0/61 caracteres → 400, zona `Mars/Base` → 400, `Europe/Madrid` y `UTC` → 200, objetivo 239/721 → 400 y 450 → 200 (en `user_settings`); `PUT /me/email` sin la contraseña correcta → 401 y con email de otro → 409 sin revelar de quién; `PUT /me/password` cierra las demás sesiones del usuario pero no la actual ni las de otros; los fallos de contraseña cuentan en el rate limit
+- [X] T017 [US3] Implementar `backend/src/routes/me.js` (`GET/PUT /me`, `PUT /me/email`, `PUT /me/password`) con `repo/users.js` (R6)
 - [ ] T018 [US3] Frontend: `core/account.service.ts` + `features/account/profile.component.*` (+ spec): nombre, email (pide contraseña), zona propuesta con `Intl` si no hay, objetivo en horas y minutos, cambio de contraseña; el nombre visible se muestra en el menú Cuenta
 
 ---
@@ -62,8 +62,8 @@
 
 **Independent Test**: `reset.test.js`.
 
-- [ ] T019 [P] [US4] Tests `backend/test/reset.test.js`: solo el propietario genera enlaces y solo para `role = 'user'` (para el propietario → 404); generar uno nuevo invalida el anterior; enlace de 30 min (reloj inyectable); `POST /auth/reset` válido → 204, contraseña nueva, **todas** las sesiones de la persona cerradas, `reset_notice_at` fijado y `audit_log` con `reset_link_created` y `password_reset`; inválido, usado o caducado → 403 con el mismo mensaje; `login` devuelve `reset_notice_at` hasta el `ack`; `GET /me/activity` lista acciones con el nombre del actor; `bootstrap()` con un token nuevo solo cierra sesiones y borra la contraseña del propietario (FR-018)
-- [ ] T020 [US4] Implementar `POST /people/:id/reset-link`, `POST /auth/reset`, `GET /me/activity`, `POST /me/reset-notice/ack` (`repo/audit.js`) y ajustar `auth/bootstrap.js` a `WHERE user_id = 1` / `WHERE id = 1`
+- [X] T019 [P] [US4] Tests `backend/test/reset.test.js`: solo el propietario genera enlaces y solo para `role = 'user'` (para el propietario → 404); generar uno nuevo invalida el anterior; enlace de 30 min (reloj inyectable); `POST /auth/reset` válido → 204, contraseña nueva, **todas** las sesiones de la persona cerradas, `reset_notice_at` fijado y `audit_log` con `reset_link_created` y `password_reset`; inválido, usado o caducado → 403 con el mismo mensaje; `login` devuelve `reset_notice_at` hasta el `ack`; `GET /me/activity` lista acciones con el nombre del actor; `bootstrap()` con un token nuevo solo cierra sesiones y borra la contraseña del propietario (FR-018)
+- [X] T020 [US4] Implementar `POST /people/:id/reset-link`, `POST /auth/reset`, `GET /me/activity`, `POST /me/reset-notice/ack` (`repo/audit.js`) y ajustar `auth/bootstrap.js` a `WHERE user_id = 1` / `WHERE id = 1`
 - [ ] T021 [US4] Frontend: `forgot.component` (mensaje fijo), `reset-password.component` (desde `#restablecer=`), botón "Enlace de recuperación" en Personas, aviso "Tu contraseña fue restablecida el …" (`role="status"`, descartable) y "Actividad de la cuenta" en el perfil (+ specs)
 
 ---
@@ -72,8 +72,8 @@
 
 **Independent Test**: `delete-account.test.js`.
 
-- [ ] T022 [P] [US5] Tests `backend/test/delete-account.test.js`: `DELETE /me` sin la contraseña correcta → 401; como B con la contraseña → 204 y 0 filas con `user_id = B` en **todas** las tablas con `user_id` (generadas desde `sqlite_master`), sus `metric_entries` e `invites.used_by` incluidos; recuentos de A idénticos; la cookie de B deja de servir; el propietario con otros usuarios → 409; el propietario solo → 204 y el alta queda pendiente de un código nuevo; la exportación de B solo contiene lo suyo (FR-019)
-- [ ] T023 [US5] Implementar `DELETE /me` en `routes/me.js` (R8)
+- [X] T022 [P] [US5] Tests `backend/test/delete-account.test.js`: `DELETE /me` sin la contraseña correcta → 401; como B con la contraseña → 204 y 0 filas con `user_id = B` en **todas** las tablas con `user_id` (generadas desde `sqlite_master`), sus `metric_entries` e `invites.used_by` incluidos; recuentos de A idénticos; la cookie de B deja de servir; el propietario con otros usuarios → 409; el propietario solo → 204 y el alta queda pendiente de un código nuevo; la exportación de B solo contiene lo suyo (FR-019)
+- [X] T023 [US5] Implementar `DELETE /me` en `routes/me.js` (R8)
 - [ ] T024 [US5] Frontend: "Borrar mi cuenta" en el perfil con explicación del plazo de 14 días de los respaldos, la contraseña y una confirmación; el mensaje del 409 del propietario (+ spec)
 
 ---
