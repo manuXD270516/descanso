@@ -59,6 +59,20 @@ export class App implements OnInit {
   readonly version = signal<string | null>(null);
 
   ngOnInit() {
+    this.applyLinkTokens();
+    // Abrir un enlace con la app ya abierta en la pestaña solo cambia el fragmento (sin recarga)
+    window.addEventListener('hashchange', () => {
+      if (this.applyLinkTokens()) this.auth.refresh();
+    });
+    this.auth.refresh();
+    this.api.health().subscribe({
+      next: (h) => this.version.set(/^[0-9a-f]{40}$/.test(h.version) ? h.version.slice(0, 7) : h.version),
+      error: () => this.version.set(null),
+    });
+  }
+
+  /** Lee #invitacion= / #restablecer= y abre la pantalla correspondiente; true si había alguno. */
+  private applyLinkTokens(): boolean {
     const links = readLinkTokens();
     if (links.invite) {
       this.inviteToken.set(links.invite);
@@ -67,11 +81,7 @@ export class App implements OnInit {
       this.resetToken.set(links.reset);
       this.publicView.set('reset');
     }
-    this.auth.refresh();
-    this.api.health().subscribe({
-      next: (h) => this.version.set(/^[0-9a-f]{40}$/.test(h.version) ? h.version.slice(0, 7) : h.version),
-      error: () => this.version.set(null),
-    });
+    return !!(links.invite || links.reset);
   }
 
   selectTab(id: Tab) {

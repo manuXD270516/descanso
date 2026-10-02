@@ -16,6 +16,13 @@ recientes. Ver [`docs/sdd/guia-migraciones.md`](../sdd/guia-migraciones.md).
 > Si pasó tiempo desde el despliegue, compara primero con el respaldo diario de S3
 > ([`restaurar-respaldo.md`](restaurar-respaldo.md)) y elige el más reciente que esté sano.
 
+> ⛔ **Nunca vuelvas manualmente a una versión anterior a la feature 008 si hay usuarios además
+> del propietario.** Las versiones anteriores no filtran por usuario: cada persona vería y podría
+> modificar los datos de todas. El rollback **automático** del pipeline es seguro (solo vuelve a la
+> imagen inmediatamente anterior, que ya es 008 o posterior). Si una versión nueva falla, **arregla
+> hacia delante** (un despliegue con la corrección) o **restaura un respaldo** con la versión
+> actual; no despliegues una imagen anterior a 008.
+
 ## 1. Síntomas y diagnóstico
 
 ```bash
@@ -33,7 +40,7 @@ flyctl logs --app descanso-sleep | grep -i "migraci"
 
 1. **Respaldo del estado actual**, por si hay que volver atrás: GitHub → Actions → **Backup** →
    *Run workflow*, y espera a que termine en verde.
-2. **Asegúrate de que corre la imagen anterior.** Si el pipeline ya hizo rollback, está hecho. Si
+2. **Asegúrate de que corre la imagen anterior** (nunca anterior a 008 si hay más usuarios; ver el aviso del principio). Si el pipeline ya hizo rollback, está hecho. Si
    no, redespliega la anterior. Así, al reiniciar, no se vuelve a aplicar la migración defectuosa:
    ```bash
    flyctl releases --app descanso-sleep                         # identifica la imagen anterior

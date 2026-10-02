@@ -86,18 +86,18 @@
 
 ## Phase 8: User Story 7 - Respaldos cifrados (Priority: P2)
 
-- [ ] T026 [US7] `.github/workflows/backup.yml`: instalar `age`; tras `integrity_check`, cifrar con `BACKUP_AGE_RECIPIENT` (falla si falta, antes de subir); subir `descanso/<TS>.db.age`; la poda incluye `*.db.age`
-- [ ] T027 [P] [US7] `docs/runbooks/restaurar-respaldo.md`: crear el par de claves (`age-keygen`), guardar la privada, `gh secret set BACKUP_AGE_RECIPIENT`, descifrar con `age -d -i …`, `integrity_check` e instalar `age` en Windows, macOS y Linux
-- [ ] T028 [US7] Ensayo local del cifrado y descifrado con `age` sobre una base de prueba (`integrity_check` ok tras descifrar); anotarlo en el runbook
+- [X] T026 [US7] `.github/workflows/backup.yml`: instalar `age`; tras `integrity_check`, cifrar con `BACKUP_AGE_RECIPIENT` (falla si falta, antes de subir); subir `descanso/<TS>.db.age`; la poda incluye `*.db.age`
+- [X] T027 [P] [US7] `docs/runbooks/restaurar-respaldo.md`: crear el par de claves (`age-keygen`), guardar la privada, `gh secret set BACKUP_AGE_RECIPIENT`, descifrar con `age -d -i …`, `integrity_check` e instalar `age` en Windows, macOS y Linux
+- [X] T028 [US7] Ensayo local del cifrado y descifrado con `age` sobre una base de prueba (`integrity_check` ok tras descifrar); anotarlo en el runbook
 
 ---
 
 ## Phase 9: Polish & Cross-Cutting
 
-- [ ] T029 [P] E2E: fixture `secondUser` en `e2e/support/fixtures.ts` (el propietario invita por API y registra a B en contextos propios); `e2e/tests/multiusuario.spec.ts` (dos navegadores: A registra una noche y B no la ve; B pide un id de A por API → 404; invitación por la UI de punta a punta); `e2e/tests/cuenta.spec.ts` (perfil, recuperación por enlace con aviso, borrar cuenta)
-- [ ] T030 [P] Runbooks y guía: en `rollback-migracion.md` y `guia-migraciones.md`, prohibir el rollback manual por debajo de 008 con otros usuarios y explicar la alternativa (FR-024); anotar la contracción pendiente de `DEFAULT 1`
-- [ ] T031 [P] `README.md`: multiusuario, invitaciones, perfil, recuperación, borrado y `BACKUP_AGE_RECIPIENT`
-- [ ] T032 Puertas de calidad, compatibilidad en Docker con la imagen de master (004) sobre una base migrada por 008 (quickstart §2), y verificación manual de quickstart §3–§5, cronometrando la invitación hasta la primera noche (< 3 min, SC-003) y la recuperación de un usuario (< 5 min, SC-006); en producción, cuando exista el bucket, comprobar que el objeto subido es `.db.age` y no se abre como SQLite (SC-005); anotar resultados en el PR
+- [X] T029 [P] E2E: fixture `secondUser` en `e2e/support/fixtures.ts` (el propietario invita por API y registra a B en contextos propios); `e2e/tests/multiusuario.spec.ts` (dos navegadores: A registra una noche y B no la ve; B pide un id de A por API → 404; invitación por la UI de punta a punta); `e2e/tests/cuenta.spec.ts` (perfil, recuperación por enlace con aviso, borrar cuenta)
+- [X] T030 [P] Runbooks y guía: en `rollback-migracion.md` y `guia-migraciones.md`, prohibir el rollback manual por debajo de 008 con otros usuarios y explicar la alternativa (FR-024); anotar la contracción pendiente de `DEFAULT 1`
+- [X] T031 [P] `README.md`: multiusuario, invitaciones, perfil, recuperación, borrado y `BACKUP_AGE_RECIPIENT`
+- [X] T032 Puertas de calidad, compatibilidad en Docker con la imagen de master (004) sobre una base migrada por 008 (quickstart §2), y verificación manual de quickstart §3–§5, cronometrando la invitación hasta la primera noche (< 3 min, SC-003) y la recuperación de un usuario (< 5 min, SC-006); en producción, cuando exista el bucket, comprobar que el objeto subido es `.db.age` y no se abre como SQLite (SC-005); anotar resultados en el PR
 
 ---
 

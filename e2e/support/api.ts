@@ -1,5 +1,5 @@
 import { expect, type APIRequestContext, type APIResponse } from '@playwright/test';
-import { OFFSET, OWNER_EMAIL, OWNER_PASSWORD, SETUP_TOKEN } from './env';
+import { OFFSET, OWNER_EMAIL, OWNER_PASSWORD, POLICY_VERSION, SETUP_TOKEN } from './env';
 
 /** "2026-09-07T23:40" → "2026-09-07T23:40:00-04:00" (hora local de los tests con su offset). */
 export const iso = (local: string) => `${local}:00${OFFSET}`;
@@ -67,6 +67,23 @@ export class Api {
   }
   status() {
     return this.request.get('/api/auth/status').then(json<{ state: string; nights?: number; email?: string }>);
+  }
+
+  /** Feature 008: invitación de un solo uso (solo el propietario). */
+  createInvite() {
+    return this.request.post('/api/people/invites').then(json<{ id: number; token: string; expires_at: string }>);
+  }
+  /** Registro con invitación aceptando la política vigente; la cookie queda en este cliente. */
+  register(invite: string, display_name: string, email: string, password: string) {
+    return this.request
+      .post('/api/auth/register', { data: { invite, display_name, email, password, accept_policy: true, policy_version: POLICY_VERSION } })
+      .then(json<{ email: string }>);
+  }
+  resetLink(userId: number) {
+    return this.request.post(`/api/people/${userId}/reset-link`).then(json<{ token: string; expires_at: string }>);
+  }
+  people() {
+    return this.request.get('/api/people').then(json<{ id: number; email: string; role: string; display_name: string }[]>);
   }
 
   /** Noche con horas locales "YYYY-MM-DDTHH:mm"; la fecha de noche es el día de acostarse. */

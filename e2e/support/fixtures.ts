@@ -1,6 +1,6 @@
 import { test as base, expect, request as playwrightRequest, type Page } from '@playwright/test';
 import { Api, iso } from './api';
-import { SHARED_URL } from './env';
+import { GUEST_EMAIL, GUEST_PASSWORD, SHARED_URL, TIMEZONE } from './env';
 import { AppServer } from './server';
 
 /** Servidor contra el que corre un test: uno propio (aislado) o el compartido. */
@@ -35,6 +35,11 @@ interface Fixtures {
   server: TestServer;
   /** Cliente de la API del mismo servidor que ve la página. */
   api: Api;
+  /**
+   * Feature 008: una segunda persona invitada por el propietario, con su propio cliente de API y
+   * su propio navegador (contexto aislado, con su sesión). Solo se crea si el test la pide.
+   */
+  guest: { api: Api; page: Page; id: number };
 }
 
 export const test = base.extend<Options & Fixtures>({
@@ -75,6 +80,23 @@ export const test = base.extend<Options & Fixtures>({
     const api = new Api(request);
     if (authenticated) await api.signIn();
     await use(api);
+    await request.dispose();
+  },
+
+  guest: async ({ server, api, browser }, use) => {
+    await api.signIn(); // el propietario (aunque el test empiece sin sesión) es quien invita
+    const invite = await api.createInvite();
+    const request = await playwrightRequest.newContext({ baseURL: server.url, extraHTTPHeaders: { Origin: server.url } });
+    const guestApi = new Api(request);
+    await guestApi.register(invite.token, 'Invitada', GUEST_EMAIL, GUEST_PASSWORD);
+    const id = (await api.people()).find((p) => p.email === GUEST_EMAIL)!.id;
+
+    const context = await browser.newContext({ baseURL: server.url, timezoneId: TIMEZONE, locale: 'es-ES' });
+    await context.route(/^https:\/\/fonts\.(googleapis|gstatic)\.com\//, (route) => route.abort());
+    await context.addCookies((await request.storageState()).cookies);
+    const page = await context.newPage();
+    await use({ api: guestApi, page, id });
+    await context.close();
     await request.dispose();
   },
 });
