@@ -83,11 +83,35 @@ jobs:
           echo "Versión actual: ${prev:-ninguna}"
           echo "version=$prev" >> "$GITHUB_OUTPUT"
 
+      # Si Fly acaba de migrar la máquina y su volumen a otro host, el volumen cambia de ID y flyctl
+      # falla con "volume not found" (los datos siguen intactos): se reintenta tras una pausa.
+      # Cualquier otro error falla al momento y, como siempre, dispara el rollback.
       - name: Desplegar la imagen por SHA en Fly.io
+        env:
+          DEPLOY_ATTEMPTS: 3
+          DEPLOY_RETRY_DELAY_SEC: 30
         run: |
+          set -uo pipefail
           extra=()
           if [[ "${{ inputs.simular_fallo }}" == "true" ]]; then extra=(--env NODE_OPTIONS=--require=/no-existe.js); fi
-          flyctl deploy --image "$IMAGE_REF" --wait-timeout 5m0s "${extra[@]}"
+          out="$RUNNER_TEMP/flyctl-deploy.log"
+          attempt=1
+          while :; do
+            rc=0
+            flyctl deploy --image "$IMAGE_REF" --wait-timeout 5m0s "${extra[@]}" 2>&1 | tee "$out" || rc=$?
+            (( rc == 0 )) && break
+            if ! grep -qi 'volume not found' "$out"; then
+              echo "::error::flyctl deploy falló (código $rc); no es un cambio de volumen, no se reintenta"
+              exit "$rc"
+            fi
+            if (( attempt >= DEPLOY_ATTEMPTS )); then
+              echo "::error::Fly no encontró el volumen en $attempt intentos; revisa 'flyctl volumes list --all' y relanza el job"
+              exit "$rc"
+            fi
+            echo "::warning::Intento $attempt de $DEPLOY_ATTEMPTS: 'volume not found' (Fly suele haber migrado la máquina y su volumen a otro host); reintento en $DEPLOY_RETRY_DELAY_SEC s"
+            sleep "$DEPLOY_RETRY_DELAY_SEC"
+            attempt=$((attempt + 1))
+          done
 
       - name: Verificar salud y versión (≤ 60 s)
         run: |
