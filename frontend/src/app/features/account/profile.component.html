@@ -1,0 +1,86 @@
+<section class="panel account-card" aria-labelledby="profile-title">
+  <h2 id="profile-title">Mi perfil</h2>
+
+  @if (message()) { <p role="status" class="notice">{{ message() }}</p> }
+  @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
+
+  @if (profile(); as p) {
+    <form class="account-form" (ngSubmit)="saveProfile()">
+      <label class="field"><span>Nombre visible</span>
+        <input type="text" name="display_name" [(ngModel)]="displayName" maxlength="60" required>
+      </label>
+      <label class="field"><span>Zona horaria</span>
+        <input type="text" name="timezone" [(ngModel)]="timezone" list="tz-list" aria-describedby="tz-hint" required>
+        <datalist id="tz-list">
+          @for (tz of timezones; track tz) { <option [value]="tz"></option> }
+        </datalist>
+        @if (tzProposed()) { <small id="tz-hint" class="muted small">Propuesta desde tu navegador. Guárdala si es correcta.</small> }
+      </label>
+      <fieldset class="field">
+        <legend class="small muted">Objetivo de sueño (entre 4 y 12 h)</legend>
+        <div class="row">
+          <label class="field"><span>Horas</span><input type="number" name="goalHours" [(ngModel)]="goalHours" min="4" max="12"></label>
+          <label class="field"><span>Minutos</span><input type="number" name="goalMinutes" [(ngModel)]="goalMinutes" min="0" max="59" step="5"></label>
+        </div>
+      </fieldset>
+      <button class="btn" type="submit">Guardar perfil</button>
+    </form>
+
+    <h3>Email</h3>
+    <form class="account-form" (ngSubmit)="saveEmail()">
+      <label class="field"><span>Email</span>
+        <input type="email" name="email" [(ngModel)]="newEmail" autocomplete="username" required>
+      </label>
+      <label class="field"><span>Contraseña actual</span>
+        <input type="password" name="emailPassword" [(ngModel)]="emailPassword" autocomplete="current-password" required>
+      </label>
+      <button class="btn" type="submit" [disabled]="!emailPassword || newEmail === p.email">Cambiar email</button>
+    </form>
+
+    <h3>Contraseña</h3>
+    <form class="account-form" (ngSubmit)="savePassword()">
+      <label class="field"><span>Contraseña actual</span>
+        <input type="password" name="currentPassword" [(ngModel)]="currentPassword" autocomplete="current-password" required>
+      </label>
+      <label class="field"><span>Contraseña nueva</span>
+        <input type="password" name="newPassword" [(ngModel)]="newPassword" autocomplete="new-password" required>
+        <small class="muted small">Al menos 12 caracteres. Se cerrarán tus otras sesiones.</small>
+      </label>
+      <button class="btn" type="submit" [disabled]="!currentPassword || newPassword.length < 12">Cambiar contraseña</button>
+    </form>
+
+    <h3>Actividad de la cuenta</h3>
+    @if (activity().length === 0) {
+      <p class="muted small">Nadie ha hecho cambios en tu cuenta.</p>
+    } @else {
+      <ul class="list-plain small">
+        @for (a of activity(); track $index) {
+          <li><span>{{ a.created_at.slice(0, 16).replace('T', ' ') }} — {{ a.actor }} {{ actionText(a) }}</span></li>
+        }
+      </ul>
+    }
+
+    <div class="danger-zone">
+      <h3>Borrar mi cuenta</h3>
+      <p class="small">
+        Se borran al momento tu cuenta y todos tus datos (noches, siestas, métricas). De los respaldos
+        desaparecen en un máximo de 14 días. Exporta antes tus datos si quieres conservarlos.
+      </p>
+      @if (p.role === 'owner') {
+        <p class="small muted">Como propietario, solo puedes borrar tu cuenta cuando no quede nadie más usando Descanso.</p>
+      }
+      <form class="account-form" (ngSubmit)="deleteAccount()">
+        <label class="field"><span>Contraseña</span>
+          <input type="password" name="deletePassword" [(ngModel)]="deletePassword" autocomplete="current-password" required>
+        </label>
+        <label class="check">
+          <input type="checkbox" name="deleteConfirm" [(ngModel)]="deleteConfirm">
+          <span>Entiendo que es definitivo.</span>
+        </label>
+        <button class="btn btn-danger" type="submit" [disabled]="!deletePassword || !deleteConfirm">Borrar mi cuenta</button>
+      </form>
+    </div>
+  } @else if (!error()) {
+    <p class="muted" role="status">Cargando…</p>
+  }
+</section>
