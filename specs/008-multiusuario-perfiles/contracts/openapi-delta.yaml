@@ -1,0 +1,194 @@
+openapi: 3.1.0
+info:
+  title: Descanso API — cambios de la feature 008
+  version: 1.4.0
+  description: |
+    Cambios sobre los contratos de 001–004.
+
+    **Aislamiento (FR-007):** todas las rutas de datos (`/sleep`, `/naps`, `/metrics`, `/stats`,
+    `/export*`) operan solo sobre el usuario de la sesión. Un id de otro usuario responde 404
+    `{ "error": "… no encontrada" }` exactamente igual que uno inexistente.
+
+    Se mantienen las reglas de 004: sesión obligatoria, CSRF por origen, límite de intentos y
+    cabeceras.
+servers:
+  - url: /api
+
+paths:
+  /auth/status:
+    get:
+      summary: Igual que en 004; en "authenticated" añade role y display_name
+      responses:
+        '200':
+          content:
+            application/json:
+              example: { state: authenticated, email: ana@ejemplo.com, role: user, display_name: Ana }
+
+  /auth/login:
+    post:
+      summary: Igual que en 004; la respuesta añade role, display_name y reset_notice_at
+      responses:
+        '200':
+          content:
+            application/json:
+              example: { email: ana@ejemplo.com, role: user, display_name: Ana, reset_notice_at: '2026-10-01T10:00:00.000Z' }
+
+  /auth/register:
+    post:
+      summary: Registro con invitación (FR-002…FR-006)
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [invite, display_name, email, password, accept_policy, policy_version]
+              properties:
+                invite: { type: string, description: 'Token del fragmento #invitacion=, enviado en el cuerpo' }
+                display_name: { type: string, minLength: 1, maxLength: 60 }
+                email: { type: string, format: email }
+                password: { type: string, minLength: 12, maxLength: 128 }
+                accept_policy: { const: true }
+                policy_version: { type: string, example: '2026-10-01' }
+      responses:
+        '201': { description: Cuenta creada y sesión iniciada (Set-Cookie como en 004) }
+        '400': { description: 'Datos inválidos, sin aceptar la política o versión de política distinta' }
+        '403': { description: 'Invitación inválida, usada, revocada o caducada ("Esta invitación no es válida")' }
+        '409': { description: 'Email ya registrado (la invitación no se gasta) o hay una sesión abierta' }
+        '429': { description: Límite de intentos }
+
+  /auth/reset:
+    post:
+      summary: Fijar contraseña con un enlace de recuperación (FR-015)
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, password]
+              properties:
+                token: { type: string }
+                password: { type: string, minLength: 12, maxLength: 128 }
+      responses:
+        '204': { description: Contraseña cambiada; todas las sesiones de la persona cerradas }
+        '400': { description: Contraseña inválida }
+        '403': { description: 'Enlace inválido, usado o caducado (mismo mensaje en todos los casos)' }
+        '429': { description: Límite de intentos }
+
+  /me:
+    get:
+      summary: Mi perfil
+      responses:
+        '200':
+          content:
+            application/json:
+              example: { id: 2, email: ana@ejemplo.com, role: user, display_name: Ana, timezone: America/La_Paz, sleep_goal_min: 480, consent_version: '2026-10-01', consent_at: '…' }
+    put:
+      summary: Editar nombre visible, zona horaria y objetivo de sueño (FR-011)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                display_name: { type: string, minLength: 1, maxLength: 60 }
+                timezone: { type: string, description: 'IANA (p. ej. Europe/Madrid) o UTC' }
+                sleep_goal_min: { type: integer, minimum: 240, maximum: 720 }
+      responses:
+        '200': { description: Perfil actualizado }
+        '400': { description: Valor fuera de rango o zona horaria desconocida }
+    delete:
+      summary: Borrar mi cuenta (FR-020, FR-021)
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, required: [password], properties: { password: { type: string } } }
+      responses:
+        '204': { description: Cuenta y todos sus datos borrados; cookie expirada }
+        '401': { description: Contraseña incorrecta (cuenta para el límite) }
+        '409': { description: 'El propietario no puede borrar su cuenta mientras existan otros usuarios' }
+
+  /me/email:
+    put:
+      summary: Cambiar email con la contraseña actual (FR-012)
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, required: [email, password], properties: { email: { type: string }, password: { type: string } } }
+      responses:
+        '200': { description: Email cambiado }
+        '401': { description: Contraseña incorrecta }
+        '409': { description: 'Ese email no está disponible' }
+
+  /me/password:
+    put:
+      summary: Cambiar contraseña; cierra mis otras sesiones (FR-012)
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object, required: [current, password], properties: { current: { type: string }, password: { type: string } } }
+      responses:
+        '204': { description: Cambiada; las demás sesiones del usuario se cierran, la actual sigue }
+        '400': { description: Contraseña nueva inválida }
+        '401': { description: Contraseña actual incorrecta }
+
+  /me/activity:
+    get:
+      summary: Registro de auditoría de mi cuenta (FR-016)
+      responses:
+        '200':
+          content:
+            application/json:
+              example: [{ action: password_reset, actor: Propietario, created_at: '…' }]
+
+  /me/reset-notice/ack:
+    post:
+      summary: Marca como visto el aviso de restablecimiento
+      responses:
+        '204': { description: OK }
+
+  /people:
+    get:
+      summary: Personas de la instalación (solo propietario; sin datos de salud)
+      responses:
+        '200':
+          content:
+            application/json:
+              example: [{ id: 2, display_name: Ana, email: ana@ejemplo.com, role: user, created_at: '…' }]
+        '403': { description: No es el propietario }
+
+  /people/invites:
+    get:
+      summary: Invitaciones con su estado (solo propietario)
+      responses:
+        '200':
+          content:
+            application/json:
+              example: [{ id: 1, status: pendiente, created_at: '…', expires_at: '…', used_by_name: null }]
+    post:
+      summary: Crear invitación (FR-001, FR-002)
+      responses:
+        '201':
+          content:
+            application/json:
+              example: { id: 1, token: '<base64url>', expires_at: '…', description: 'El frontend compone /#invitacion=<token>' }
+        '403': { description: No es el propietario }
+
+  /people/invites/{id}:
+    delete:
+      summary: Revocar una invitación pendiente
+      responses:
+        '204': { description: Revocada }
+        '404': { description: No existe o ya no está pendiente }
+
+  /people/{id}/reset-link:
+    post:
+      summary: Enlace de recuperación de 30 min para un usuario (FR-014, FR-016)
+      responses:
+        '201':
+          content:
+            application/json:
+              example: { token: '<base64url>', expires_at: '…' }
+        '403': { description: No es el propietario }
+        '404': { description: 'Usuario inexistente o es el propietario' }

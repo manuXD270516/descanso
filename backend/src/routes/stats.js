@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const db = require('../db');
+const repo = require('../repo/stats');
 const { durationMinutes, parseRange, circularAvg } = require('../util');
 
 const r = Router();
@@ -7,8 +7,8 @@ const r = Router();
 // GET /api/stats?from=YYYY-MM-DD&to=YYYY-MM-DD  → resumen diario + promedios
 r.get('/', (req, res) => {
   const { from, to } = parseRange(req.query, { required: true });
-  const sleep = db.prepare('SELECT * FROM sleep_records WHERE wake_time IS NOT NULL AND date >= ? AND date <= ?').all(from, to);
-  const naps = db.prepare('SELECT * FROM naps WHERE date >= ? AND date <= ?').all(from, to);
+  const sleep = repo.nightsInRange(req.user.id, from, to);
+  const naps = repo.napsInRange(req.user.id, from, to);
 
   const days = {};
   const day = (d) => (days[d] ||= { date: d, sleep_min: 0, nap_min: 0, naps: 0, bedtime: null, wake_time: null });

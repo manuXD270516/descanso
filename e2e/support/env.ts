@@ -13,3 +13,8 @@ export const OFFSET = '-04:00';
 export const SETUP_TOKEN = 'e2e-codigo-de-alta';
 export const OWNER_EMAIL = 'propietario@descanso.test';
 export const OWNER_PASSWORD = 'una frase de prueba larga';
+/** Versión de la política de privacidad (feature 008); igual que backend/src/policy.js. */
+export const POLICY_VERSION = '2026-10-01';
+/** Segunda persona de prueba (feature 008). */
+export const GUEST_EMAIL = 'invitada@descanso.test';
+export const GUEST_PASSWORD = 'otra frase de prueba larga';

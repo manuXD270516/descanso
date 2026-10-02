@@ -24,7 +24,21 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: auto
+      # Clave PÚBLICA de age (age1…): el pipeline cifra pero nunca puede descifrar (feature 008)
+      BACKUP_AGE_RECIPIENT: ${{ secrets.BACKUP_AGE_RECIPIENT }}
     steps:
+      # Antes de descargar nada: sin clave de cifrado no se sigue (nunca se sube una copia en claro)
+      - name: Comprobar la clave de cifrado
+        run: |
+          set -euo pipefail
+          if [[ ! "${BACKUP_AGE_RECIPIENT:-}" =~ ^age1[0-9a-z]{58}$ ]]; then
+            echo "::error::Falta o no es válido el secreto BACKUP_AGE_RECIPIENT (clave pública age1…). Ver docs/runbooks/restaurar-respaldo.md"
+            exit 1
+          fi
+
+      - name: Instalar age
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq age
+
       - name: Descargar copia consistente
         run: |
           set -euo pipefail
@@ -39,12 +53,22 @@ jobs:
           echo "integrity_check: $result"
           [[ "$result" == "ok" ]]
 
+      # La base contiene datos de salud de todos los usuarios: solo sale cifrada (feature 008)
+      - name: Cifrar con age
+        run: |
+          set -euo pipefail
+          age -r "$BACKUP_AGE_RECIPIENT" -o backup.db.age backup.db
+          rm -f backup.db
+          head -c 21 backup.db.age | grep -q '^age-encryption.org/v1' # cabecera de age, no SQLite
+          ls -l backup.db.age
+
       - name: Subir al bucket
         run: |
           set -euo pipefail
-          aws s3 cp backup.db "s3://$S3_BUCKET/descanso/$TS.db" --endpoint-url "$S3_ENDPOINT"
+          aws s3 cp backup.db.age "s3://$S3_BUCKET/descanso/$TS.db.age" --endpoint-url "$S3_ENDPOINT"
 
-      # Solo llega aquí si la copia de hoy se subió bien: un fallo nunca borra respaldos (FR-013)
+      # Solo llega aquí si la copia de hoy se subió bien: un fallo nunca borra respaldos (FR-013).
+      # Poda tanto las copias cifradas (.db.age) como las antiguas en claro (.db) de antes de 008.
       - name: Podar respaldos de más de 14 días
         run: |
           set -euo pipefail

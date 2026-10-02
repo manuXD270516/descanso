@@ -35,7 +35,7 @@ test('alta con el código correcto: 201, sesión iniciada, código gastado y ema
   assert.match(cookie, /^sid=[\w-]+; Path=\/; HttpOnly; SameSite=Lax; Max-Age=2592000$/);
   assert.ok(db.prepare('SELECT used_at FROM auth_setup').get().used_at);
   const me = await anon.get('/api/auth/status').set('Cookie', cookie.split(';')[0]).expect(200);
-  assert.deepEqual(me.body, { state: 'authenticated', email: 'yo@ejemplo.com' });
+  assert.deepEqual(me.body, { state: 'authenticated', email: 'yo@ejemplo.com', role: 'owner', display_name: 'yo' });
   // El código ya no sirve
   await setup({ token, email: 'otro@ejemplo.com', password: PASSWORD }).expect(409);
 });
@@ -65,7 +65,9 @@ test('rotar el código cierra todas las sesiones y borra la contraseña sin toca
 
   token = rotate();
   await anon.get('/api/sleep').set('Cookie', cookie).expect(401);
-  assert.equal(db.prepare('SELECT COUNT(*) AS c FROM sessions').get().c, 0);
+  // Feature 008: la rotación cierra solo las sesiones del propietario; las de otros usuarios siguen
+  assert.equal(db.prepare('SELECT COUNT(*) AS c FROM sessions WHERE user_id = 1').get().c, 0);
+  assert.ok(db.prepare('SELECT COUNT(*) AS c FROM sessions WHERE user_id <> 1').get().c > 0);
   assert.equal(db.prepare('SELECT password_hash FROM users WHERE id = 1').get().password_hash, null);
   assert.deepEqual(db.prepare('SELECT * FROM sleep_records').all(), before);
   assert.deepEqual((await anon.get('/api/auth/status')).body, { state: 'setup', nights: 1 });

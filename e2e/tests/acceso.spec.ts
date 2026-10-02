@@ -40,7 +40,8 @@ test.describe('Acceso protegido (004)', () => {
     await expect(page.getByRole('navigation', { name: 'Secciones' })).toBeVisible();
 
     await page.getByText('Cuenta', { exact: true }).click();
-    await expect(page.getByText(OWNER_EMAIL)).toBeVisible();
+    // Feature 008: el menú muestra el nombre visible (al dar de alta: la parte local del email)
+    await expect(page.locator('.account-email')).toHaveText(OWNER_EMAIL.split('@')[0]);
     await page.getByRole('button', { name: 'Cerrar sesión' }).click();
     await expect(page.getByRole('heading', { name: 'Entrar' })).toBeVisible();
     await page.reload();

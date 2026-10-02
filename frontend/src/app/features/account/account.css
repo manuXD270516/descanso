@@ -1,0 +1,83 @@
+.account-card {
+  max-width: 520px;
+  margin: 1rem auto 0;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.account-card form,
+.account-form {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.account-card .btn {
+  justify-self: start;
+}
+
+.notice {
+  border-left: 3px solid var(--moon);
+  padding: 0.5rem 0.75rem;
+  background: var(--night-2);
+  border-radius: 0 8px 8px 0;
+}
+
+.check {
+  display: flex;
+  gap: 0.55rem;
+  align-items: flex-start;
+}
+
+.check input {
+  margin-top: 0.2rem;
+}
+
+.policy h3 {
+  margin-top: 0.4rem;
+}
+
+.policy p {
+  color: var(--ink-dim);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.list-plain {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.list-plain li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.link-box {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.link-box input {
+  font-family: ui-monospace, monospace;
+  font-size: 0.8rem;
+}
+
+.danger-zone {
+  border: 1px solid var(--danger);
+  border-radius: 12px;
+  padding: 0.9rem;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.row-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}

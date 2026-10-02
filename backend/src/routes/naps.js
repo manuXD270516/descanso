@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const db = require('../db');
+const repo = require('../repo/naps');
 const { isIso, isDate, durationMinutes, localDateOf, parseRange, HttpError } = require('../util');
 
 const r = Router();
@@ -22,36 +22,21 @@ function validate(body) {
 }
 
 r.get('/', (req, res) => {
-  const { from, to } = parseRange(req.query);
-  let sql = 'SELECT * FROM naps';
-  const params = [];
-  const where = [];
-  if (from) { where.push('date >= ?'); params.push(from); }
-  if (to) { where.push('date <= ?'); params.push(to); }
-  if (where.length) sql += ' WHERE ' + where.join(' AND ');
-  sql += ' ORDER BY start_time DESC';
-  res.json(db.prepare(sql).all(...params).map(withDuration));
+  res.json(repo.list(req.user.id, parseRange(req.query)).map(withDuration));
 });
 
 r.post('/', (req, res) => {
-  const d = validate(req.body);
-  const info = db.prepare('INSERT INTO naps (date, start_time, end_time, notes) VALUES (?,?,?,?)')
-    .run(d.date, d.start_time, d.end_time, d.notes);
-  res.status(201).json(withDuration(db.prepare('SELECT * FROM naps WHERE id = ?').get(info.lastInsertRowid)));
+  res.status(201).json(withDuration(repo.create(req.user.id, validate(req.body))));
 });
 
 r.put('/:id', (req, res) => {
-  const existing = db.prepare('SELECT * FROM naps WHERE id = ?').get(req.params.id);
+  const existing = repo.get(req.user.id, req.params.id);
   if (!existing) throw new HttpError(404, 'Siesta no encontrada');
-  const d = validate({ ...existing, ...req.body });
-  db.prepare('UPDATE naps SET date=?, start_time=?, end_time=?, notes=? WHERE id=?')
-    .run(d.date, d.start_time, d.end_time, d.notes, existing.id);
-  res.json(withDuration(db.prepare('SELECT * FROM naps WHERE id = ?').get(existing.id)));
+  res.json(withDuration(repo.update(req.user.id, existing.id, validate({ ...existing, ...req.body }))));
 });
 
 r.delete('/:id', (req, res) => {
-  const info = db.prepare('DELETE FROM naps WHERE id = ?').run(req.params.id);
-  if (!info.changes) throw new HttpError(404, 'Siesta no encontrada');
+  if (!repo.remove(req.user.id, req.params.id)) throw new HttpError(404, 'Siesta no encontrada');
   res.status(204).end();
 });
 

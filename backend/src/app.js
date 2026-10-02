@@ -27,6 +27,8 @@ app.use('/api/naps', require('./routes/naps'));
 app.use('/api/metrics', require('./routes/metrics'));
 app.use('/api/stats', require('./routes/stats'));
 app.use('/api', require('./routes/export'));
+app.use('/api/people', require('./routes/people'));
+app.use('/api/me', require('./routes/me'));
 
 // Sirve el frontend compilado de Angular si existe (despliegue en un solo servicio)
 const distDir = process.env.FRONTEND_DIST || path.join(__dirname, '..', '..', 'frontend', 'dist', 'frontend', 'browser');

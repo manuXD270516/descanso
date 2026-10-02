@@ -9,8 +9,7 @@
 - NO se introducen ORMs, frameworks de estado ni librerías de UI salvo que el plan lo justifique
   explícitamente.
 
-**Razón**: un stack acotado mantiene el proyecto mono-usuario pequeño, predecible y fácil de
-mantener.
+**Razón**: un stack acotado mantiene el proyecto pequeño, predecible y fácil de mantener.
 
 ### II. Persistencia segura
 
@@ -22,6 +21,10 @@ mantener.
     las filas, verificar recuentos y contenido, y solo entonces sustituir la antigua; patrón de
     12 pasos de SQLite) no es un DROP de datos, siempre que la verificación preceda a la
     sustitución y la migración sea atómica.
+  - Aclaración: borrar datos **a petición de su propio dueño** (su cuenta completa o una fuente de
+    datos que él elige eliminar) no es un DROP de datos del usuario, sino el ejercicio de su
+    derecho de supresión. MUST exigir su confirmación explícita, borrar solo filas de ese
+    usuario y quedar probado; los respaldos se purgan por retención, en el plazo documentado.
 
 **Razón**: los registros de sueño son historia personal irrecuperable; las migraciones
 repetibles evitan pérdidas y estados inconsistentes.
@@ -75,9 +78,17 @@ atención; debe ser clara y accesible.
 
 ## Alcance del producto
 
-"Descanso" es un tracker personal de sueño, siestas y métricas, mono-usuario. El repositorio
-contiene un MVP funcional en `backend/` y `frontend/`, que es la línea base sobre la que se
-especifican las nuevas features.
+"Descanso" es un tracker personal de sueño, siestas y métricas, **multiusuario con aislamiento
+estricto**: varias personas lo usan, cada una con su cuenta, y nadie ve ni modifica los datos de
+otra. Entran solo por invitación del propietario. El repositorio contiene la app en `backend/` y
+`frontend/`.
+
+- Todo dato de usuario MUST pertenecer a un usuario y toda consulta MUST filtrarse por él; un
+  recurso ajeno se comporta como inexistente (404).
+- El aislamiento MUST verificarse con una suite automática de dos usuarios que recorra todos los
+  endpoints, y con una comprobación del esquema.
+- Quien opera el servidor tiene acceso técnico a la base y a los respaldos; la app MUST decirlo
+  con honestidad a cada persona antes de que se registre.
 
 ## Flujo de trabajo y puertas de calidad
 
@@ -99,6 +110,7 @@ especifican las nuevas features.
 
 | Versión | Fecha | Tipo | Cambio |
 |---------|-------|------|--------|
+| 2.0.0 | 2026-10-01 | MAJOR + MINOR | **Alcance**: de mono-usuario a multiusuario con aislamiento estricto (filtrado por usuario, 404 para lo ajeno, suite de aislamiento y transparencia sobre el acceso del operador). **Principio II**: el borrado a petición del propio dueño no es DROP de datos. Necesarias antes del plan de 008. |
 | 1.0.1 | 2026-09-30 | PATCH | Principio II: toda migración pasa por el runner con respaldo previo (feature 003); reconstruir una tabla con copia verificada en la misma migración no es DROP de datos. Necesaria antes del plan de 004. |
 
-**Version**: 1.0.1 | **Ratified**: 2026-09-29 | **Last Amended**: 2026-09-30
+**Version**: 2.0.0 | **Ratified**: 2026-09-29 | **Last Amended**: 2026-10-01

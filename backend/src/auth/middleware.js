@@ -11,6 +11,12 @@ function requireAuth(req, res, next) {
   next();
 }
 
+/** Solo el propietario (feature 008): invitaciones, personas y enlaces de recuperación. */
+function requireOwner(req, res, next) {
+  if (req.user?.role !== 'owner') return res.status(403).json({ error: 'Solo el propietario puede hacer esto' });
+  next();
+}
+
 const SAFE = new Set(['GET', 'HEAD', 'OPTIONS']);
 
 /** Rechaza escrituras que no vienen del propio sitio (research R8). FR-013. */
@@ -56,4 +62,4 @@ function securityHeaders(req, res, next) {
   next();
 }
 
-module.exports = { requireAuth, csrf, securityHeaders };
+module.exports = { requireAuth, requireOwner, csrf, securityHeaders };

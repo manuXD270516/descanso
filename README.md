@@ -6,6 +6,11 @@ Aplicación full-stack para registrar la hora de dormir cada noche, la hora de d
 al día siguiente, siestas con inicio y fin, y un panel de métricas configurables
 (escala, número, sí/no o texto) con historial diario.
 
+**Multiusuario por invitación** (feature 008): el propietario invita a otras personas con un
+enlace de un solo uso; cada una tiene su cuenta, su perfil y sus datos, y nadie ve los de otra
+(tampoco el propietario). Quien administra el servidor tiene acceso técnico a la base y a los
+respaldos (cifrados): la app lo dice antes de registrarse.
+
 - **Backend:** Node.js 22 LTS · Express 5 · SQLite (better-sqlite3), datos persistentes en un archivo `.db`
 - **Frontend:** Angular 20 (standalone components + signals)
 - **Despliegue:** un solo servicio — Express sirve la API y el frontend compilado
@@ -14,8 +19,9 @@ al día siguiente, siestas con inicio y fin, y un panel de métricas configurabl
 sleep-tracker/
 ├── backend/          API REST + servidor estático
 │   ├── src/server.js
-│   ├── src/db.js     esquema SQLite (se crea solo al arrancar)
-│   └── src/routes/   sleep · naps · metrics · stats
+│   ├── src/db.js     conexión SQLite + migraciones al arrancar (src/migrations)
+│   ├── src/repo/     único acceso a datos de usuario (userId obligatorio)
+│   └── src/routes/   sleep · naps · metrics · stats · export · auth · me · people
 ├── frontend/         proyecto Angular
 ├── e2e/              pruebas end-to-end con Playwright (docs/testing/e2e-playwright.md)
 ├── Dockerfile
@@ -71,6 +77,12 @@ modifican datos deben venir del propio sitio (`Sec-Fetch-Site`/`Origin`); si no,
 | GET    | `/api/auth/status`                    | `setup` · `setup-unavailable` · `login` · `authenticated` |
 | POST   | `/api/auth/setup`                     | `{token, email, password}` alta del propietario (contraseña de 12 a 128 caracteres) |
 | POST   | `/api/auth/login` · `/api/auth/logout` | Entrar (5 fallos en 15 min → 429) / cerrar sesión   |
+| POST   | `/api/auth/register`                  | `{invite, display_name, email, password, accept_policy, policy_version}` registro por invitación |
+| POST   | `/api/auth/reset`                     | `{token, password}` contraseña nueva con un enlace de recuperación |
+| GET · PUT · DELETE | `/api/me`                 | Mi perfil (nombre, zona horaria, objetivo de sueño) / borrar mi cuenta (con contraseña) |
+| PUT    | `/api/me/email` · `/api/me/password`  | Cambiar email o contraseña (con la actual)         |
+| GET    | `/api/me/activity`                    | Acciones del propietario sobre mi cuenta           |
+| GET · POST · DELETE | `/api/people…`           | Solo propietario: personas, invitaciones (72 h) y enlaces de recuperación (30 min) |
 | GET    | `/api/export.json`                    | Todos mis datos en JSON versionado                 |
 | GET    | `/api/export/{noches,siestas,metricas,valores}.csv` | Un CSV por tipo (UTF-8 con BOM)      |
 | GET    | `/api/sleep?from&to`                  | Noches (con `duration_min`)                        |
@@ -163,8 +175,10 @@ El workflow **Backup** corre a diario (03:17 UTC) y también se puede lanzar a m
 1. descarga una copia consistente de la base con `/api/admin/backup`, protegido con
    `BACKUP_TOKEN`;
 2. verifica su integridad;
-3. la sube a un bucket privado compatible con S3;
-4. borra las copias de más de 14 días.
+3. la **cifra con age** usando la clave pública `BACKUP_AGE_RECIPIENT` (la privada solo la
+   guarda el propietario; sin el secreto, el workflow falla sin subir nada en claro);
+4. la sube a un bucket privado compatible con S3;
+5. borra las copias de más de 14 días.
 
 Para restaurar, sigue [`docs/runbooks/restaurar-respaldo.md`](docs/runbooks/restaurar-respaldo.md).
 
@@ -198,5 +212,10 @@ cd ../backend && npm ci && PORT=80 DB_PATH=/var/lib/descanso/sleep.db npm start
 
 - La "fecha de la noche" es el día en que te acostaste (una noche del 11 al 12 se guarda como `2026-09-11`).
 - Solo puede haber una noche abierta a la vez (lo garantiza la base; la API responde 409 si se intenta abrir otra); "Ya desperté" la cierra.
-- Al crear la base se añaden tres métricas de ejemplo (Calidad del sueño, Energía al despertar, Cafés). Puedes editarlas, archivarlas o eliminarlas desde el panel.
+- Cada cuenta empieza con tres métricas de ejemplo (Calidad del sueño, Energía al despertar, Cafés). Puedes editarlas, archivarlas o eliminarlas desde el panel.
+- **Invitar**: Cuenta → Personas → "Invitar a alguien" y envía el enlace por el medio que prefieras.
+- **Olvidé mi contraseña**: el propietario genera un enlace de recuperación en Personas; si es el propio
+  propietario, sigue [`docs/runbooks/recuperar-acceso.md`](docs/runbooks/recuperar-acceso.md).
+- **Rollback**: con otros usuarios registrados, nunca vuelvas manualmente a una versión anterior a 008
+  ([`rollback-migracion.md`](docs/runbooks/rollback-migracion.md)).
 - Archivar una métrica la oculta sin borrar el historial; eliminar borra también sus registros.
