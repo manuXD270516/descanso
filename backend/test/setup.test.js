@@ -19,7 +19,7 @@ const setup = (body) => anon.post('/api/auth/setup').send(body);
 beforeEach(() => db.exec('DELETE FROM sleep_records'));
 
 test('sin contraseña: status "setup" con el número de noches y la API responde 401 (US2-1, US2-4)', async () => {
-  db.prepare('INSERT INTO sleep_records (date, bedtime, wake_time) VALUES (?,?,?)').run('2026-09-01', iso('2026-09-01T23:00'), iso('2026-09-02T07:00'));
+  db.prepare('INSERT INTO sleep_records (user_id, date, bedtime, wake_time) VALUES (1,?,?,?)').run('2026-09-01', iso('2026-09-01T23:00'), iso('2026-09-02T07:00'));
   rotate();
   const { body } = await anon.get('/api/auth/status').expect(200);
   assert.deepEqual(body, { state: 'setup', nights: 1 });
@@ -35,7 +35,7 @@ test('alta con el código correcto: 201, sesión iniciada, código gastado y ema
   assert.match(cookie, /^sid=[\w-]+; Path=\/; HttpOnly; SameSite=Lax; Max-Age=2592000$/);
   assert.ok(db.prepare('SELECT used_at FROM auth_setup').get().used_at);
   const me = await anon.get('/api/auth/status').set('Cookie', cookie.split(';')[0]).expect(200);
-  assert.deepEqual(me.body, { state: 'authenticated', email: 'yo@ejemplo.com', role: 'owner', display_name: 'yo' });
+  assert.deepEqual(me.body, { state: 'authenticated', email: 'yo@ejemplo.com', role: 'owner', display_name: 'yo', onboarded: false });
   // El código ya no sirve
   await setup({ token, email: 'otro@ejemplo.com', password: PASSWORD }).expect(409);
 });
@@ -56,7 +56,7 @@ test('rotar el código cierra todas las sesiones y borra la contraseña sin toca
   let token = rotate();
   const r = await setup({ token, email: 'yo@ejemplo.com', password: PASSWORD }).expect(201);
   const cookie = r.headers['set-cookie'][0].split(';')[0];
-  db.prepare('INSERT INTO sleep_records (date, bedtime, wake_time) VALUES (?,?,?)').run('2026-09-01', iso('2026-09-01T23:00'), iso('2026-09-02T07:00'));
+  db.prepare('INSERT INTO sleep_records (user_id, date, bedtime, wake_time) VALUES (1,?,?,?)').run('2026-09-01', iso('2026-09-01T23:00'), iso('2026-09-02T07:00'));
   const before = db.prepare('SELECT * FROM sleep_records').all();
 
   // Mismo código: nada cambia

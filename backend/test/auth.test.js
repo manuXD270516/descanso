@@ -17,7 +17,7 @@ before(async () => {
 test('entrar: 200 y cookie sid HttpOnly, SameSite=Lax, 30 días; en HTTPS __Host-sid con Secure (FR-001, FR-007)', async () => {
   const r = await login(' YO@ejemplo.com ', PASSWORD).expect(200);
   // 008 añade role, display_name y reset_notice_at a la respuesta
-  assert.deepEqual(r.body, { email: EMAIL, role: 'owner', display_name: null, reset_notice_at: null });
+  assert.deepEqual(r.body, { email: EMAIL, role: 'owner', display_name: null, reset_notice_at: null, onboarded: false });
   assert.match(r.headers['set-cookie'][0], /^sid=[\w-]{43}; Path=\/; HttpOnly; SameSite=Lax; Max-Age=2592000$/);
   const s = await login(EMAIL, PASSWORD, { 'X-Forwarded-Proto': 'https' }).expect(200);
   assert.match(s.headers['set-cookie'][0], /^__Host-sid=[\w-]{43}; Path=\/; HttpOnly; SameSite=Lax; Max-Age=2592000; Secure$/);

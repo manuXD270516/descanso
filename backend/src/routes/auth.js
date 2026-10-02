@@ -52,7 +52,7 @@ r.get('/status', (req, res) => {
   const session = loadSession(db, req);
   if (session) {
     if (session.refreshed) setCookie(req, res, session.id);
-    return res.json({ state: 'authenticated', ...sessionUser(session.user) });
+    return res.json({ state: 'authenticated', ...sessionUser(session.user), onboarded: users.isOnboarded(session.user.id) });
   }
   if (owner().password_hash) return res.json({ state: 'login' });
   if (!setupRow().token_hash) return res.json({ state: 'setup-unavailable' });
@@ -125,7 +125,7 @@ r.post('/register', async (req, res) => {
     throw e;
   }
   setCookie(req, res, createSession(db, userId));
-  res.status(201).json({ email, role: 'user', display_name: displayName });
+  res.status(201).json({ email, role: 'user', display_name: displayName, onboarded: false });
 });
 
 // POST /api/auth/login { email, password }
@@ -143,7 +143,7 @@ r.post('/login', async (req, res) => {
   }
   limiter.reset(`email:${email}`);
   setCookie(req, res, createSession(db, user.id));
-  res.json({ ...sessionUser(user), reset_notice_at: user.reset_notice_at });
+  res.json({ ...sessionUser(user), reset_notice_at: user.reset_notice_at, onboarded: users.isOnboarded(user.id) });
 });
 
 // POST /api/auth/logout → invalida la sesión en el servidor

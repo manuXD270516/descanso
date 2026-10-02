@@ -81,6 +81,16 @@ test('los listados, el resumen y la exportación de B no contienen nada de A (FR
   assert.ok(!JSON.stringify([nights, metrics, exp]).includes('user_id'));
 });
 
+test('el dashboard de B no refleja nada de A (feature 005)', async () => {
+  const q = { days: 30, to: '2026-09-30' };
+  const a = (await api.get('/api/dashboard').query(q).expect(200)).body;
+  const b = (await otherApi.get('/api/dashboard').query(q).expect(200)).body;
+  assert.ok(a.summary.days_with_data > 0, 'A tiene datos');
+  assert.equal(b.summary.days_with_data, 0);
+  assert.equal(b.pending14.days, 0);
+  assert.ok(b.days.every((d) => d.status !== 'data'));
+});
+
 test('la noche abierta y "una sola noche abierta" son por usuario (FR-008, US2-3)', async () => {
   assert.equal((await api.get('/api/sleep/open').expect(200)).body.id, A.open.id);
   const bOpen = (await otherApi.get('/api/sleep/open').expect(200)).body;

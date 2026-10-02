@@ -37,7 +37,7 @@ test('la base guarda solo la huella del token; caduca a las 72 h (FR-002)', asyn
 test('registro válido: 201, sesión, rol user, consentimiento, 3 métricas y objetivo propios (FR-004, FR-005)', async () => {
   const inv = await invite();
   const r = await register({ invite: ` ${inv.token} `, email: '  Lucia@Ejemplo.com ', display_name: '  Lucía ' }).expect(201);
-  assert.deepEqual(r.body, { email: 'lucia@ejemplo.com', role: 'user', display_name: 'Lucía' });
+  assert.deepEqual(r.body, { email: 'lucia@ejemplo.com', role: 'user', display_name: 'Lucía', onboarded: false });
   const cookie = r.headers['set-cookie'][0].split(';')[0];
   const u = db.prepare('SELECT id, role, consent_version, consent_at FROM users WHERE email = ?').get('lucia@ejemplo.com');
   assert.equal(u.role, 'user');
@@ -46,7 +46,7 @@ test('registro válido: 201, sesión, rol user, consentimiento, 3 métricas y ob
   const metrics = (await anon.get('/api/metrics').set('Cookie', cookie).expect(200)).body;
   assert.deepEqual(metrics.map((m) => m.name), ['Calidad del sueño', 'Energía al despertar', 'Cafés']);
   assert.deepEqual((await anon.get('/api/sleep').set('Cookie', cookie).expect(200)).body, []);
-  assert.equal(db.prepare('SELECT sleep_goal_min FROM user_settings WHERE user_id = ?').get(u.id).sleep_goal_min, 480);
+  assert.equal(db.prepare('SELECT sleep_goal_min FROM user_settings WHERE user_id = ?').get(u.id).sleep_goal_min, 420); // 7 h por defecto desde 005
   assert.equal(db.prepare('SELECT used_by FROM invites WHERE id = ?').get(inv.id).used_by, u.id);
   await anon.get('/api/people').set('Cookie', cookie).expect(403); // no es propietaria
 });

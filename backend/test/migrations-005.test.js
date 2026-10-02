@@ -6,6 +6,9 @@ const os = require('node:os');
 const path = require('node:path');
 const Database = require('better-sqlite3');
 const { migrate } = require('../src/migrate');
+const { migrationsUpTo } = require('./fixtures/migrations-up-to');
+// Esquema de su momento: hasta la migración 005 (ver fixtures/migrations-up-to.js)
+const DIR = migrationsUpTo(5);
 const { makeLegacyDb } = require('./fixtures/make-legacy-db');
 
 // Migración 005 (feature 008): users reconstruida con roles y perfil, y tablas nuevas.
@@ -30,7 +33,7 @@ function migrated() {
   const usersBefore = db.prepare('SELECT id, email, password_hash, role, created_at FROM users ORDER BY id').all();
   const counts = (d) => Object.fromEntries(['sessions', 'sleep_records', 'naps', 'metrics', 'metric_entries'].map((t) => [t, d.prepare(`SELECT COUNT(*) AS c FROM ${t}`).get().c]));
   const countsBefore = counts(db);
-  migrate(db, { log: silent }); // aplica 005 con el directorio real
+  migrate(db, { dir: DIR, log: silent }); // aplica 005
   return { db, usersBefore, countsBefore, counts };
 }
 

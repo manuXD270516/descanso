@@ -12,10 +12,10 @@
 
 ## Phase 1: Foundational (bloquea las historias)
 
-- [ ] T001 Tests `backend/test/migrations-006-007.test.js`: sobre la base legacy migrada hasta 005 con un segundo usuario y datos → tras 006, recuento y huella de todas las columnas idénticos en `sleep_records`, `naps` y `metrics`, `metric_entries` intacta, `foreign_key_check` vacío, `INSERT` sin `user_id` → error NOT NULL, `ux_sleep_one_open` nombra el índice en su error y conserva `sqlite_sequence`; tras 007, filas con 480 → 420 y `goal_customized = 0`, filas con otro valor conservadas y `goal_customized = 1`, `DEFAULT 420`, `onboarded_at` NULL
-- [ ] T002 Crear `backend/src/migrations/006_contraer_user_id.js` (`foreignKeys: false`, copia verificada como en `004_user_id_en_datos.js`, sin `DEFAULT 1`) y `backend/src/migrations/007_objetivo_y_bienvenida.sql` (reconstrucción de `user_settings` según data-model.md)
-- [ ] T003 [P] Compatibilidad `backend/test/compat-previous-005.test.js` con `fixtures/legacy-008-statements.js` (sentencias de `repo/` y `auth` de 008: crear noche/siesta/métrica con `user_id`, `createUser` con `user_settings(user_id, updated_at)`, `updateProfile` de objetivo, borrar cuenta): funcionan sobre el esquema de 005
-- [ ] T004 Ajustar `repo/users.js`: `updateProfile` con objetivo → `goal_customized = 1`; `profile()` devuelve `goal_customized` y `onboarded_at`; `createUser` toma el nuevo DEFAULT 420
+- [X] T001 Tests `backend/test/migrations-006-007.test.js`: sobre la base legacy migrada hasta 005 con un segundo usuario y datos → tras 006, recuento y huella de todas las columnas idénticos en `sleep_records`, `naps` y `metrics`, `metric_entries` intacta, `foreign_key_check` vacío, `INSERT` sin `user_id` → error NOT NULL, `ux_sleep_one_open` nombra el índice en su error y conserva `sqlite_sequence`; tras 007, filas con 480 → 420 y `goal_customized = 0`, filas con otro valor conservadas y `goal_customized = 1`, `DEFAULT 420`, `onboarded_at` NULL
+- [X] T002 Crear `backend/src/migrations/006_contraer_user_id.js` (`foreignKeys: false`, copia verificada como en `004_user_id_en_datos.js`, sin `DEFAULT 1`) y `backend/src/migrations/007_objetivo_y_bienvenida.sql` (reconstrucción de `user_settings` según data-model.md)
+- [X] T003 [P] Compatibilidad `backend/test/compat-previous-005.test.js` con `fixtures/legacy-008-statements.js` (sentencias de `repo/` y `auth` de 008: crear noche/siesta/métrica con `user_id`, `createUser` con `user_settings(user_id, updated_at)`, `updateProfile` de objetivo, borrar cuenta): funcionan sobre el esquema de 005
+- [X] T004 Ajustar `repo/users.js`: `updateProfile` con objetivo → `goal_customized = 1`; `profile()` devuelve `goal_customized` y `onboarded_at`; `createUser` toma el nuevo DEFAULT 420
 
 ---
 
@@ -23,11 +23,11 @@
 
 **Independent Test**: `analytics.test.js` + `dashboard.test.js` + e2e.
 
-- [ ] T005 [P] [US1] Tests `backend/test/analytics.test.js` (puras, con fixtures): `buildDays` con noche + 2 siestas → suma; 2 noches con la misma fecha → suma; día sin registro → `none` y `total_min = null`; noche abierta → `in_progress`; `summary` ignora `none`/`in_progress` en la media y en "X de Y"; `pending` neto (déficit, compensación, sin días → `null`) contando solo días registrados de los últimos 14
-- [ ] T006 [US1] Implementar `backend/src/analytics.js` (`buildDays`, `summary`, `pending`) (R1)
-- [ ] T007 [P] [US1] Tests `backend/test/dashboard.test.js`: `GET /api/dashboard?days=30&to=…` → forma de `contracts/openapi-delta.yaml`; `days` ∉ {7,30,90} → 400; `to` inválido o posterior a hoy+1 → 400; sin sesión → 401; 90 días con datos responde en < 300 ms (SC-001); `PUT /api/me` con objetivo 239/721 → 400 y 450 → `goal_customized = 1`
-- [ ] T008 [US1] Implementar `backend/src/repo/dashboard.js` (noches del rango incluida la abierta y siestas, por usuario) y `backend/src/routes/dashboard.js`; montar en `app.js`
-- [ ] T009 [US1] Añadir `/api/dashboard` a `backend/test/isolation.test.js`: el dashboard de B no refleja nada de A (días, resumen, pendiente, regularidad)
+- [X] T005 [P] [US1] Tests `backend/test/analytics.test.js` (puras, con fixtures): `buildDays` con noche + 2 siestas → suma; 2 noches con la misma fecha → suma; día sin registro → `none` y `total_min = null`; noche abierta → `in_progress`; `summary` ignora `none`/`in_progress` en la media y en "X de Y"; `pending` neto (déficit, compensación, sin días → `null`) contando solo días registrados de los últimos 14
+- [X] T006 [US1] Implementar `backend/src/analytics.js` (`buildDays`, `summary`, `pending`) (R1)
+- [X] T007 [P] [US1] Tests `backend/test/dashboard.test.js`: `GET /api/dashboard?days=30&to=…` → forma de `contracts/openapi-delta.yaml`; `days` ∉ {7,30,90} → 400; `to` inválido o posterior a hoy+1 → 400; sin sesión → 401; 90 días con datos responde en < 300 ms (SC-001); `PUT /api/me` con objetivo 239/721 → 400 y 450 → `goal_customized = 1`
+- [X] T008 [US1] Implementar `backend/src/repo/dashboard.js` (noches del rango incluida la abierta y siestas, por usuario) y `backend/src/routes/dashboard.js`; montar en `app.js`
+- [X] T009 [US1] Añadir `/api/dashboard` a `backend/test/isolation.test.js`: el dashboard de B no refleja nada de A (días, resumen, pendiente, regularidad)
 - [ ] T010 [P] [US1] Frontend: `core/dashboard.service.ts`, `shared/charts/daily-bars.component.ts` (SVG con banda del objetivo, `none` y `in_progress` diferenciados sin rojo ni verde, `role="img"`, título y descripción) y `shared/charts/chart-table.component.ts` ("Ver como tabla"), con specs
 - [ ] T011 [US1] Frontend: `features/trends/trends.component.*` (3 indicadores, selector 7/30/90, gráfico, textos de pendiente según signo y "Aún no hay datos…") y pestaña "Tendencias" en `app.ts/app.html`, con specs
 
@@ -35,23 +35,23 @@
 
 ## Phase 3: User Story 4 - Objetivo adaptado a los ciclos (Priority: P2)
 
-- [ ] T012 [P] [US4] Tests en `analytics.test.js`: `cycles(420)` → `equivalent 4.7` y atajos (4 → 360, 5 → 450, 6 → 540); `cycles(240)` y `cycles(720)` dentro de rango; atajos siempre en 240..720
-- [ ] T013 [US4] Implementar `cycles()` y devolver `cycle_min` y `cycles` en el dashboard
+- [X] T012 [P] [US4] Tests en `analytics.test.js`: `cycles(420)` → `equivalent 4.7` y atajos (4 → 360, 5 → 450, 6 → 540); `cycles(240)` y `cycles(720)` dentro de rango; atajos siempre en 240..720
+- [X] T013 [US4] Implementar `cycles()` y devolver `cycle_min` y `cycles` en el dashboard
 - [ ] T014 [US4] Frontend: `features/trends/goal-editor.component.ts` (equivalencia en ciclos, atajos, campo libre en h y min, nota de aproximación y error 400), usado desde Tendencias; en el perfil, los mismos atajos (+ specs)
 
 ---
 
 ## Phase 4: User Story 3 - Regularidad (Priority: P2)
 
-- [ ] T015 [P] [US3] Tests en `analytics.test.js`: < 7 noches → `null`; 23:30 y 00:30 → media 0 y dispersión pequeña (SC-003); dispersión conocida (±40 min) con un fixture; media en 0..1439
+- [X] T015 [P] [US3] Tests en `analytics.test.js`: < 7 noches → `null`; 23:30 y 00:30 → media 0 y dispersión pequeña (SC-003); dispersión conocida (±40 min) con un fixture; media en 0..1439
 - [ ] T016 [US3] Implementar `regularity()` (media y desviación circular) y su sección plegable en Tendencias (+ spec)
 
 ---
 
 ## Phase 5: User Story 5 - Bienvenida (Priority: P2)
 
-- [ ] T017 [P] [US5] Tests: `POST /api/me/onboarding` con y sin objetivo → `onboarded_at` fijado, objetivo y `goal_customized`; 400 fuera de rango; `status` y `login` devuelven `onboarded`; es por usuario
-- [ ] T018 [US5] Implementar la ruta y `onboarded` en `routes/auth.js`
+- [X] T017 [P] [US5] Tests: `POST /api/me/onboarding` con y sin objetivo → `onboarded_at` fijado, objetivo y `goal_customized`; 400 fuera de rango; `status` y `login` devuelven `onboarded`; es por usuario
+- [X] T018 [US5] Implementar la ruta y `onboarded` en `routes/auth.js`
 - [ ] T019 [US5] Frontend: `features/onboarding/welcome.component.ts` (pregunta, atajos de ciclos, campo libre y "Saltar") mostrado tras entrar si `!onboarded`; `AuthService.onboarded` (+ spec)
 
 ---

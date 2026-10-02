@@ -15,7 +15,7 @@ test('GET /me devuelve el perfil con el objetivo por defecto y sin datos sensibl
   assert.equal(me.email, OTHER_EMAIL);
   assert.equal(me.role, 'user');
   assert.equal(me.display_name, 'Invitada');
-  assert.equal(me.sleep_goal_min, 480);
+  assert.equal(me.sleep_goal_min, 420); // 7 h por defecto desde 005
   assert.equal(me.timezone, null);
   assert.ok(!('password_hash' in me));
 });
@@ -28,7 +28,7 @@ test('PUT /me valida nombre, zona IANA y objetivo de 4 a 12 h (FR-011)', async (
   assert.deepEqual([me.display_name, me.timezone, me.sleep_goal_min], ['Inés', 'Europe/Madrid', 450]);
   await otherApi.put('/api/me').send({ timezone: 'UTC' }).expect(200);
   assert.equal(db.prepare('SELECT sleep_goal_min FROM user_settings WHERE user_id = ?').get(OTHER_ID).sleep_goal_min, 450);
-  assert.equal(db.prepare('SELECT sleep_goal_min FROM user_settings WHERE user_id = 1').get().sleep_goal_min, 480, 'el del propietario no cambia');
+  assert.equal(db.prepare('SELECT sleep_goal_min FROM user_settings WHERE user_id = 1').get().sleep_goal_min, 420, 'el del propietario no cambia');
 });
 
 test('cambiar el email exige la contraseña y no revela de quién es un email ocupado (FR-012)', async () => {
