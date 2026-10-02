@@ -14,14 +14,14 @@
 
 ## Phase 1: Foundational (bloquea todas las historias)
 
-- [ ] T001 Tests de la migración en `backend/test/migrations-005.test.js`: sobre la base legacy migrada hasta 004 (con el propietario dado de alta) → huella de `users` (`id, email, password_hash, role, created_at`) idéntica; `role` admite `'user'` y rechaza otros valores; `display_name` del propietario = parte local de su email; existe `user_settings` del propietario con `sleep_goal_min = 480` y CHECK 240..720; tablas `invites`, `password_resets` y `audit_log` creadas; recuentos de `sessions`, `sleep_records`, `naps`, `metrics` y `metric_entries` intactos (sin cascadas); `foreign_key_check` vacío
-- [ ] T002 Crear `backend/src/migrations/005_multiusuario.js` (`foreignKeys: false`) según data-model.md: reconstrucción verificada de `users` y nuevas tablas `user_settings` (`sleep_goal_min INTEGER NOT NULL DEFAULT 480 CHECK (sleep_goal_min BETWEEN 240 AND 720)`), `invites`, `password_resets` y `audit_log` (`action CHECK IN ('reset_link_created','password_reset')`) con sus `ON DELETE`
-- [ ] T003 [P] Test de compatibilidad `backend/test/compat-previous-008.test.js` con `fixtures/legacy-004-statements.js` (sentencias de auth y datos de 004: status, login con `users`, `bootstrap` de 004, sesiones, crear noche/siesta/métrica): funcionan sobre el esquema de 008
-- [ ] T004 [P] Meta-test `backend/test/schema-isolation.test.js` (R9) con la clasificación de data-model.md
-- [ ] T005 Crear `backend/src/repo/` (R1): `sleep.js`, `naps.js`, `metrics.js` (incluye `seedDefaults(userId)`), `entries.js`, `stats.js`, `export.js`, con `userId` obligatorio (lanza si falta) y `WHERE user_id = ?` o `JOIN metrics` en todas las consultas; mover a ellos el SQL de `backend/src/routes/{sleep,naps,metrics,stats,export}.js`
-- [ ] T006 Reescribir esas rutas para usar `repo.*(req.user.id, …)` y responder 404 cuando el repo no encuentra el recurso (incluido el IDOR de `DELETE /metrics/:id/entries/:date`, R2); quitar `require('../db')` de las rutas de datos
-- [ ] T007 [P] Test estático `backend/test/routes-no-db.test.js`: ningún archivo de `backend/src/routes/` contiene `db.prepare` ni `db.exec`, salvo `auth.js` y `admin.js` (justificados, tablas de identidad y respaldo)
-- [ ] T008 Ampliar `backend/test/helpers.js`: segundo usuario `other` (`role = 'user'`, con sus métricas sembradas) y su agente `otherApi`; la suite existente sigue pasando sin cambios de expectativas
+- [X] T001 Tests de la migración en `backend/test/migrations-005.test.js`: sobre la base legacy migrada hasta 004 (con el propietario dado de alta) → huella de `users` (`id, email, password_hash, role, created_at`) idéntica; `role` admite `'user'` y rechaza otros valores; `display_name` del propietario = parte local de su email; existe `user_settings` del propietario con `sleep_goal_min = 480` y CHECK 240..720; tablas `invites`, `password_resets` y `audit_log` creadas; recuentos de `sessions`, `sleep_records`, `naps`, `metrics` y `metric_entries` intactos (sin cascadas); `foreign_key_check` vacío
+- [X] T002 Crear `backend/src/migrations/005_multiusuario.js` (`foreignKeys: false`) según data-model.md: reconstrucción verificada de `users` y nuevas tablas `user_settings` (`sleep_goal_min INTEGER NOT NULL DEFAULT 480 CHECK (sleep_goal_min BETWEEN 240 AND 720)`), `invites`, `password_resets` y `audit_log` (`action CHECK IN ('reset_link_created','password_reset')`) con sus `ON DELETE`
+- [X] T003 [P] Test de compatibilidad `backend/test/compat-previous-008.test.js` con `fixtures/legacy-004-statements.js` (sentencias de auth y datos de 004: status, login con `users`, `bootstrap` de 004, sesiones, crear noche/siesta/métrica): funcionan sobre el esquema de 008
+- [X] T004 [P] Meta-test `backend/test/schema-isolation.test.js` (R9) con la clasificación de data-model.md
+- [X] T005 Crear `backend/src/repo/` (R1): `sleep.js`, `naps.js`, `metrics.js` (incluye `seedDefaults(userId)`), `entries.js`, `stats.js`, `export.js`, con `userId` obligatorio (lanza si falta) y `WHERE user_id = ?` o `JOIN metrics` en todas las consultas; mover a ellos el SQL de `backend/src/routes/{sleep,naps,metrics,stats,export}.js`
+- [X] T006 Reescribir esas rutas para usar `repo.*(req.user.id, …)` y responder 404 cuando el repo no encuentra el recurso (incluido el IDOR de `DELETE /metrics/:id/entries/:date`, R2); quitar `require('../db')` de las rutas de datos
+- [X] T007 [P] Test estático `backend/test/routes-no-db.test.js`: ningún archivo de `backend/src/routes/` contiene `db.prepare` ni `db.exec`, salvo `auth.js` y `admin.js` (justificados, tablas de identidad y respaldo)
+- [X] T008 Ampliar `backend/test/helpers.js`: segundo usuario `other` (`role = 'user'`, con sus métricas sembradas) y su agente `otherApi`; la suite existente sigue pasando sin cambios de expectativas
 
 **Checkpoint**: datos aislados por usuario en el backend; esquema listo.
 
@@ -31,8 +31,8 @@
 
 **Independent Test**: `isolation.test.js`.
 
-- [ ] T009 [US2] Crear `backend/test/isolation.test.js` (R10): A (propietario) y B con noche abierta y cerrada, siesta, métrica y valores; recorrer por introspección todas las rutas de `sleep`, `naps`, `metrics`, `stats` y `export`; como B, con ids y fechas de A → 404 o listas sin filas de A; huella de A intacta; `/sleep/open` de cada uno es la suya; A y B pueden tener una noche abierta a la vez; `/stats` y la exportación de B no contienen nada de A (FR-007…FR-009, SC-001)
-- [ ] T010 [US2] Corregir lo que destape T009 en `repo/` y rutas hasta que pase
+- [X] T009 [US2] Crear `backend/test/isolation.test.js` (R10): A (propietario) y B con noche abierta y cerrada, siesta, métrica y valores; recorrer por introspección todas las rutas de `sleep`, `naps`, `metrics`, `stats` y `export`; como B, con ids y fechas de A → 404 o listas sin filas de A; huella de A intacta; `/sleep/open` de cada uno es la suya; A y B pueden tener una noche abierta a la vez; `/stats` y la exportación de B no contienen nada de A (FR-007…FR-009, SC-001)
+- [X] T010 [US2] Corregir lo que destape T009 en `repo/` y rutas hasta que pase
 
 ---
 

@@ -34,9 +34,16 @@ test('con el JSON se reconstruye una base vacía con los mismos recuentos (SC-00
   fresh.pragma('foreign_keys = ON');
   migrate(fresh, { log: { info() {}, warn() {} } });
   importExport(fresh, j);
-  for (const [table, key] of [['sleep_records', 'sleep_records'], ['naps', 'naps'], ['metrics', 'metrics'], ['metric_entries', 'metric_entries']]) {
-    assert.equal(fresh.prepare(`SELECT COUNT(*) AS c FROM ${table}`).get().c, j[key].length, table);
-    assert.equal(fresh.prepare(`SELECT COUNT(*) AS c FROM ${table}`).get().c, db.prepare(`SELECT COUNT(*) AS c FROM ${table}`).get().c, table);
+  // Recuentos del propietario (id 1) en la base de origen: la exportación es por usuario (feature 008)
+  const ownerCount = {
+    sleep_records: 'SELECT COUNT(*) AS c FROM sleep_records WHERE user_id = 1',
+    naps: 'SELECT COUNT(*) AS c FROM naps WHERE user_id = 1',
+    metrics: 'SELECT COUNT(*) AS c FROM metrics WHERE user_id = 1',
+    metric_entries: 'SELECT COUNT(*) AS c FROM metric_entries e JOIN metrics m ON m.id = e.metric_id WHERE m.user_id = 1',
+  };
+  for (const table of Object.keys(ownerCount)) {
+    assert.equal(fresh.prepare(`SELECT COUNT(*) AS c FROM ${table}`).get().c, j[table].length, table);
+    assert.equal(fresh.prepare(`SELECT COUNT(*) AS c FROM ${table}`).get().c, db.prepare(ownerCount[table]).get().c, table);
   }
   assert.deepEqual(fresh.prepare('SELECT notes FROM sleep_records WHERE date = ?').get('2026-09-05'), { notes: 'dormí, "bien", y\ndesperté una vez' });
   fresh.close();
@@ -48,7 +55,7 @@ test('un CSV por tipo: BOM, cabeceras en español, RFC 4180 y una fila por regis
     const res = await api.get(`/api/export/${tipo}.csv`).buffer(true).parse((r, cb) => { let d = ''; r.setEncoding('utf8'); r.on('data', (c) => (d += c)); r.on('end', () => cb(null, d)); }).expect(200);
     assert.match(res.headers['content-type'], /^text\/csv; charset=utf-8/);
     assert.match(res.headers['content-disposition'], new RegExp(`filename="descanso-${tipo}-\\d{4}-\\d{2}-\\d{2}\\.csv"`));
-    assert.ok(res.body.startsWith('﻿'), 'BOM');
+    assert.ok(res.body.startsWith('\uFEFF'), 'BOM');
     const lines = res.body.slice(1).trimEnd().split('\r\n');
     assert.equal(lines[0], header);
     if (tipo !== 'noches') assert.equal(lines.length - 1, count, tipo);

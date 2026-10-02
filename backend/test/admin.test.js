@@ -6,7 +6,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const Database = require('better-sqlite3');
-const { api, iso } = require('./helpers');
+const { api, db, iso } = require('./helpers');
 
 const binary = (res, cb) => {
   const chunks = [];
@@ -44,8 +44,10 @@ test('con el token correcto entrega una copia SQLite consistente con los datos (
     const copy = new Database(file, { readonly: true });
     assert.equal(copy.pragma('integrity_check', { simple: true }), 'ok');
     assert.equal(copy.prepare("SELECT COUNT(*) AS c FROM sleep_records WHERE notes = 'control'").get().c, 1);
-    assert.equal(copy.prepare('SELECT COUNT(*) AS c FROM metrics').get().c, 3);
+    // El respaldo es la base completa: incluye las métricas de todos los usuarios (feature 008)
+    const metrics = copy.prepare('SELECT COUNT(*) AS c FROM metrics').get().c;
     copy.close();
+    assert.equal(metrics, db.prepare('SELECT COUNT(*) AS c FROM metrics').get().c);
   } finally {
     fs.rmSync(file, { force: true });
   }

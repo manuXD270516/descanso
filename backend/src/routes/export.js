@@ -1,17 +1,10 @@
-// Exportar mis datos (feature 004, US5): JSON versionado y un CSV por tipo de dato.
-// Nunca incluye usuarios, contraseñas, sesiones ni el código de alta (FR-024).
+// Exportar mis datos (features 004 y 008): JSON versionado y un CSV por tipo, solo del usuario.
+// Nunca incluye usuarios, contraseñas, sesiones ni el código de alta.
 const { Router } = require('express');
-const db = require('../db');
+const repo = require('../repo/export');
 const { HttpError } = require('../util');
 
 const r = Router();
-
-const QUERIES = {
-  sleep_records: 'SELECT id, date, bedtime, wake_time, notes, created_at FROM sleep_records ORDER BY id',
-  naps: 'SELECT id, date, start_time, end_time, notes, created_at FROM naps ORDER BY id',
-  metrics: 'SELECT id, name, type, unit, min_value, max_value, color, sort_order, archived, created_at FROM metrics ORDER BY id',
-  metric_entries: 'SELECT id, metric_id, date, value, created_at FROM metric_entries ORDER BY id',
-};
 
 // Un CSV por tipo, con cabeceras en español (aclaración del 2026-09-30)
 const CSV = {
@@ -30,9 +23,9 @@ function csvField(v) {
   return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
-r.get('/export.json', (_req, res) => {
+r.get('/export.json', (req, res) => {
   const out = { format: 'descanso-export', version: 1, exported_at: new Date().toISOString() };
-  for (const [key, sql] of Object.entries(QUERIES)) out[key] = db.prepare(sql).all();
+  for (const table of repo.TABLES) out[table] = repo.rows(req.user.id, table);
   res.set('Content-Disposition', `attachment; filename="descanso-${today()}.json"`);
   res.json(out);
 });
@@ -40,11 +33,11 @@ r.get('/export.json', (_req, res) => {
 r.get('/export/:tipo.csv', (req, res) => {
   const def = CSV[req.params.tipo];
   if (!def) throw new HttpError(404, 'Tipo de exportación desconocido');
-  const rows = db.prepare(QUERIES[def.table]).raw().all();
+  const rows = repo.rows(req.user.id, def.table, { raw: true });
   const lines = [def.headers.join(','), ...rows.map((row) => row.map(csvField).join(','))];
   res.set('Content-Type', 'text/csv; charset=utf-8');
   res.set('Content-Disposition', `attachment; filename="descanso-${req.params.tipo}-${today()}.csv"`);
-  res.send('﻿' + lines.join('\r\n') + '\r\n'); // BOM: Excel reconoce los acentos
+  res.send('\uFEFF' + lines.join('\r\n') + '\r\n'); // BOM: Excel reconoce los acentos
 });
 
 module.exports = r;
