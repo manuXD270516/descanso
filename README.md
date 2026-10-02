@@ -124,6 +124,15 @@ cd backend && npm test && npm run lint          # node:test + supertest, base SQ
 cd frontend && npm run lint && npx ng test --watch=false --browsers=ChromeHeadless
 ```
 
+Verificación local automatizada (servidor + datos sembrados + quickstart de Tendencias) y datos de
+prueba bajo demanda: [`docs/runbooks/verificacion-local.md`](docs/runbooks/verificacion-local.md).
+
+```bash
+node scripts/smoke-local.mjs run                          # verifica y para
+node scripts/smoke-local.mjs serve --build --fresh        # deja la app abierta con datos
+node scripts/smoke-local.mjs seed --days 90 --metrics     # más datos, sin duplicar (solo localhost)
+```
+
 Pruebas end-to-end con Playwright (navegador real contra el servidor real, un servidor con base
 SQLite vacía por test). Requieren las dependencias de `backend/` y `frontend/` instaladas; en
 local usan el Google Chrome instalado:
