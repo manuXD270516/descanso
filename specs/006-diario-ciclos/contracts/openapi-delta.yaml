@@ -1,0 +1,118 @@
+openapi: 3.1.0
+info:
+  title: Descanso API — cambios de la feature 006
+  version: 1.6.0
+  description: |
+    Cambios sobre los contratos de 001–008 y 005. Todo con sesión y aislado por usuario (008):
+    lo ajeno responde 404. Las ventanas de despertar se calculan en el cliente y no tienen endpoint
+    (FR-004, principio VIII).
+servers:
+  - url: /api
+
+paths:
+  /me:
+    get:
+      summary: Mi perfil; añade cycle_min y latency_min (FR-009)
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Profile' }
+    put:
+      summary: Actualiza mi perfil; acepta además cycle_min y latency_min (FR-009)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                display_name: { type: string }
+                timezone: { type: string }
+                sleep_goal_min: { type: integer, minimum: 240, maximum: 720 }
+                cycle_min: { type: integer, minimum: 70, maximum: 110 }
+                latency_min: { type: integer, minimum: 0, maximum: 60 }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Profile' }
+        '400':
+          description: |
+            "La duración del ciclo debe estar entre 70 y 110 minutos" ·
+            "El tiempo en dormirte debe estar entre 0 y 60 minutos" (además de los de 005/008)
+
+  /sleep/{id}:
+    put:
+      summary: Edita una noche; acepta además las respuestas de la tarjeta (FR-018)
+      description: |
+        Fusión parcial con la noche existente: enviar solo `{ sol_bucket }` cambia solo esa respuesta.
+        `null` borra una respuesta. Una noche ajena o inexistente → 404.
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date: { type: string, format: date }
+                bedtime: { type: string, format: date-time }
+                wake_time: { type: [string, 'null'], format: date-time }
+                notes: { type: [string, 'null'] }
+                sol_bucket: { $ref: '#/components/schemas/SolBucket' }
+                awakenings_bucket: { $ref: '#/components/schemas/AwakeningsBucket' }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SleepRecord' }
+        '400': { description: 'Respuesta no válida (valor fuera de la lista)' }
+        '404': { description: 'Registro no encontrado (incluye noches de otra persona)' }
+
+  /sleep:
+    get:
+      summary: Noches; cada una incluye sol_bucket y awakenings_bucket (pueden ser null)
+  /sleep/open:
+    get:
+      summary: Noche abierta; incluye las respuestas (siempre null hasta cerrarla)
+
+  /dashboard:
+    get:
+      summary: Igual que 005, pero cycle_min y cycles usan la duración de ciclo del usuario (FR-010)
+
+  /export.json:
+    get:
+      summary: sleep_records incluye sol_bucket y awakenings_bucket (FR-019)
+  /export/noches.csv:
+    get:
+      summary: Añade al final las columnas tiempo_dormirse (<15 | 15-30 | >30) y despertares (0 | 1-2 | 3+), vacías sin respuesta
+
+components:
+  schemas:
+    SolBucket:
+      type: [string, 'null']
+      enum: [lt15, 15_30, gt30, null]
+    AwakeningsBucket:
+      type: [string, 'null']
+      enum: ['0', 1_2, 3plus, null]
+    SleepRecord:
+      type: object
+      properties:
+        id: { type: integer }
+        date: { type: string, format: date }
+        bedtime: { type: string, format: date-time }
+        wake_time: { type: [string, 'null'], format: date-time }
+        notes: { type: [string, 'null'] }
+        duration_min: { type: [integer, 'null'] }
+        sol_bucket: { $ref: '#/components/schemas/SolBucket' }
+        awakenings_bucket: { $ref: '#/components/schemas/AwakeningsBucket' }
+        created_at: { type: string }
+    Profile:
+      type: object
+      description: Perfil de 008/005 más los ajustes de ciclo
+      properties:
+        sleep_goal_min: { type: integer }
+        goal_customized: { type: integer }
+        onboarded_at: { type: [string, 'null'] }
+        cycle_min: { type: integer, default: 90 }
+        latency_min: { type: integer, default: 15 }
