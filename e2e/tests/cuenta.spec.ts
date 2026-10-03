@@ -12,8 +12,9 @@ test.describe('Cuenta (008)', () => {
     await expect(p.getByText('Propuesta desde tu navegador')).toBeVisible();
     await p.getByLabel('Nombre visible').fill('Inés');
     await p.getByLabel('Zona horaria').fill('Europe/Madrid');
-    await p.getByLabel('Horas').fill('7');
-    await p.getByLabel('Minutos').fill('30');
+    // Feature 005: el objetivo se edita con el mismo editor de ciclos que Tendencias
+    await p.getByRole('button', { name: '7 h 30 · 5 ciclos' }).click();
+    await expect(p.getByRole('status').filter({ hasText: 'Objetivo guardado.' })).toBeVisible();
     await p.getByRole('button', { name: 'Guardar perfil' }).click();
     await expect(p.getByRole('status').filter({ hasText: 'Perfil guardado.' })).toBeVisible();
     await p.reload();

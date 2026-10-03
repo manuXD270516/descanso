@@ -3,6 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { AccountService, Activity, Profile } from '../../core/account.service';
 import { AuthService } from '../../core/auth.service';
+import { GoalEditorComponent } from '../trends/goal-editor.component';
 
 const ACTIONS: Record<Activity['action'], string> = {
   reset_link_created: 'generó un enlace de recuperación',
@@ -12,7 +13,7 @@ const ACTIONS: Record<Activity['action'], string> = {
 /** Mi perfil (feature 008, US3–US5). */
 @Component({
   selector: 'app-profile',
-  imports: [FormsModule],
+  imports: [FormsModule, GoalEditorComponent],
   templateUrl: './profile.component.html',
   styleUrl: './account.css',
 })
@@ -32,8 +33,6 @@ export class ProfileComponent implements OnInit {
 
   displayName = '';
   timezone = '';
-  goalHours = 8;
-  goalMinutes = 0;
   newEmail = '';
   emailPassword = '';
   currentPassword = '';
@@ -51,8 +50,6 @@ export class ProfileComponent implements OnInit {
     this.displayName = p.display_name ?? '';
     this.tzProposed.set(!p.timezone);
     this.timezone = p.timezone ?? (Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC');
-    this.goalHours = Math.floor(p.sleep_goal_min / 60);
-    this.goalMinutes = p.sleep_goal_min % 60;
     this.newEmail = p.email;
   }
 
@@ -61,8 +58,8 @@ export class ProfileComponent implements OnInit {
   }
 
   saveProfile() {
-    const sleep_goal_min = Number(this.goalHours) * 60 + Number(this.goalMinutes);
-    this.run(this.account.updateProfile({ display_name: this.displayName, timezone: this.timezone, sleep_goal_min }), (p) => {
+    // El objetivo se guarda con su propio editor (ciclos, feature 005)
+    this.run(this.account.updateProfile({ display_name: this.displayName, timezone: this.timezone }), (p) => {
       this.load(p as Profile);
       this.auth.displayName.set((p as Profile).display_name);
       this.ok('Perfil guardado.');

@@ -52,7 +52,7 @@ test('DT-04: la fecha de una siesta debe ser el día local de su inicio (crear y
 
 test('FR-021: los datos antiguos incoherentes se conservan; editarlos sin corregir la fecha → 400', async () => {
   const id = db
-    .prepare('INSERT INTO sleep_records (date, bedtime, wake_time, notes) VALUES (?,?,?,?)')
+    .prepare('INSERT INTO sleep_records (user_id, date, bedtime, wake_time, notes) VALUES (1,?,?,?,?)')
     .run('2026-09-06', iso('2026-09-05T23:00'), iso('2026-09-06T07:00'), 'antigua').lastInsertRowid;
   const before = db.prepare('SELECT * FROM sleep_records WHERE id = ?').get(id);
   await api.put(`/api/sleep/${id}`).send({ notes: 'editada' }).expect(400);
@@ -76,7 +76,7 @@ test('DT-08: una métrica sí/no solo acepta valores sí o no', async () => {
 });
 
 test('FR-019: la base impide dos noches abiertas, también insertando directamente', () => {
-  const ins = db.prepare('INSERT INTO sleep_records (date, bedtime) VALUES (?, ?)');
+  const ins = db.prepare('INSERT INTO sleep_records (user_id, date, bedtime) VALUES (1, ?, ?)');
   ins.run('2026-09-05', iso('2026-09-05T23:00'));
   assert.throws(() => ins.run('2026-09-06', iso('2026-09-06T23:00')), (e) => e.code === 'SQLITE_CONSTRAINT_UNIQUE');
 });

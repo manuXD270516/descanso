@@ -16,6 +16,7 @@ interface StatusResponse {
   email?: string;
   role?: Role;
   display_name?: string | null;
+  onboarded?: boolean;
 }
 
 interface SessionUser {
@@ -23,6 +24,7 @@ interface SessionUser {
   role?: Role;
   display_name?: string | null;
   reset_notice_at?: string | null;
+  onboarded?: boolean;
 }
 
 export interface RegisterForm {
@@ -44,6 +46,8 @@ export class AuthService {
   readonly nights = signal(0);
   /** Fecha del último restablecimiento de contraseña, pendiente de mostrar (feature 008). */
   readonly resetNotice = signal<string | null>(null);
+  /** ¿Ya vio la bienvenida? (feature 005). */
+  readonly onboarded = signal(true);
 
   refresh(): void {
     this.http.get<StatusResponse>('/api/auth/status').subscribe({
@@ -53,6 +57,7 @@ export class AuthService {
         this.role.set(s.role ?? null);
         this.displayName.set(s.display_name ?? null);
         this.nights.set(s.nights ?? 0);
+        this.onboarded.set(s.onboarded ?? true);
       },
       error: () => this.state.set('offline'),
     });
@@ -102,6 +107,7 @@ export class AuthService {
     this.role.set(u.role ?? null);
     this.displayName.set(u.display_name ?? null);
     this.resetNotice.set(u.reset_notice_at ?? null);
+    this.onboarded.set(u.onboarded ?? true);
     this.state.set('authenticated');
   }
 }

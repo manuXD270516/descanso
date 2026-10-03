@@ -5,6 +5,9 @@ const os = require('node:os');
 const path = require('node:path');
 const Database = require('better-sqlite3');
 const { migrate } = require('../src/migrate');
+const { migrationsUpTo } = require('./fixtures/migrations-up-to');
+// Esquema de su momento: hasta la migración 005 (ver fixtures/migrations-up-to.js)
+const DIR = migrationsUpTo(5);
 const { makeLegacyDb } = require('./fixtures/make-legacy-db');
 const { legacy004 } = require('./fixtures/legacy-004-statements');
 
@@ -15,7 +18,7 @@ after(() => fs.rmSync(tmp, { recursive: true, force: true }));
 test('las sentencias de 004 (alta, entrada, rotación, sesiones y datos) operan sobre el esquema de 008', () => {
   const db = new Database(makeLegacyDb(path.join(tmp, 'sleep.db')));
   db.pragma('foreign_keys = ON');
-  migrate(db, { log: { info() {}, warn() {} } });
+  migrate(db, { dir: DIR, log: { info() {}, warn() {} } });
   const v4 = legacy004(db);
 
   try {

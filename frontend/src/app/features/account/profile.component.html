@@ -16,15 +16,11 @@
         </datalist>
         @if (tzProposed()) { <small id="tz-hint" class="muted small">Propuesta desde tu navegador. Guárdala si es correcta.</small> }
       </label>
-      <fieldset class="field">
-        <legend class="small muted">Objetivo de sueño (entre 4 y 12 h)</legend>
-        <div class="row">
-          <label class="field"><span>Horas</span><input type="number" name="goalHours" [(ngModel)]="goalHours" min="4" max="12"></label>
-          <label class="field"><span>Minutos</span><input type="number" name="goalMinutes" [(ngModel)]="goalMinutes" min="0" max="59" step="5"></label>
-        </div>
-      </fieldset>
       <button class="btn" type="submit">Guardar perfil</button>
     </form>
+
+    <h3>Objetivo de sueño</h3>
+    <app-goal-editor [goalMin]="p.sleep_goal_min" />
 
     <h3>Email</h3>
     <form class="account-form" (ngSubmit)="saveEmail()">

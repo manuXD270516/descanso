@@ -8,10 +8,10 @@ const { importExport } = require('./fixtures/import-export');
 // Exportar mis datos (US5, FR-022…FR-024, SC-007).
 
 function seed() {
-  db.prepare('INSERT INTO sleep_records (date, bedtime, wake_time, notes) VALUES (?,?,?,?)')
+  db.prepare('INSERT INTO sleep_records (user_id, date, bedtime, wake_time, notes) VALUES (1,?,?,?,?)')
     .run('2026-09-05', iso('2026-09-05T23:00'), iso('2026-09-06T07:00'), 'dormí, "bien", y\ndesperté una vez');
-  db.prepare('INSERT INTO sleep_records (date, bedtime) VALUES (?,?)').run('2026-09-06', iso('2026-09-06T23:30'));
-  db.prepare('INSERT INTO naps (date, start_time, end_time) VALUES (?,?,?)').run('2026-09-06', iso('2026-09-06T14:00'), iso('2026-09-06T14:30'));
+  db.prepare('INSERT INTO sleep_records (user_id, date, bedtime) VALUES (1,?,?)').run('2026-09-06', iso('2026-09-06T23:30'));
+  db.prepare('INSERT INTO naps (user_id, date, start_time, end_time) VALUES (1,?,?,?)').run('2026-09-06', iso('2026-09-06T14:00'), iso('2026-09-06T14:30'));
   db.prepare('INSERT INTO metric_entries (metric_id, date, value) VALUES (1, ?, ?), (3, ?, ?)').run('2026-09-06', '4', '2026-09-06', '2');
 }
 
@@ -73,7 +73,7 @@ test('tipo desconocido → 404; sin sesión → 401', async () => {
 
 test('10 años de datos se exportan en menos de 5 s', async () => {
   db.exec('DELETE FROM sleep_records; DELETE FROM metric_entries;');
-  const ins = db.prepare('INSERT INTO sleep_records (date, bedtime, wake_time) VALUES (?,?,?)');
+  const ins = db.prepare('INSERT INTO sleep_records (user_id, date, bedtime, wake_time) VALUES (1,?,?,?)');
   const ent = db.prepare('INSERT INTO metric_entries (metric_id, date, value) VALUES (?,?,?)');
   db.transaction(() => {
     for (let i = 0; i < 3650; i++) {

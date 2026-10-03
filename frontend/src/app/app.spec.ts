@@ -28,16 +28,16 @@ describe('App', () => {
   }
   const authenticated = { state: 'authenticated', email: 'yo@ejemplo.com' };
 
-  it('muestra las pestañas Noche, Siestas y Métricas, con la activa marcada (FR-027)', () => {
+  it('muestra las pestañas Noche, Tendencias, Siestas y Métricas, con la activa marcada (FR-027, feature 005)', () => {
     const { fixture, el } = render(authenticated);
     const tabs = Array.from(el.querySelectorAll('nav.tabs button'));
-    expect(tabs.map((t) => t.textContent!.trim())).toEqual(['Noche', 'Siestas', 'Métricas']);
+    expect(tabs.map((t) => t.textContent!.trim())).toEqual(['Noche', 'Tendencias', 'Siestas', 'Métricas']);
     expect(tabs[0].getAttribute('aria-current')).toBe('page');
     expect(el.querySelector('app-night')).not.toBeNull();
 
-    (tabs[1] as HTMLButtonElement).click();
+    (tabs[2] as HTMLButtonElement).click();
     fixture.detectChanges();
-    expect(tabs[1].getAttribute('aria-current')).toBe('page');
+    expect(tabs[2].getAttribute('aria-current')).toBe('page');
     expect(tabs[0].getAttribute('aria-current')).toBeNull();
     expect(el.querySelector('app-naps')).not.toBeNull();
     expect(el.querySelector('app-night')).toBeNull();
@@ -79,7 +79,7 @@ describe('App', () => {
 
     it('un 401 de la API vuelve a "Entrar" y conserva la pestaña al volver (caso límite)', () => {
       const { fixture, el } = render(authenticated);
-      (Array.from(el.querySelectorAll('nav.tabs button'))[2] as HTMLButtonElement).click();
+      (Array.from(el.querySelectorAll('nav.tabs button'))[3] as HTMLButtonElement).click();
       fixture.detectChanges();
       // La pestaña Métricas pide datos: la sesión caducó
       for (const req of http.match((r) => r.url.startsWith('/api/metrics'))) req.flush({ error: 'Necesitas iniciar sesión' }, { status: 401, statusText: 'Unauthorized' });
@@ -105,6 +105,12 @@ describe('App', () => {
       fixture.detectChanges();
       expect(el.querySelector('app-login')).not.toBeNull();
     });
+  });
+
+  it('sin bienvenida vista, muestra la bienvenida en lugar de las pestañas de datos (feature 005)', () => {
+    const { el } = render({ ...authenticated, onboarded: false });
+    expect(el.querySelector('app-welcome')).not.toBeNull();
+    expect(el.querySelector('app-night')).toBeNull();
   });
 
   describe('pie de página con la versión (FR-017)', () => {

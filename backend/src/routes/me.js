@@ -65,6 +65,15 @@ r.put('/password', async (req, res) => {
 
 r.get('/activity', (req, res) => res.json(audit.activity(req.user.id)));
 
+// Bienvenida vista (feature 005): una vez por usuario; opcionalmente fija el objetivo
+r.post('/onboarding', (req, res) => {
+  const goal = req.body?.sleep_goal_min;
+  if (goal !== undefined && (!Number.isInteger(goal) || goal < 240 || goal > 720)) {
+    throw new HttpError(400, 'El objetivo de sueño debe estar entre 4 y 12 horas');
+  }
+  res.json(users.completeOnboarding(req.user.id, goal));
+});
+
 r.post('/reset-notice/ack', (req, res) => {
   users.setResetNotice(req.user.id, null);
   res.status(204).end();

@@ -54,6 +54,8 @@ test.describe('Multiusuario (008)', () => {
     await expect(p2.getByRole('button', { name: 'Crear mi cuenta' })).toBeDisabled();
     await p2.getByLabel(/He leído y acepto la política/).check();
     await p2.getByRole('button', { name: 'Crear mi cuenta' }).click();
+    // Feature 005: tras registrarse, la bienvenida pregunta el objetivo (se salta: 7 h)
+    await p2.getByRole('button', { name: 'Saltar (7 h)' }).click();
 
     await p2.getByRole('button', { name: 'Me voy a dormir' }).click();
     await expect(p2.getByRole('button', { name: 'Ya desperté' })).toBeVisible();

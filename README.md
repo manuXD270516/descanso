@@ -6,6 +6,12 @@ Aplicación full-stack para registrar la hora de dormir cada noche, la hora de d
 al día siguiente, siestas con inicio y fin, y un panel de métricas configurables
 (escala, número, sí/no o texto) con historial diario.
 
+**Tendencias** (feature 005): la pestaña Tendencias muestra las horas dormidas por día (noche +
+siestas) en 7, 30 o 90 días frente a tu objetivo, cuántos días lo cumples, el sueño pendiente neto
+de los últimos 14 días y la regularidad de tus horarios. El objetivo empieza en **7 h** y se puede
+cambiar con atajos de ciclos completos (~90 min cada uno, una orientación); la primera vez que
+entras, una bienvenida te lo pregunta. Cada gráfico tiene descripción en frases y "Ver como tabla".
+
 **Multiusuario por invitación** (feature 008): el propietario invita a otras personas con un
 enlace de un solo uso; cada una tiene su cuenta, su perfil y sus datos, y nadie ve los de otra
 (tampoco el propietario). Quien administra el servidor tiene acceso técnico a la base y a los
@@ -79,7 +85,9 @@ modifican datos deben venir del propio sitio (`Sec-Fetch-Site`/`Origin`); si no,
 | POST   | `/api/auth/login` · `/api/auth/logout` | Entrar (5 fallos en 15 min → 429) / cerrar sesión   |
 | POST   | `/api/auth/register`                  | `{invite, display_name, email, password, accept_policy, policy_version}` registro por invitación |
 | POST   | `/api/auth/reset`                     | `{token, password}` contraseña nueva con un enlace de recuperación |
-| GET · PUT · DELETE | `/api/me`                 | Mi perfil (nombre, zona horaria, objetivo de sueño) / borrar mi cuenta (con contraseña) |
+| GET · PUT · DELETE | `/api/me`                 | Mi perfil (nombre, zona horaria, objetivo de sueño de 4 a 12 h) / borrar mi cuenta (con contraseña) |
+| POST   | `/api/me/onboarding`                  | `{sleep_goal_min?}` bienvenida vista (sin objetivo: se queda en 7 h) |
+| GET    | `/api/dashboard?days=7\|30\|90&to`   | Tendencias: días (`data` · `none` · `in_progress`), resumen, pendiente neto 14 días, regularidad y ciclos |
 | PUT    | `/api/me/email` · `/api/me/password`  | Cambiar email o contraseña (con la actual)         |
 | GET    | `/api/me/activity`                    | Acciones del propietario sobre mi cuenta           |
 | GET · POST · DELETE | `/api/people…`           | Solo propietario: personas, invitaciones (72 h) y enlaces de recuperación (30 min) |
@@ -114,6 +122,15 @@ Los filtros `from`/`to` deben ser fechas reales `AAAA-MM-DD` con `from ≤ to`; 
 ```bash
 cd backend && npm test && npm run lint          # node:test + supertest, base SQLite en memoria
 cd frontend && npm run lint && npx ng test --watch=false --browsers=ChromeHeadless
+```
+
+Verificación local automatizada (servidor + datos sembrados + quickstart de Tendencias) y datos de
+prueba bajo demanda: [`docs/runbooks/verificacion-local.md`](docs/runbooks/verificacion-local.md).
+
+```bash
+node scripts/smoke-local.mjs run                          # verifica y para
+node scripts/smoke-local.mjs serve --build --fresh        # deja la app abierta con datos
+node scripts/smoke-local.mjs seed --days 90 --metrics     # más datos, sin duplicar (solo localhost)
 ```
 
 Pruebas end-to-end con Playwright (navegador real contra el servidor real, un servidor con base

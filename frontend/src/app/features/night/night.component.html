@@ -48,10 +48,11 @@
     <h2>Últimas 14 noches</h2>
     <span class="legend small muted"><i class="sw moon"></i>Sueño <i class="sw dawn"></i>Siesta</span>
   </div>
-  <div class="axis tabular faint small">
+  <div class="axis tabular faint small" aria-hidden="true">
     @for (t of axisTicks; track $index) { <span [style.left.%]="t.x">{{ t.h }}h</span> }
   </div>
-  <div class="ribbons">
+  <!-- Feature 005 (FR-011): el dibujo es una imagen con descripción; los datos, en la tabla -->
+  <div class="ribbons" role="img" aria-label="Cinta de las últimas 14 noches" aria-describedby="ribbon-desc">
     @for (r of ribbons(); track r.date) {
       <div class="ribbon-row">
         <span class="ribbon-label small muted">{{ r.label }}</span>
@@ -66,6 +67,8 @@
       </div>
     }
   </div>
+  <p id="ribbon-desc" class="small muted">{{ ribbonDescription() }}</p>
+  <app-chart-table caption="Últimas 14 noches" [columns]="ribbonColumns" [rows]="ribbonRows()" />
 </section>
 
 <!-- Detalle -->

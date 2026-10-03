@@ -65,6 +65,14 @@ export class Api {
     await this.setupOwner(email, password);
     await this.request.post('/api/auth/login', { data: { email, password } }).then(json<{ email: string }>);
   }
+  /** Feature 005: marca la bienvenida como vista (con un objetivo opcional). */
+  completeOnboarding(sleep_goal_min?: number) {
+    return this.request.post('/api/me/onboarding', { data: sleep_goal_min ? { sleep_goal_min } : {} }).then(json<unknown>);
+  }
+  /** Feature 005: dashboard de tendencias. */
+  dashboard(days: 7 | 30 | 90, to: string) {
+    return this.request.get(`/api/dashboard?days=${days}&to=${to}`).then(json<{ goal_min: number; summary: { avg_min: number | null; days_with_data: number; goal_met: number }; pending14: { net_min: number | null; days: number } }>);
+  }
   status() {
     return this.request.get('/api/auth/status').then(json<{ state: string; nights?: number; email?: string }>);
   }

@@ -5,6 +5,9 @@ const os = require('node:os');
 const path = require('node:path');
 const Database = require('better-sqlite3');
 const { migrate } = require('../src/migrate');
+const { migrationsUpTo } = require('./fixtures/migrations-up-to');
+// Esquema de su momento: hasta la migración 004 (ver fixtures/migrations-up-to.js)
+const DIR = migrationsUpTo(4);
 const { makeLegacyDb, hashTables } = require('./fixtures/make-legacy-db');
 
 // Migraciones 003–004 (feature 004): usuarios y user_id por reconstrucción verificada (US4).
@@ -19,7 +22,7 @@ function migrated(name, opts) {
   const db = new Database(file);
   db.pragma('foreign_keys = ON');
   const t0 = performance.now();
-  migrate(db, { log: silent });
+  migrate(db, { dir: DIR, log: silent });
   return { db, file, hashes, ms: performance.now() - t0 };
 }
 
@@ -68,7 +71,7 @@ test('se conservan los índices por fecha y el contador AUTOINCREMENT (no se reu
   pre.prepare('DELETE FROM naps WHERE id = ?').run(maxId); // el último id queda "usado"
   pre.close();
   const db = new Database(file);
-  migrate(db, { log: silent });
+  migrate(db, { dir: DIR, log: silent });
   const idx = db.prepare("SELECT name FROM sqlite_master WHERE type = 'index' AND name NOT LIKE 'sqlite_%'").all().map((r) => r.name);
   for (const name of ['idx_sleep_date', 'idx_naps_date', 'idx_entries_date', 'ux_sleep_one_open', 'idx_sessions_user']) assert.ok(idx.includes(name), name);
   const newId = db.prepare("INSERT INTO naps (date, start_time, end_time) VALUES ('2026-09-30','a','b')").run().lastInsertRowid;

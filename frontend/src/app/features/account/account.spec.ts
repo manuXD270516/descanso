@@ -116,20 +116,20 @@ describe('Cuenta (feature 008)', () => {
       return r;
     }
 
-    it('propone la zona del navegador si no hay, y muestra objetivo y actividad', () => {
+    it('propone la zona del navegador si no hay, y muestra objetivo (con ciclos) y actividad', () => {
       const { el, c } = load();
       expect(c.tzProposed()).toBeTrue();
       expect(c.timezone).toBe(Intl.DateTimeFormat().resolvedOptions().timeZone);
-      expect([c.goalHours, c.goalMinutes]).toEqual([7, 30]);
+      expect(el.querySelector('app-goal-editor')!.textContent).toContain('7 h 30');
       expect(el.textContent).toContain('Propietario tu contraseña se restableció');
     });
 
-    it('guarda nombre, zona y objetivo en minutos', () => {
+    it('guarda nombre y zona (el objetivo va por su editor)', () => {
       const { c } = load({ timezone: 'Europe/Madrid' });
-      Object.assign(c, { displayName: 'Inés', goalHours: 8, goalMinutes: 15 });
+      Object.assign(c, { displayName: 'Inés' });
       c.saveProfile();
       const req = http.expectOne((r) => r.url === '/api/me' && r.method === 'PUT');
-      expect(req.request.body).toEqual({ display_name: 'Inés', timezone: 'Europe/Madrid', sleep_goal_min: 495 });
+      expect(req.request.body).toEqual({ display_name: 'Inés', timezone: 'Europe/Madrid' });
       req.flush({ ...profile, display_name: 'Inés' });
       expect(auth.displayName()).toBe('Inés');
     });

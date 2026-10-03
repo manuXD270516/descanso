@@ -35,7 +35,8 @@ function circularAvg(values) {
   const y = rad.reduce((s, a) => s + Math.sin(a), 0) / rad.length;
   let ang = Math.atan2(y, x);
   if (ang < 0) ang += 2 * Math.PI;
-  return Math.round((ang / (2 * Math.PI)) * 1440) % 1440; // el redondeo puede dar 1440 (DT-21)
+  // El redondeo puede dar 1440 (DT-21); "+ 0" evita devolver -0 cuando atan2 da -0
+  return (Math.round((ang / (2 * Math.PI)) * 1440) % 1440) + 0;
 }
 
 module.exports = { HttpError, isIso, isDate, durationMinutes, localDateOf, parseRange, circularAvg };

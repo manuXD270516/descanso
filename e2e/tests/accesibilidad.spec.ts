@@ -4,17 +4,19 @@ import { expect, openTab, setNow, test } from '../support/fixtures';
 // Accesibilidad básica · FR-027 (001) y principio VII de la constitución:
 // español, responsive, foco visible y movimiento reducido.
 
-const TABS = ['Noche', 'Siestas', 'Métricas'] as const;
+const TABS = ['Noche', 'Tendencias', 'Siestas', 'Métricas'] as const;
 
 /** Abre las secciones plegables de cada pestaña para revisar también sus controles. */
 async function expandTab(page: Page, tab: (typeof TABS)[number]) {
   if (tab === 'Noche') await page.getByRole('button', { name: 'Registrar una noche pasada' }).click();
+  if (tab === 'Tendencias') await page.getByRole('button', { name: 'Editar objetivo' }).click();
   if (tab === 'Métricas') await page.getByRole('button', { name: 'Nueva métrica' }).click();
 }
 
 /** Espera a que el contenido de la pestaña (con sus secciones plegables abiertas) esté pintado. */
 async function waitForTab(page: Page, tab: (typeof TABS)[number]) {
   if (tab === 'Noche') await expect(page.getByRole('button', { name: 'Ocultar registro manual' })).toBeVisible();
+  if (tab === 'Tendencias') await expect(page.getByRole('button', { name: 'Guardar objetivo' })).toBeVisible();
   if (tab === 'Siestas') await expect(page.getByRole('heading', { name: 'Últimos 30 días' })).toBeVisible();
   if (tab === 'Métricas') await expect(page.getByRole('heading', { name: 'Nueva métrica' })).toBeVisible();
 }
@@ -58,6 +60,8 @@ test.describe('Accesibilidad básica (servidor compartido, solo lectura)', () =>
     await expect(nav.getByRole('button', { name: 'Noche' })).toBeFocused();
     expect(await focusOutline(page)).toBe('solid 2px');
 
+    await page.keyboard.press('Tab');
+    await expect(nav.getByRole('button', { name: 'Tendencias' })).toBeFocused();
     await page.keyboard.press('Tab');
     await expect(nav.getByRole('button', { name: 'Siestas' })).toBeFocused();
     await page.keyboard.press('Enter');

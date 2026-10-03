@@ -5,6 +5,9 @@ const os = require('node:os');
 const path = require('node:path');
 const Database = require('better-sqlite3');
 const { migrate } = require('../src/migrate');
+const { migrationsUpTo } = require('./fixtures/migrations-up-to');
+// Esquema de su momento: hasta la migración 002 (ver fixtures/migrations-up-to.js)
+const DIR = migrationsUpTo(2);
 const { openLegacy } = require('./fixtures/legacy-db');
 const { makeLegacyDb } = require('./fixtures/make-legacy-db');
 
@@ -16,7 +19,7 @@ after(() => fs.rmSync(tmp, { recursive: true, force: true }));
 test('la versión anterior arranca y opera sobre el esquema migrado', () => {
   const file = makeLegacyDb(path.join(tmp, 'sleep.db'));
   const m = new Database(file);
-  migrate(m, { log: { info() {}, warn() {} } });
+  migrate(m, { dir: DIR, log: { info() {}, warn() {} } });
   m.close();
 
   // "Rollback": la imagen anterior abre la base con su propio inicializador
@@ -72,7 +75,7 @@ test('la versión anterior arranca y opera sobre el esquema migrado', () => {
 test('tras volver a la versión nueva, el esquema sigue en la última versión y no se reaplica nada', () => {
   const file = path.join(tmp, 'sleep.db');
   const db = new Database(file);
-  const r = migrate(db, { log: { info() {}, warn() {} } });
+  const r = migrate(db, { dir: DIR, log: { info() {}, warn() {} } });
   db.close();
   assert.deepEqual(r.applied, []);
 });

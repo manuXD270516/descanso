@@ -30,8 +30,8 @@ after(() => {
 
 test('los datos sobreviven a un reinicio y las métricas iniciales no se duplican (US6-1, US6-3)', () => {
   const before = run(`
-    db.prepare("INSERT INTO sleep_records (date, bedtime, wake_time, notes) VALUES ('2026-09-07','2026-09-07T23:40:00-04:00','2026-09-08T07:10:00-04:00','ok')").run();
-    db.prepare("INSERT INTO naps (date, start_time, end_time) VALUES ('2026-09-08','2026-09-08T14:00:00-04:00','2026-09-08T14:30:00-04:00')").run();
+    db.prepare("INSERT INTO sleep_records (user_id, date, bedtime, wake_time, notes) VALUES (1, '2026-09-07','2026-09-07T23:40:00-04:00','2026-09-08T07:10:00-04:00','ok')").run();
+    db.prepare("INSERT INTO naps (user_id, date, start_time, end_time) VALUES (1, '2026-09-08','2026-09-08T14:00:00-04:00','2026-09-08T14:30:00-04:00')").run();
     db.prepare("INSERT INTO metric_entries (metric_id, date, value) VALUES (1,'2026-09-08','4')").run();
     ${READ_ALL}
   `);
