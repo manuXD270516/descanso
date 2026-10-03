@@ -4,6 +4,9 @@ const { isIso, isDate, durationMinutes, localDateOf, parseRange, HttpError } = r
 
 const r = Router();
 
+// Respuestas de la tarjeta "¿Cómo fue la noche?" (feature 006): rangos, no minutos exactos
+const BUCKETS = { sol_bucket: ['lt15', '15_30', 'gt30'], awakenings_bucket: ['0', '1_2', '3plus'] };
+
 function withDuration(row) {
   return row && { ...row, duration_min: row.wake_time ? durationMinutes(row.bedtime, row.wake_time) : null };
 }
@@ -23,6 +26,11 @@ function validate(body, partial = false) {
     out.wake_time = body.wake_time;
   }
   if (body.notes !== undefined) out.notes = body.notes ? String(body.notes).slice(0, 500) : null;
+  for (const [key, allowed] of Object.entries(BUCKETS)) {
+    if (body[key] === undefined) continue;
+    if (body[key] !== null && !allowed.includes(body[key])) throw new HttpError(400, 'Respuesta no válida');
+    out[key] = body[key];
+  }
   if (out.bedtime && out.wake_time && durationMinutes(out.bedtime, out.wake_time) <= 0) {
     throw new HttpError(400, 'La hora de despertar debe ser posterior a la de dormir');
   }

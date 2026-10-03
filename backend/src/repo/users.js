@@ -4,7 +4,8 @@ const { requireUser } = require('./scope');
 const metrics = require('./metrics');
 
 const PROFILE = `u.id, u.email, u.role, u.display_name, u.timezone, u.consent_version, u.consent_at,
-  u.reset_notice_at, u.created_at, s.sleep_goal_min, s.goal_customized, s.onboarded_at`;
+  u.reset_notice_at, u.created_at, s.sleep_goal_min, s.goal_customized, s.onboarded_at,
+  COALESCE(s.cycle_min, 90) AS cycle_min, COALESCE(s.latency_min, 15) AS latency_min`;
 
 const profile = (userId) =>
   db.prepare(`SELECT ${PROFILE} FROM users u LEFT JOIN user_settings s ON s.user_id = u.id WHERE u.id = ?`).get(requireUser(userId));
@@ -28,12 +29,13 @@ function createUser({ email, passwordHash: hash, displayName, consentVersion }) 
   return id;
 }
 
-function updateProfile(userId, { display_name, timezone, sleep_goal_min }) {
+function updateProfile(userId, { display_name, timezone, sleep_goal_min, cycle_min, latency_min }) {
   const now = new Date().toISOString();
   db.transaction(() => {
     if (display_name !== undefined) db.prepare('UPDATE users SET display_name = ? WHERE id = ?').run(display_name, requireUser(userId));
     if (timezone !== undefined) db.prepare('UPDATE users SET timezone = ? WHERE id = ?').run(timezone, requireUser(userId));
     if (sleep_goal_min !== undefined) setGoal(userId, sleep_goal_min, now);
+    if (cycle_min !== undefined || latency_min !== undefined) setCycleSettings(userId, { cycle_min, latency_min }, now);
   })();
   return profile(userId);
 }
@@ -43,6 +45,13 @@ function setGoal(userId, minutes, now = new Date().toISOString()) {
   db.prepare(`INSERT INTO user_settings (user_id, sleep_goal_min, goal_customized, updated_at) VALUES (?, ?, 1, ?)
     ON CONFLICT(user_id) DO UPDATE SET sleep_goal_min = excluded.sleep_goal_min, goal_customized = 1, updated_at = excluded.updated_at`)
     .run(requireUser(userId), minutes, now);
+}
+
+/** Ajustes de la calculadora de ciclos (006): duración del ciclo y tiempo en dormirse; no tocan el objetivo. */
+function setCycleSettings(userId, { cycle_min, latency_min }, now = new Date().toISOString()) {
+  db.prepare(`INSERT INTO user_settings (user_id, cycle_min, latency_min, updated_at) VALUES (?, COALESCE(?, 90), COALESCE(?, 15), ?)
+    ON CONFLICT(user_id) DO UPDATE SET cycle_min = COALESCE(?, cycle_min), latency_min = COALESCE(?, latency_min), updated_at = excluded.updated_at`)
+    .run(requireUser(userId), cycle_min ?? null, latency_min ?? null, now, cycle_min ?? null, latency_min ?? null);
 }
 
 /** Bienvenida vista (005): una sola vez por usuario; opcionalmente fija el objetivo. */
@@ -56,6 +65,9 @@ function completeOnboarding(userId, goalMin) {
   })();
   return profile(userId);
 }
+
+/** Duración del ciclo de la persona (006); 90 min si no la ha cambiado. */
+const cycleOf = (userId) => db.prepare('SELECT cycle_min FROM user_settings WHERE user_id = ?').get(requireUser(userId))?.cycle_min ?? 90;
 
 const goalOf = (userId) => db.prepare('SELECT sleep_goal_min FROM user_settings WHERE user_id = ?').get(requireUser(userId))?.sleep_goal_min ?? 420;
 
@@ -90,5 +102,5 @@ const deleteUser = (userId) => db.prepare('DELETE FROM users WHERE id = ?').run(
 module.exports = {
   profile, byEmailForLogin, passwordHash, emailTaken, createUser, updateProfile, setEmail, setPassword,
   setResetNotice, changePassword, closeSessions, listPeople, roleOf, othersExist, deleteUser,
-  setGoal, completeOnboarding, goalOf, isOnboarded,
+  setGoal, setCycleSettings, completeOnboarding, goalOf, cycleOf, isOnboarded,
 };

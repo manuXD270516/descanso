@@ -44,6 +44,14 @@ Ejemplo de renombrado de `notes` a `comment` en noches:
 - Despliegue 3: eliminar `notes`. Como SQLite exige recrear la tabla, se hace copiando los datos
   a una tabla nueva **sin perder ninguna fila**; el principio II prohíbe borrar datos del usuario.
 
+Ejemplo de *expand* puro: `008_ciclos_y_diario.js` (feature 006).
+- Añade `cycle_min` y `latency_min` (con `DEFAULT`) a `user_settings`, y `sol_bucket` y
+  `awakenings_bucket` (NULL) a `sleep_records`.
+- Usa `ALTER TABLE … ADD COLUMN`, comprueba antes con `PRAGMA table_info` si la columna ya existe
+  y no reconstruye nada.
+- El código de 005 sigue funcionando porque nombra sus columnas; lo prueba
+  `compat-previous-006.test.js`. No deja ningún paso *contract* pendiente.
+
 ### Multiusuario (desde la feature 008)
 
 - **Toda tabla nueva con datos de una persona lleva `user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE`**,

@@ -14,7 +14,7 @@ import { CYCLE_MIN, GOAL_MAX, GOAL_MIN, cyclesFor, fmtGoal } from '../../core/cy
   template: `
     <div class="goal-editor">
       <p class="small">
-        Tu objetivo: <strong>{{ fmt(draft()) }}</strong>, unos <strong>{{ equivalent() }}</strong> ciclos de {{ cycle }} min.
+        Tu objetivo: <strong>{{ fmt(draft()) }}</strong>, unos <strong>{{ equivalent() }}</strong> ciclos de {{ cycleMin() }} min.
       </p>
       <div class="row wrap" role="group" aria-label="Ciclos completos">
         @for (s of shortcuts(); track s.cycles) {
@@ -27,7 +27,7 @@ import { CYCLE_MIN, GOAL_MAX, GOAL_MIN, cyclesFor, fmtGoal } from '../../core/cy
         <label class="field"><span>Minutos</span><input type="number" name="goalMinutes" [ngModel]="minutes()" (ngModelChange)="setParts(hours(), $event)" min="0" max="59" step="5"></label>
         <button type="button" class="btn" (click)="save()" [disabled]="busy()">Guardar objetivo</button>
       </div>
-      <p class="small faint">Un ciclo dura unos {{ cycle }} minutos, aunque varía entre personas y a lo largo de la noche: tómalo como orientación.</p>
+      <p class="small faint">Un ciclo dura unos {{ cycleMin() }} minutos, aunque varía entre personas y a lo largo de la noche: tómalo como orientación.</p>
       @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
       @if (saved()) { <p class="small" role="status">Objetivo guardado.</p> }
     </div>
@@ -42,9 +42,10 @@ export class GoalEditorComponent {
   private account = inject(AccountService);
 
   readonly goalMin = input.required<number>();
+  /** Duración del ciclo de la persona (feature 006, FR-010); 90 min por defecto. */
+  readonly cycleMin = input(CYCLE_MIN);
   readonly changed = output<number>();
 
-  readonly cycle = CYCLE_MIN;
   readonly draft = signal(420);
   readonly busy = signal(false);
   readonly error = signal<string | null>(null);
@@ -52,8 +53,8 @@ export class GoalEditorComponent {
 
   readonly hours = computed(() => Math.floor(this.draft() / 60));
   readonly minutes = computed(() => this.draft() % 60);
-  readonly equivalent = computed(() => cyclesFor(this.draft()).equivalent.toLocaleString('es'));
-  readonly shortcuts = computed(() => cyclesFor(this.draft()).shortcuts);
+  readonly equivalent = computed(() => cyclesFor(this.draft(), this.cycleMin()).equivalent.toLocaleString('es'));
+  readonly shortcuts = computed(() => cyclesFor(this.draft(), this.cycleMin()).shortcuts);
   readonly fmt = fmtGoal;
 
   constructor() {

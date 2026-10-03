@@ -14,6 +14,8 @@ function record(p: Partial<SleepRecord>): SleepRecord {
   return { id: 1, date: '2026-09-07', bedtime: '2026-09-07T23:40:00-04:00', wake_time: null, notes: null, duration_min: null, ...p };
 }
 
+const PROFILE = { id: 1, email: 'yo@x.com', role: 'owner', display_name: 'Yo', timezone: null, sleep_goal_min: 450, cycle_min: 90, latency_min: 15, consent_version: null, consent_at: null, created_at: '' };
+
 describe('NightComponent', () => {
   let fixture: ComponentFixture<NightComponent>;
   let http: HttpTestingController;
@@ -43,6 +45,8 @@ describe('NightComponent', () => {
     fixture = TestBed.createComponent(NightComponent);
     el = fixture.nativeElement;
     fixture.detectChanges();
+    // Feature 006: el perfil trae el objetivo (recordatorio) y los ajustes de la calculadora
+    http.expectOne('/api/me').flush(PROFILE);
   });
 
   afterEach(() => http.verify());

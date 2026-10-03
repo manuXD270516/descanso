@@ -1,8 +1,10 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Dashboard, DashboardService } from '../../core/dashboard.service';
 import { fmtDuration, fmtMinutesOfDay, localDate } from '../../core/time';
+import { WATCH_IMPORT_AVAILABLE } from '../../core/features';
 import { DailyBarsComponent } from '../../shared/charts/daily-bars.component';
+import { OriginBadgeComponent } from '../../shared/origin/origin-badge.component';
 import { GoalEditorComponent } from './goal-editor.component';
 
 type Period = 7 | 30 | 90;
@@ -13,7 +15,7 @@ type Period = 7 | 30 | 90;
  */
 @Component({
   selector: 'app-trends',
-  imports: [DailyBarsComponent, GoalEditorComponent],
+  imports: [DailyBarsComponent, GoalEditorComponent, OriginBadgeComponent],
   templateUrl: './trends.component.html',
   styleUrl: './trends.component.css',
 })
@@ -25,6 +27,8 @@ export class TrendsComponent implements OnInit {
   readonly data = signal<Dashboard | null>(null);
   readonly error = signal<string | null>(null);
   readonly editing = signal(false);
+  /** ¿Existe la importación de relojes? (feature 006, US3; la activa 007) */
+  readonly watchImport = input(WATCH_IMPORT_AVAILABLE);
 
   readonly fmtDuration = fmtDuration;
   readonly fmtMinutesOfDay = fmtMinutesOfDay;

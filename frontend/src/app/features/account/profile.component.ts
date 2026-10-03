@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { AccountService, Activity, Profile } from '../../core/account.service';
 import { AuthService } from '../../core/auth.service';
 import { GoalEditorComponent } from '../trends/goal-editor.component';
+import { CycleSettingsComponent } from '../night/cycle-settings.component';
 
 const ACTIONS: Record<Activity['action'], string> = {
   reset_link_created: 'generó un enlace de recuperación',
@@ -13,7 +14,7 @@ const ACTIONS: Record<Activity['action'], string> = {
 /** Mi perfil (feature 008, US3–US5). */
 @Component({
   selector: 'app-profile',
-  imports: [FormsModule, GoalEditorComponent],
+  imports: [FormsModule, GoalEditorComponent, CycleSettingsComponent],
   templateUrl: './profile.component.html',
   styleUrl: './account.css',
 })
@@ -43,6 +44,11 @@ export class ProfileComponent implements OnInit {
   ngOnInit() {
     this.account.me().subscribe({ next: (p) => this.load(p), error: (e) => this.fail(e) });
     this.account.activity().subscribe({ next: (a) => this.activity.set(a) });
+  }
+
+  /** Ajustes de ciclo guardados (feature 006): los atajos del objetivo usan el ciclo nuevo sin recargar el formulario. */
+  cycleChanged(s: { cycleMin: number; latencyMin: number }) {
+    this.profile.update((p) => p && { ...p, cycle_min: s.cycleMin, latency_min: s.latencyMin });
   }
 
   private load(p: Profile) {

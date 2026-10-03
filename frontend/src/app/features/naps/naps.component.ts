@@ -4,10 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { ApiService, Nap } from '../../core/api.service';
 import { addDays, fmtDateShort, fmtDuration, fmtTime, inputLocalToIso, isoToInputLocal, localDate, nightDate, toInputLocal } from '../../core/time';
+import { OriginBadgeComponent } from '../../shared/origin/origin-badge.component';
 
 @Component({
   selector: 'app-naps',
-  imports: [FormsModule],
+  imports: [FormsModule, OriginBadgeComponent],
   templateUrl: './naps.component.html',
   styleUrl: './naps.component.css',
 })

@@ -21,17 +21,18 @@ r.get('/', (req, res) => {
   const nights = repo.nights(req.user.id, fetchFrom, to);
   const naps = repo.naps(req.user.id, fetchFrom, to);
   const goal = users.goalOf(req.user.id);
+  const cycle = users.cycleOf(req.user.id); // feature 006: el ciclo de cada persona
   const period = a.buildDays(nights, naps, from, to);
 
   res.json({
     goal_min: goal,
-    cycle_min: a.CYCLE_MIN,
+    cycle_min: cycle,
     period: { from, to, days },
     days: period,
     summary: a.summary(period, goal),
     pending14: a.pending(a.buildDays(nights, naps, from14, to), goal),
     regularity: a.regularity(nights.filter((n) => n.date >= from)),
-    cycles: a.cycles(goal),
+    cycles: a.cycles(goal, cycle),
   });
 });
 

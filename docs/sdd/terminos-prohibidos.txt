@@ -1,0 +1,43 @@
+# Términos prohibidos en los textos de la interfaz (principio VIII, feature 006, FR-003).
+# Lo vigila backend/test/forbidden-terms.test.js sobre frontend/src (sin *.spec.ts) y backend/src.
+#
+# Formato: un término o frase por línea; "#" inicia un comentario.
+# - Sin distinguir mayúsculas ni tildes ("diagnóstico" = "DIAGNOSTICO").
+# - Con límites de palabra: "apnea" no marca "apneas" salvo con comodín.
+# - Un "*" final es comodín de sufijo: "trastorno*" marca "trastorno" y "trastornos".
+#
+# Excepciones conscientes (no están en la lista):
+# - "médico": el aviso obligatorio dice "No es un dispositivo médico".
+# - "tratamiento" a secas: es el término legal del RGPD ("tratamiento de mis datos").
+# - "AHI": tras quitar tildes coincide con "ahí".
+
+# Trastornos y diagnósticos
+insomnio*
+apnea*
+narcolepsia*
+parasomnia*
+hipersomnia*
+bruxismo
+trastorno*
+diagnostic*
+sindrome*
+patologi*
+enfermedad*
+
+# Tratamiento y medicación
+tratamiento medico
+medicacion*
+
+# Umbrales y alertas clínicas
+umbral clinico
+umbrales clinicos
+alerta medica
+alertas medicas
+riesgo de salud
+deberias consultar
+iah
+
+# Puntuaciones y fases presentadas como medidas (SC-007)
+puntuacion de sueno
+hipnograma
+% de rem

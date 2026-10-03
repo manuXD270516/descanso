@@ -87,3 +87,18 @@ test('90 días con datos responden en menos de 300 ms (SC-001)', async () => {
   assert.ok(body.regularity && body.regularity.nights === 90);
   assert.ok(ms < 300, `${Math.round(ms)} ms`);
 });
+
+test('los atajos del objetivo usan la duración de ciclo de la persona (feature 006, FR-010)', async () => {
+  await api.put('/api/me').send({ cycle_min: 100 }).expect(200);
+  try {
+    const d = (await api.get(`/api/dashboard?days=7&to=${TO}`).expect(200)).body;
+    assert.equal(d.cycle_min, 100);
+    assert.equal(d.cycles.shortcuts.length, 3);
+    for (const s of d.cycles.shortcuts) {
+      assert.equal(s.minutes, s.cycles * 100);
+      assert.ok(s.minutes >= 240 && s.minutes <= 720);
+    }
+  } finally {
+    await api.put('/api/me').send({ cycle_min: 90 }).expect(200);
+  }
+});

@@ -43,6 +43,17 @@ r.put('/', (req, res) => {
     if (!Number.isInteger(goal) || goal < 240 || goal > 720) throw new HttpError(400, 'El objetivo de sueño debe estar entre 4 y 12 horas');
     changes.sleep_goal_min = goal;
   }
+  // Calculadora de ciclos (feature 006, FR-009)
+  if (req.body.cycle_min !== undefined) {
+    const v = req.body.cycle_min;
+    if (!Number.isInteger(v) || v < 70 || v > 110) throw new HttpError(400, 'La duración del ciclo debe estar entre 70 y 110 minutos');
+    changes.cycle_min = v;
+  }
+  if (req.body.latency_min !== undefined) {
+    const v = req.body.latency_min;
+    if (!Number.isInteger(v) || v < 0 || v > 60) throw new HttpError(400, 'El tiempo en dormirte debe estar entre 0 y 60 minutos');
+    changes.latency_min = v;
+  }
   res.json(users.updateProfile(req.user.id, changes));
 });
 

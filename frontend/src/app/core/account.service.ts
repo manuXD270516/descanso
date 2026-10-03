@@ -10,6 +10,9 @@ export interface Profile {
   display_name: string | null;
   timezone: string | null;
   sleep_goal_min: number;
+  /** Calculadora de ciclos (feature 006): 70–110 y 0–60 min. */
+  cycle_min: number;
+  latency_min: number;
   consent_version: string | null;
   consent_at: string | null;
   created_at: string;
@@ -49,7 +52,7 @@ export class AccountService {
   me(): Observable<Profile> {
     return this.http.get<Profile>('/api/me');
   }
-  updateProfile(body: Partial<Pick<Profile, 'display_name' | 'timezone' | 'sleep_goal_min'>>): Observable<Profile> {
+  updateProfile(body: Partial<Pick<Profile, 'display_name' | 'timezone' | 'sleep_goal_min' | 'cycle_min' | 'latency_min'>>): Observable<Profile> {
     return this.http.put<Profile>('/api/me', body);
   }
   changeEmail(email: string, password: string): Observable<Profile> {

@@ -157,3 +157,49 @@ describe('Objetivo y ciclos (US4, US5)', () => {
     expect(auth.onboarded()).toBeTrue();
   });
 });
+
+describe('Feature 006 en Tendencias', () => {
+  let http: HttpTestingController;
+  beforeEach(() => {
+    TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
+    http = TestBed.inject(HttpTestingController);
+  });
+  afterEach(() => http.verify());
+
+  function render(watchImport?: boolean) {
+    const fixture = TestBed.createComponent(TrendsComponent);
+    if (watchImport !== undefined) fixture.componentRef.setInput('watchImport', watchImport);
+    fixture.detectChanges();
+    http.expectOne((r) => r.url === '/api/dashboard').flush(dashboard());
+    fixture.detectChanges();
+    return fixture.nativeElement as HTMLElement;
+  }
+
+  it('"Fases" sin importación de relojes: estado vacío honesto, sin gráficos ni porcentajes (US3)', () => {
+    const phases = render().querySelector('.phases')!;
+    expect(phases.textContent).toContain('Descanso aún no importa datos de relojes');
+    expect(phases.querySelector('svg, a')).toBeNull();
+    expect(phases.textContent).not.toMatch(/%/);
+  });
+
+  it('"Fases" con importación disponible (feature 007): ofrece "Importa tus datos →"', () => {
+    const phases = render(true).querySelector('.phases')!;
+    expect(phases.querySelector('a')!.textContent).toContain('Importa tus datos →');
+  });
+
+  it('el gráfico lleva la insignia "Anotado por ti" una vez en su cabecera (US1)', () => {
+    const el = render();
+    expect(el.querySelectorAll('.trends-panel app-origin-badge').length).toBe(1);
+    expect(el.querySelector('.trends-panel .block-head')!.textContent).toContain('Anotado por ti');
+  });
+
+  it('el editor de objetivo usa la duración de ciclo de la persona (FR-010)', () => {
+    const fixture = TestBed.createComponent(GoalEditorComponent);
+    fixture.componentRef.setInput('goalMin', 420);
+    fixture.componentRef.setInput('cycleMin', 100);
+    fixture.detectChanges();
+    const c = fixture.componentInstance;
+    expect(c.shortcuts().map((s) => s.minutes)).toEqual([300, 400, 500]);
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain('ciclos de 100 min');
+  });
+});

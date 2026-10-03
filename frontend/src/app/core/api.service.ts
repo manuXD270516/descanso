@@ -9,7 +9,13 @@ export interface SleepRecord {
   wake_time: string | null;
   notes: string | null;
   duration_min: number | null;
+  /** Respuestas opcionales de "¿Cómo fue la noche?" (feature 006); null = sin respuesta. */
+  sol_bucket?: SolBucket | null;
+  awakenings_bucket?: AwakeningsBucket | null;
 }
+
+export type SolBucket = 'lt15' | '15_30' | 'gt30';
+export type AwakeningsBucket = '0' | '1_2' | '3plus';
 
 export interface Nap {
   id: number;

@@ -50,7 +50,7 @@ test('con el JSON se reconstruye una base vacía con los mismos recuentos (SC-00
 });
 
 test('un CSV por tipo: BOM, cabeceras en español, RFC 4180 y una fila por registro (FR-023)', async () => {
-  const expected = { noches: ['id,fecha_noche,hora_dormir,hora_despertar,notas,creado', 2], siestas: ['id,fecha,inicio,fin,notas,creado', 1], metricas: ['id,nombre,tipo,unidad,minimo,maximo,color,orden,archivada,creado', 3], valores: ['id,metrica_id,fecha,valor,creado', 2] };
+  const expected = { noches: ['id,fecha_noche,hora_dormir,hora_despertar,notas,creado,tiempo_dormirse,despertares', 2], siestas: ['id,fecha,inicio,fin,notas,creado', 1], metricas: ['id,nombre,tipo,unidad,minimo,maximo,color,orden,archivada,creado', 3], valores: ['id,metrica_id,fecha,valor,creado', 2] };
   for (const [tipo, [header, count]] of Object.entries(expected)) {
     const res = await api.get(`/api/export/${tipo}.csv`).buffer(true).parse((r, cb) => { let d = ''; r.setEncoding('utf8'); r.on('data', (c) => (d += c)); r.on('end', () => cb(null, d)); }).expect(200);
     assert.match(res.headers['content-type'], /^text\/csv; charset=utf-8/);
@@ -86,4 +86,20 @@ test('10 años de datos se exportan en menos de 5 s', async () => {
   const res = await api.get('/api/export.json').expect(200);
   assert.equal(res.body.sleep_records.length, 3650);
   assert.ok(performance.now() - t0 < 5000);
+});
+
+test('las respuestas de la tarjeta se exportan: códigos en JSON, rangos legibles al final del CSV (feature 006, FR-019)', async () => {
+  db.exec('DELETE FROM sleep_records; DELETE FROM naps; DELETE FROM metric_entries;');
+  seed();
+  db.prepare("UPDATE sleep_records SET sol_bucket = 'gt30', awakenings_bucket = '1_2' WHERE date = '2026-09-05' AND user_id = 1").run();
+  const j = (await api.get('/api/export.json').expect(200)).body;
+  const answered = j.sleep_records.find((n) => n.date === '2026-09-05');
+  const open = j.sleep_records.find((n) => n.date === '2026-09-06');
+  assert.deepEqual([answered.sol_bucket, answered.awakenings_bucket], ['gt30', '1_2']);
+  assert.deepEqual([open.sol_bucket, open.awakenings_bucket], [null, null]);
+
+  const csv = (await api.get('/api/export/noches.csv').buffer(true).parse((r, cb) => { let d = ''; r.setEncoding('utf8'); r.on('data', (c) => (d += c)); r.on('end', () => cb(null, d)); })).body;
+  const lines = csv.slice(1).trimEnd().split('\r\n');
+  assert.ok(lines.some((l) => l.endsWith(',>30,1-2')), 'rangos legibles al final');
+  assert.ok(lines.some((l) => l.startsWith(`${open.id},2026-09-06`) && l.endsWith(',,')), 'sin respuesta: vacío');
 });

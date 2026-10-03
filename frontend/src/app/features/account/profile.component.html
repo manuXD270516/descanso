@@ -20,7 +20,11 @@
     </form>
 
     <h3>Objetivo de sueño</h3>
-    <app-goal-editor [goalMin]="p.sleep_goal_min" />
+    <app-goal-editor [goalMin]="p.sleep_goal_min" [cycleMin]="p.cycle_min" />
+
+    <h3>Ciclos de sueño</h3>
+    <p class="small muted">Para la calculadora de Noche y los atajos del objetivo. Es una orientación: cada ciclo dura entre 70 y 110 minutos según la persona.</p>
+    <app-cycle-settings [cycleMin]="p.cycle_min" [latencyMin]="p.latency_min" (changed)="cycleChanged($event)" />
 
     <h3>Email</h3>
     <form class="account-form" (ngSubmit)="saveEmail()">

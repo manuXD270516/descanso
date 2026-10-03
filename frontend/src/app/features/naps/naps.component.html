@@ -14,7 +14,7 @@
 </section>
 
 <section class="list">
-  <h2>Últimos 30 días</h2>
+  <div class="row block-head"><h2>Últimos 30 días</h2>@if (grouped().length) { <app-origin-badge origin="manual" /> }</div>
   @if (grouped().length === 0) {
     <p class="empty">Sin siestas registradas todavía. Añade la primera arriba.</p>
   }

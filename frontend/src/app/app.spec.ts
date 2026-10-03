@@ -43,6 +43,20 @@ describe('App', () => {
     expect(el.querySelector('app-night')).toBeNull();
   });
 
+  it('el aviso "No es un dispositivo médico" se ve en Noche, Tendencias y Siestas, no en Métricas (feature 006, FR-002)', () => {
+    const { fixture, el } = render(authenticated);
+    const tabs = Array.from(el.querySelectorAll('nav.tabs button')) as HTMLButtonElement[];
+    const notice = () => el.querySelector('.medical-notice[role="note"]')?.textContent ?? null;
+    const seen: (string | null)[] = [];
+    for (const t of tabs) {
+      t.click();
+      fixture.detectChanges();
+      seen.push(notice());
+    }
+    expect(seen.slice(0, 3).every((n) => !!n && n.includes('No es un dispositivo médico'))).toBeTrue();
+    expect(seen[3]).toBeNull();
+  });
+
   describe('compuerta de acceso (feature 004)', () => {
     it('sin sesión muestra "Entrar" y ningún dato ni pestañas (US1-1)', () => {
       const { el } = render({ state: 'login' });
