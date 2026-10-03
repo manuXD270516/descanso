@@ -76,6 +76,29 @@ credenciales.
 **Razón**: la app se usa a diario desde distintos dispositivos, a menudo de noche y con poca
 atención; debe ser clara y accesible.
 
+### VIII. Datos de salud: privacidad y honestidad
+
+- **Origen declarado**: todo dato de sueño mostrado MUST indicar si lo anotó la persona, si es una
+  estimación de la app o si viene de un dispositivo. Una estimación MUST NOT guardarse ni
+  presentarse como medición.
+- **Lenguaje no clínico**: la app no es un dispositivo médico y MUST decirlo de forma visible donde
+  muestre datos de sueño. Ningún texto MUST nombrar trastornos, diagnósticos, umbrales clínicos ni
+  alertas médicas; una prueba automática con una lista de términos prohibidos lo vigila.
+- **"Sin dato" no es 0**: la ausencia de registro MUST mostrarse como ausencia, nunca como cero ni
+  rellenarse.
+- **Estadística prudente**: un estadístico o una relación entre datos MUST mostrarse solo con un
+  mínimo de observaciones fijado en su spec, y en lenguaje no causal ("suelen ir juntos", nunca
+  "provoca").
+- **Consentimiento por fuente**: conectar o importar una fuente externa de datos de salud MUST
+  requerir el consentimiento explícito de la persona, que puede revocarlo y elegir si se borran los
+  datos de esa fuente (principio II). Los tokens de acceso a terceros MUST guardarse cifrados.
+- **Notificaciones sin datos de salud**: ningún aviso fuera de la app (push, correo) MUST incluir
+  datos de sueño ni de salud.
+
+**Razón**: los datos de sueño son sensibles y la app no mide fases ni diagnostica; confundir una
+estimación con una medición o usar lenguaje clínico genera falsas certezas y ansiedad por dormir
+"bien" (ortosomnia).
+
 ## Alcance del producto
 
 "Descanso" es un tracker personal de sueño, siestas y métricas, **multiusuario con aislamiento
@@ -92,7 +115,7 @@ otra. Entran solo por invitación del propietario. El repositorio contiene la ap
 
 ## Flujo de trabajo y puertas de calidad
 
-- Cada plan MUST verificar el cumplimiento de los principios I–VII antes de implementarse.
+- Cada plan MUST verificar el cumplimiento de los principios I–VIII antes de implementarse.
 - Las desviaciones se documentan en "Complexity Tracking" (principio VI).
 - Una tarea solo se cierra cuando se cumplen las puertas del principio IV.
 
@@ -110,7 +133,8 @@ otra. Entran solo por invitación del propietario. El repositorio contiene la ap
 
 | Versión | Fecha | Tipo | Cambio |
 |---------|-------|------|--------|
+| 2.1.0 | 2026-10-03 | MINOR | **Principio VIII** nuevo, "Datos de salud: privacidad y honestidad": origen declarado, lenguaje no clínico, "sin dato" ≠ 0, estadística prudente con n mínima y lenguaje no causal, consentimiento y revocación por fuente con tokens cifrados, y notificaciones sin datos de salud. Necesaria antes del plan de 006. |
 | 2.0.0 | 2026-10-01 | MAJOR + MINOR | **Alcance**: de mono-usuario a multiusuario con aislamiento estricto (filtrado por usuario, 404 para lo ajeno, suite de aislamiento y transparencia sobre el acceso del operador). **Principio II**: el borrado a petición del propio dueño no es DROP de datos. Necesarias antes del plan de 008. |
 | 1.0.1 | 2026-09-30 | PATCH | Principio II: toda migración pasa por el runner con respaldo previo (feature 003); reconstruir una tabla con copia verificada en la misma migración no es DROP de datos. Necesaria antes del plan de 004. |
 
-**Version**: 2.0.0 | **Ratified**: 2026-09-29 | **Last Amended**: 2026-10-01
+**Version**: 2.1.0 | **Ratified**: 2026-09-29 | **Last Amended**: 2026-10-03
