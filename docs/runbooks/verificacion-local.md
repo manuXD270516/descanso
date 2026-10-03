@@ -27,6 +27,7 @@ servidor se para solo.
 | 2 | Tendencias | 7/30/90 filas; días "sin dato" con total `null` (nunca 0); hoy "en curso"; "X de Y" coherente; pendiente 14 días; 3 atajos de ciclos entre 4 y 12 h; editar a 13 h → 400, con un atajo → 200 |
 | 3 | Regularidad | Con ≥ 7 noches trae media y ±min; en un periodo sin noches, `null` ("Aún no hay datos suficientes") |
 | Borde | Periodo | `days=14` → 400 "El periodo debe ser 7, 30 o 90 días" |
+| 006 | Ciclos y tarjeta | Ajustes 90/15 por defecto; ciclo 120 → 400; 100/20 → 200 y los atajos del objetivo pasan a ser múltiplos de 100; respuestas "15–30" y "1–2" guardadas en la noche; valor inválido → 400; el CSV de noches trae `tiempo_dormirse,despertares` |
 
 El paso 4 del quickstart (descripción y "Ver como tabla" de cada gráfico, contraste y sin rojo ni
 verde) lo cubre la e2e `e2e/tests/tendencias.spec.ts`.

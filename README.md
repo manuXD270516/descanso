@@ -12,6 +12,22 @@ de los últimos 14 días y la regularidad de tus horarios. El objetivo empieza e
 cambiar con atajos de ciclos completos (~90 min cada uno, una orientación); la primera vez que
 entras, una bienvenida te lo pregunta. Cada gráfico tiene descripción en frases y "Ver como tabla".
 
+**Ciclos y honestidad de datos** (feature 006, principio VIII):
+- **Calculadora**: bajo "¿Hora de dormir?" se ven 3 ventanas para despertar tras 4, 5 o 6 ciclos
+  ("entre 6:30 y 7:00"). Usa tu ciclo (70–110 min) y el tiempo que tardas en dormirte (0–60 min),
+  ajustables en "Ajustar" o en Mi perfil. Es una estimación y lo dice siempre; no se guarda.
+- **Tarjeta "¿Cómo fue la noche?"**: aparece después de "Ya desperté". Es opcional y guarda en la
+  noche cuánto tardaste en dormirte y cuántas veces despertaste, por rangos. Cerrar la noche
+  sigue siendo un toque.
+- **Noche abierta olvidada**: si lleva 14 h o más abierta, al abrir la app te propone tu hora de
+  dormir + tu objetivo. Sin notificaciones.
+- **Honestidad**: cada bloque de datos dice su origen ("Anotado por ti", "Estimado") y Noche,
+  Tendencias y Siestas avisan de que no es un dispositivo médico. "Fases" explica que la app no
+  las mide.
+- **Vocabulario**: ningún texto usa vocabulario clínico; lo vigila una prueba con la lista
+  [`docs/sdd/terminos-prohibidos.txt`](docs/sdd/terminos-prohibidos.txt). Si una palabra de la
+  lista es necesaria en otro sentido, documenta la excepción en el propio archivo.
+
 **Multiusuario por invitación** (feature 008): el propietario invita a otras personas con un
 enlace de un solo uso; cada una tiene su cuenta, su perfil y sus datos, y nadie ve los de otra
 (tampoco el propietario). Quien administra el servidor tiene acceso técnico a la base y a los
@@ -85,7 +101,7 @@ modifican datos deben venir del propio sitio (`Sec-Fetch-Site`/`Origin`); si no,
 | POST   | `/api/auth/login` · `/api/auth/logout` | Entrar (5 fallos en 15 min → 429) / cerrar sesión   |
 | POST   | `/api/auth/register`                  | `{invite, display_name, email, password, accept_policy, policy_version}` registro por invitación |
 | POST   | `/api/auth/reset`                     | `{token, password}` contraseña nueva con un enlace de recuperación |
-| GET · PUT · DELETE | `/api/me`                 | Mi perfil (nombre, zona horaria, objetivo de sueño de 4 a 12 h) / borrar mi cuenta (con contraseña) |
+| GET · PUT · DELETE | `/api/me`                 | Mi perfil (nombre, zona horaria, objetivo de sueño de 4 a 12 h, `cycle_min` 70–110 y `latency_min` 0–60) / borrar mi cuenta (con contraseña) |
 | POST   | `/api/me/onboarding`                  | `{sleep_goal_min?}` bienvenida vista (sin objetivo: se queda en 7 h) |
 | GET    | `/api/dashboard?days=7\|30\|90&to`   | Tendencias: días (`data` · `none` · `in_progress`), resumen, pendiente neto 14 días, regularidad y ciclos |
 | PUT    | `/api/me/email` · `/api/me/password`  | Cambiar email o contraseña (con la actual)         |
@@ -97,7 +113,7 @@ modifican datos deben venir del propio sitio (`Sec-Fetch-Site`/`Origin`); si no,
 | GET    | `/api/sleep/open`                     | Noche abierta (me acosté, aún no despierto)        |
 | POST   | `/api/sleep`                          | `{date, bedtime, wake_time?, notes?}` · `date` = día local de `bedtime` · 409 si ya hay una noche abierta y no se envía `wake_time` |
 | POST   | `/api/sleep/wake`                     | `{wake_time}` cierra la noche abierta              |
-| PUT    | `/api/sleep/:id` · DELETE             | Editar / eliminar                                  |
+| PUT    | `/api/sleep/:id` · DELETE             | Editar (fusión parcial; incluye `sol_bucket` `lt15·15_30·gt30` y `awakenings_bucket` `0·1_2·3plus`, `null` borra) / eliminar |
 | GET    | `/api/naps?from&to`                   | Siestas                                            |
 | POST   | `/api/naps`                           | `{date, start_time, end_time, notes?}` · `date` = día local de `start_time` |
 | PUT    | `/api/naps/:id` · DELETE              | Editar / eliminar                                  |

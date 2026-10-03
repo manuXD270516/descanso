@@ -7,11 +7,14 @@ const path = require('node:path');
 const Database = require('better-sqlite3');
 const { migrate } = require('../src/migrate');
 const { makeLegacyDb } = require('./fixtures/make-legacy-db');
+const { migrationsUpTo } = require('./fixtures/migrations-up-to');
 
 // Migraciones 006 (contracción de user_id) y 007 (objetivo de 7 h y bienvenida), feature 005.
 let tmp;
 const silent = { info() {}, warn() {} };
 const MIGRATIONS = path.join(__dirname, '..', 'src', 'migrations');
+// Fijado a su era: las migraciones posteriores (008) añaden columnas y cambiarían las huellas
+const UP_TO_007 = migrationsUpTo(7);
 before(() => { tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'descanso-m006-')); });
 after(() => fs.rmSync(tmp, { recursive: true, force: true }));
 
@@ -38,7 +41,7 @@ function upTo005() {
 test('006: contrae user_id sin perder ni alterar filas; sin usuario explícito → error', () => {
   const { db, maxNap } = upTo005();
   const before = Object.fromEntries(['sleep_records', 'naps', 'metrics', 'metric_entries'].map((t) => [t, hashAll(db, t)]));
-  migrate(db, { log: silent });
+  migrate(db, { dir: UP_TO_007, log: silent });
   for (const [t, h] of Object.entries(before)) assert.equal(hashAll(db, t), h, `${t} intacta`);
   assert.deepEqual(db.pragma('foreign_key_check'), []);
 
@@ -62,7 +65,7 @@ test('006: contrae user_id sin perder ni alterar filas; sin usuario explícito �
 
 test('007: objetivo por defecto 7 h; 480 → 420 sin personalizar, el resto se conserva personalizado', () => {
   const { db } = upTo005();
-  migrate(db, { log: silent });
+  migrate(db, { dir: UP_TO_007, log: silent });
   const rows = db.prepare('SELECT user_id, sleep_goal_min, goal_customized, onboarded_at FROM user_settings ORDER BY user_id').all();
   assert.deepEqual(rows, [
     { user_id: 1, sleep_goal_min: 420, goal_customized: 0, onboarded_at: null },

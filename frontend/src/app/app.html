@@ -77,6 +77,10 @@
             @case ('people') { <app-people /> }
             @case ('privacy') { <app-privacy /> }
             @default {
+              <!-- Feature 006, US1 (FR-002, principio VIII): siempre visible donde hay datos de sueño -->
+              @if (tab() !== 'metrics') {
+                <p class="medical-notice small" role="note">No es un dispositivo médico: Descanso te ayuda a llevar un registro y sus estimaciones son orientativas.</p>
+              }
               @switch (tab()) {
                 @case ('night') { <app-night /> }
                 @case ('trends') { <app-trends /> }

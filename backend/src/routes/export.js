@@ -8,7 +8,12 @@ const r = Router();
 
 // Un CSV por tipo, con cabeceras en español (aclaración del 2026-09-30)
 const CSV = {
-  noches: { table: 'sleep_records', headers: ['id', 'fecha_noche', 'hora_dormir', 'hora_despertar', 'notas', 'creado'] },
+  // Feature 006: las respuestas de la tarjeta van al final, como rangos legibles (vacío = sin respuesta)
+  noches: {
+    table: 'sleep_records',
+    headers: ['id', 'fecha_noche', 'hora_dormir', 'hora_despertar', 'notas', 'creado', 'tiempo_dormirse', 'despertares'],
+    labels: { 6: { lt15: '<15', '15_30': '15-30', gt30: '>30' }, 7: { 0: '0', '1_2': '1-2', '3plus': '3+' } },
+  },
   siestas: { table: 'naps', headers: ['id', 'fecha', 'inicio', 'fin', 'notas', 'creado'] },
   metricas: { table: 'metrics', headers: ['id', 'nombre', 'tipo', 'unidad', 'minimo', 'maximo', 'color', 'orden', 'archivada', 'creado'] },
   valores: { table: 'metric_entries', headers: ['id', 'metrica_id', 'fecha', 'valor', 'creado'] },
@@ -34,7 +39,8 @@ r.get('/export/:tipo.csv', (req, res) => {
   const def = CSV[req.params.tipo];
   if (!def) throw new HttpError(404, 'Tipo de exportación desconocido');
   const rows = repo.rows(req.user.id, def.table, { raw: true });
-  const lines = [def.headers.join(','), ...rows.map((row) => row.map(csvField).join(','))];
+  const label = (v, i) => (def.labels?.[i] && v !== null ? def.labels[i][v] : v);
+  const lines = [def.headers.join(','), ...rows.map((row) => row.map((v, i) => csvField(label(v, i))).join(','))];
   res.set('Content-Type', 'text/csv; charset=utf-8');
   res.set('Content-Disposition', `attachment; filename="descanso-${req.params.tipo}-${today()}.csv"`);
   res.send('\uFEFF' + lines.join('\r\n') + '\r\n'); // BOM: Excel reconoce los acentos

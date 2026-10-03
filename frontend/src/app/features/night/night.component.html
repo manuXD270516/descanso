@@ -1,5 +1,23 @@
 @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
 
+<!-- Feature 006, US4: noche abierta olvidada (≥ 14 h). Sin notificaciones: solo al abrir la app -->
+@if (showReminder()) {
+  <section class="panel reminder" role="status" aria-labelledby="reminder-title">
+    <h2 id="reminder-title">¿Olvidaste marcar que despertaste?</h2>
+    <p class="small muted">Tu noche sigue abierta. Te proponemos tu hora de dormir más tu objetivo de sueño; cámbiala si no es correcta.</p>
+    <div class="row wrap">
+      <input type="datetime-local" [ngModel]="reminderInput()" (ngModelChange)="reminderInput.set($event)" aria-label="Hora en que desperté">
+      <button class="btn btn-dawn" type="button" (click)="acceptReminder()" [disabled]="busy()">Sí, desperté a esa hora</button>
+      <button class="btn btn-ghost" type="button" (click)="dismissReminder()">Aún no</button>
+    </div>
+  </section>
+}
+
+<!-- Feature 006, US5: tarjeta opcional, siempre después de cerrar la noche -->
+@if (lastClosed(); as n) {
+  <app-night-card [night]="n" (closed)="lastClosed.set(null)" (answered)="reload()" />
+}
+
 <!-- Estado actual -->
 <section class="panel state" [class.sleeping]="open()">
   @if (open(); as o) {
@@ -9,6 +27,7 @@
       <input type="datetime-local" [ngModel]="wakeInput()" (ngModelChange)="wakeInput.set($event)" aria-label="Hora de despertar">
       <button class="btn btn-dawn" type="button" (click)="wakeUp()" [disabled]="busy()">Ya desperté</button>
     </div>
+    <app-cycle-calculator [bedtime]="o.bedtime" [cycleMin]="cycleMin()" [latencyMin]="latencyMin()" (settingsChanged)="updateSettings($event)" />
   } @else {
     <p class="state-title">¿Hora de dormir?</p>
     <p class="muted small">Guarda la hora en que te acuestas. Mañana cierras la noche al despertar.</p>
@@ -16,6 +35,7 @@
       <input type="datetime-local" [ngModel]="bedtimeInput()" (ngModelChange)="bedtimeInput.set($event)" aria-label="Hora de dormir">
       <button class="btn btn-moon" type="button" (click)="goToSleep()" [disabled]="busy()">Me voy a dormir</button>
     </div>
+    <app-cycle-calculator [bedtime]="bedtimeIso()" [cycleMin]="cycleMin()" [latencyMin]="latencyMin()" (settingsChanged)="updateSettings($event)" />
   }
   <button class="btn btn-ghost btn-sm manual-toggle" type="button" (click)="showManual.set(!showManual())">
     {{ showManual() ? 'Ocultar registro manual' : 'Registrar una noche pasada' }}
@@ -45,7 +65,7 @@
 <!-- Cinta de las últimas noches -->
 <section class="panel ribbon-panel">
   <div class="row between">
-    <h2>Últimas 14 noches</h2>
+    <div class="row block-head"><h2>Últimas 14 noches</h2>@if (nightsOrigin(); as o) { <app-origin-badge [origin]="o" /> }</div>
     <span class="legend small muted"><i class="sw moon"></i>Sueño <i class="sw dawn"></i>Siesta</span>
   </div>
   <div class="axis tabular faint small" aria-hidden="true">
@@ -73,7 +93,7 @@
 
 <!-- Detalle -->
 <section class="list">
-  <h2>Registros</h2>
+  <div class="row block-head"><h2>Registros</h2>@if (nightsOrigin(); as o) { <app-origin-badge [origin]="o" /> }</div>
   @if (records().length === 0) {
     <p class="empty">Aún no hay noches registradas. Empieza con "Me voy a dormir" o registra una noche pasada.</p>
   }
@@ -85,6 +105,18 @@
           <label class="field"><span>Notas</span><input type="text" [(ngModel)]="edit.notes"></label>
           <label class="field"><span>Me dormí</span><input type="datetime-local" [(ngModel)]="edit.bedtime"></label>
           <label class="field"><span>Desperté</span><input type="datetime-local" [(ngModel)]="edit.wake"></label>
+          <label class="field"><span>Tiempo en dormirme</span>
+            <select [(ngModel)]="edit.sol">
+              <option value="">Sin respuesta</option>
+              @for (o of solOptions; track o.value) { <option [value]="o.value">{{ o.label }}</option> }
+            </select>
+          </label>
+          <label class="field"><span>Despertares en la noche</span>
+            <select [(ngModel)]="edit.awakenings">
+              <option value="">Sin respuesta</option>
+              @for (o of awakeningsOptions; track o.value) { <option [value]="o.value">{{ o.label }}</option> }
+            </select>
+          </label>
         </div>
         <div class="row end">
           <button class="btn btn-ghost btn-sm" type="button" (click)="editingId.set(null)">Cancelar</button>
@@ -96,6 +128,7 @@
           <span class="tabular">{{ fmtTime(r.bedtime) }} → {{ fmtTime(r.wake_time) }}</span>
           <span class="record-dur tabular" [class.muted]="!r.wake_time">{{ r.wake_time ? fmtDuration(r.duration_min) : 'noche abierta' }}</span>
         </div>
+        @if (answersText(r); as a) { <p class="small muted answers">{{ a }}</p> }
         @if (r.notes) { <p class="small muted">{{ r.notes }}</p> }
         <div class="row end">
           <button class="btn btn-ghost btn-sm" type="button" (click)="startEdit(r)">Editar</button>

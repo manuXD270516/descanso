@@ -19,9 +19,10 @@
 .between { justify-content: space-between; }
 .wrap { flex-wrap: wrap; }
 .periods { display: flex; gap: 0.35rem; }
-.regularity summary { cursor: pointer; list-style: revert; }
-.regularity summary h2 { display: inline; font-size: 1.1rem; }
-.regularity p { margin-top: 0.5rem; }
+.regularity summary, .phases summary { cursor: pointer; list-style: revert; }
+.regularity summary h2, .phases summary h2 { display: inline; font-size: 1.1rem; }
+.regularity p, .phases p { margin-top: 0.5rem; }
+.block-head { gap: 0.6rem; align-items: center; }
 
 @media (max-width: 480px) {
   .summary { grid-template-columns: 1fr; }

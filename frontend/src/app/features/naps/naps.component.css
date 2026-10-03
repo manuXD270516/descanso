@@ -9,3 +9,6 @@
 .nap { display: grid; gap: 0.4rem; padding: 0.75rem 1rem; }
 .nap-main { display: flex; justify-content: space-between; gap: 1rem; }
 .nap-dur { color: var(--dawn); font-weight: 600; }
+
+/* Feature 006: insignia de origen junto al título del bloque */
+.block-head { gap: 0.6rem; align-items: center; }

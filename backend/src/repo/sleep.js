@@ -2,7 +2,8 @@
 const db = require('../db');
 const { requireUser, rangeClause } = require('./scope');
 
-const COLS = 'id, date, bedtime, wake_time, notes, created_at';
+// sol_bucket y awakenings_bucket: respuestas opcionales de la tarjeta (feature 006); NULL = sin respuesta
+const COLS = 'id, date, bedtime, wake_time, notes, sol_bucket, awakenings_bucket, created_at';
 
 function list(userId, range = {}) {
   const params = [requireUser(userId)];
@@ -24,8 +25,8 @@ function create(userId, d) {
 
 function update(userId, id, d) {
   const info = db
-    .prepare('UPDATE sleep_records SET date=?, bedtime=?, wake_time=?, notes=? WHERE user_id = ? AND id = ?')
-    .run(d.date, d.bedtime, d.wake_time ?? null, d.notes ?? null, requireUser(userId), id);
+    .prepare('UPDATE sleep_records SET date=?, bedtime=?, wake_time=?, notes=?, sol_bucket=?, awakenings_bucket=? WHERE user_id = ? AND id = ?')
+    .run(d.date, d.bedtime, d.wake_time ?? null, d.notes ?? null, d.sol_bucket ?? null, d.awakenings_bucket ?? null, requireUser(userId), id);
   return info.changes ? get(userId, id) : undefined;
 }
 

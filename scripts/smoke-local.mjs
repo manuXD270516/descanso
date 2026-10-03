@@ -246,6 +246,25 @@ async function verify(call, opts) {
 
   const badPeriod = await call('GET', `/api/dashboard?days=14&to=${today}`);
   check('Borde · periodo no permitido → 400', badPeriod.status === 400, badPeriod.data?.error ?? '');
+
+  // Feature 006: ajustes de ciclo, atajos con el ciclo de la persona y respuestas de la tarjeta
+  const me = (await call('GET', '/api/me')).data;
+  check('006 · ajustes de ciclo por defecto 90/15', me.cycle_min === 90 && me.latency_min === 15, `${me.cycle_min}/${me.latency_min}`);
+  const badCycle = await call('PUT', '/api/me', { cycle_min: 120 });
+  check('006 · ciclo de 120 min → 400', badCycle.status === 400, badCycle.data?.error ?? '');
+  const okCycle = await call('PUT', '/api/me', { cycle_min: 100, latency_min: 20 });
+  check('006 · ciclo 100 y 20 min para dormirse → 200', okCycle.status === 200 && okCycle.data.cycle_min === 100, `${okCycle.status}`);
+  const d100 = await dash(7);
+  check('006 · los atajos del objetivo usan ciclos de 100 min', d100.cycle_min === 100 && d100.cycles.shortcuts.every((s) => s.minutes === s.cycles * 100));
+  await call('PUT', '/api/me', { cycle_min: 90, latency_min: 15 });
+
+  const closed = ((await call('GET', '/api/sleep')).data ?? []).find((n) => n.wake_time);
+  const answer = await call('PUT', `/api/sleep/${closed.id}`, { sol_bucket: '15_30', awakenings_bucket: '1_2' });
+  check('006 · respuestas de la tarjeta guardadas en la noche', answer.status === 200 && answer.data.sol_bucket === '15_30' && answer.data.awakenings_bucket === '1_2');
+  const badAnswer = await call('PUT', `/api/sleep/${closed.id}`, { sol_bucket: '15' });
+  check('006 · respuesta fuera de la lista → 400', badAnswer.status === 400, badAnswer.data?.error ?? '');
+  const csv = await call('GET', '/api/export/noches.csv');
+  check('006 · el CSV de noches trae tiempo_dormirse y despertares', typeof csv.data === 'string' && csv.data.includes('tiempo_dormirse,despertares') && csv.data.includes(',15-30,1-2'));
   return results;
 }
 

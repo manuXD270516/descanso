@@ -117,3 +117,14 @@ test('IDOR corregido: B no puede borrar un valor de A conociendo id de métrica 
   const still = db.prepare('SELECT COUNT(*) AS c FROM metric_entries WHERE metric_id = ? AND date = ?').get(A.metric.id, A.date);
   assert.equal(still.c, 1);
 });
+
+test('las respuestas de la tarjeta de A no se leen ni se escriben desde B (feature 006)', async () => {
+  await api.put(`/api/sleep/${A.closed.id}`).send({ sol_bucket: '15_30', awakenings_bucket: '1_2' }).expect(200);
+  const before = fingerprintOf(A_ID);
+  await otherApi.put(`/api/sleep/${A.closed.id}`).send({ sol_bucket: null, awakenings_bucket: '3plus' }).expect(404);
+  const mine = (await otherApi.get('/api/sleep').expect(200)).body;
+  assert.ok(mine.every((n) => n.sol_bucket === null && n.awakenings_bucket === null), 'B no ve respuestas de A');
+  const exported = (await otherApi.get('/api/export.json').expect(200)).body;
+  assert.ok(!JSON.stringify(exported).includes('15_30'));
+  assert.equal(fingerprintOf(A_ID), before);
+});

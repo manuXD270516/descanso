@@ -118,3 +118,10 @@
 }
 .login-links { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
 .back { justify-self: center; }
+
+/* Feature 006: aviso de no dispositivo médico en Noche, Tendencias y Siestas */
+.medical-notice {
+  color: var(--ink-dim);
+  border-left: 3px solid var(--line);
+  padding: 0.2rem 0 0.2rem 0.6rem;
+}

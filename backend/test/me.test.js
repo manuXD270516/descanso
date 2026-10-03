@@ -58,3 +58,26 @@ test('los fallos de contraseña actual cuentan para el límite de intentos (FR-0
   for (let i = 0; i < 5; i++) await tryWrong().expect(401);
   await otherApi.put('/api/me/email').set('Fly-Client-IP', 'ip-perfil').send({ email: 'z@z.com', password: PASSWORD }).expect(429);
 });
+
+test('ajustes de ciclo (feature 006, FR-009): 90/15 por defecto, rangos, por usuario y sin tocar el objetivo', async () => {
+  const me = (await otherApi.get('/api/me').expect(200)).body;
+  assert.deepEqual([me.cycle_min, me.latency_min], [90, 15]);
+  const customized = db.prepare('SELECT goal_customized FROM user_settings WHERE user_id = ?').get(OTHER_ID).goal_customized;
+
+  const saved = (await otherApi.put('/api/me').send({ cycle_min: 100, latency_min: 20 }).expect(200)).body;
+  assert.deepEqual([saved.cycle_min, saved.latency_min], [100, 20]);
+  assert.equal(db.prepare('SELECT goal_customized FROM user_settings WHERE user_id = ?').get(OTHER_ID).goal_customized, customized, 'goal_customized intacto');
+
+  for (const cycle_min of [69, 111, 90.5, '90', null]) {
+    const r = await otherApi.put('/api/me').send({ cycle_min }).expect(400);
+    assert.equal(r.body.error, 'La duración del ciclo debe estar entre 70 y 110 minutos');
+  }
+  for (const latency_min of [-1, 61, 7.5, '15', null]) {
+    const r = await otherApi.put('/api/me').send({ latency_min }).expect(400);
+    assert.equal(r.body.error, 'El tiempo en dormirte debe estar entre 0 y 60 minutos');
+  }
+  await otherApi.put('/api/me').send({ cycle_min: 70, latency_min: 0 }).expect(200);
+  await otherApi.put('/api/me').send({ cycle_min: 110, latency_min: 60 }).expect(200);
+  assert.deepEqual(db.prepare('SELECT cycle_min, latency_min FROM user_settings WHERE user_id = 1').get(), { cycle_min: 90, latency_min: 15 }, 'el del propietario no cambia');
+  await otherApi.put('/api/me').send({ cycle_min: 100, latency_min: 20 }).expect(200);
+});
