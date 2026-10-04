@@ -24,6 +24,21 @@ de la app lleva datos de salud.
   identificada por el día en que te acuestas (principio III).
 - Q: ¿Aviso por defecto? → A: **30 min** antes de la hora de acostarse (configurable 15–60).
 
+### Spike del calendario (2026-10-04, emulador Android 15)
+
+Resultados y evidencias: [`spike/README.md`](spike/README.md). Lo que cambia esta spec:
+
+- **Google Calendar** (app de Android, con y sin cuenta) importa el archivo con "Añadir todo" y, al
+  reimportar, **actualiza** y borra los días cancelados, sin duplicar. Pero **descarta la alarma del
+  archivo** y aplica la **notificación por defecto del calendario de destino**. También descarta la
+  propiedad `URL`, aunque conserva la descripción.
+- **Calendarios AOSP** (Etar, como referencia de los de fabricante): importan un solo evento, usan su
+  recordatorio por defecto y **duplican** al reimportar.
+- Tocar el aviso abre **el evento** en el calendario; desde su enlace se llega a Descanso (2 toques).
+- El modo descanso / No molestar de Android silencia los recordatorios del calendario.
+- Sin verificar: Google Calendar web (navegador del emulador no compatible) y Apple Calendar (no se
+  puede emular en Windows).
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Agendar mi horario (Priority: P1)
@@ -68,7 +83,8 @@ acostarme, para que el móvil me avise sin que la app tenga que estar abierta.
 **Independent Test**: con L–V 23:15 y S–D 1:15 y aviso de 30 min, "Añadir a mi calendario" descarga
 un archivo que pasa un validador iCalendar, contiene 7 eventos semanales (uno por día activo) a la
 hora de acostarse con alarma de 30 min y el texto "Descanso: en 30 min es tu hora de dormir", sin
-datos de salud; importarlo en el calendario del móvil hace sonar la alarma.
+datos de salud. Importado en Google Calendar (Android) en un calendario con notificación por defecto
+de 30 min, suena 30 min antes; reimportar una versión nueva no duplica.
 
 **Acceptance Scenarios**:
 
@@ -82,14 +98,19 @@ datos de salud; importarlo en el calendario del móvil hace sonar la alarma.
 5. **Given** que cambio el horario y descargo de nuevo, **When** lo importo, **Then** los eventos se
    actualizan en lugar de duplicarse, y un día que deja de tener evento aparece cancelado.
 6. **Given** la guía, **When** la abro desde Android, **Then** me muestra primero las instrucciones de
-   Android: Google Calendar web (subir el archivo) o el calendario del fabricante; las de iPhone
-   ("Añadir todo") quedan disponibles debajo.
+   Android: abrir el archivo con Google Calendar → "Añadir todo", en un calendario cuya
+   **notificación por defecto** sea mi "Avisarme antes" (y cómo crear un calendario "Descanso" con
+   ella). Las de iPhone ("Añadir todo") quedan disponibles debajo, marcadas "no verificadas".
 7. **Given** una plataforma en la que el spike mostró que la alarma importada no suena o que
    reimportar duplica, **When** abro su guía, **Then** lo dice claramente y propone la alternativa
    (crear una alarma recurrente en el reloj del móvil con las horas del horario, o borrar los eventos
    anteriores antes de importar).
-8. **Given** el evento o su alarma, **When** lo toco, **Then** se abre la app en Noche con "Me voy a
-   dormir" visible sin desplazarse.
+8. **Given** el aviso del calendario, **When** lo toco, **Then** se abre el evento, cuya descripción
+   incluye el enlace "Abrir Descanso"; al tocarlo se abre la app en Noche con "Me voy a dormir"
+   visible sin desplazarse.
+9. **Given** un calendario que duplica al reimportar o que ignora la alarma (calendarios de fabricante
+   tipo AOSP), **When** abro su guía, **Then** me dice que borre los eventos anteriores antes de
+   importar y que ajuste el recordatorio del evento.
 
 ---
 
@@ -170,6 +191,7 @@ animación.
 - Hora de acostarme después de medianoche (1:15) en la noche del sábado: la noche sigue siendo la
   del sábado, pero el evento del calendario cae el domingo a la 1:15.
 - Cambio de horario oficial (DST): el evento de las 23:15 sigue a las 23:15 (hora flotante).
+- Modo descanso / No molestar activo antes del aviso: el calendario no suena; la guía lo advierte.
 - Dos versiones el mismo día: la segunda sustituye a la primera desde hoy (una sola versión por día).
 - Un día desactivado en la versión nueva que estaba activo antes: el archivo lo emite cancelado.
 - Pausa que termina hoy: los avisos vuelven mañana.
@@ -189,8 +211,9 @@ animación.
 - **FR-003**: El horario MUST admitir "Igual todos los días" (por defecto), "Distinto el fin de
   semana" (noches del sábado y del domingo) y "Cada día distinto", con días activables y
   desactivables. Cada día del horario es una noche, nombrada por el día en que te acuestas.
-- **FR-004**: Cada guardado MUST crear una versión vigente desde ese día; las versiones no se
-  editan ni se borran (salvo con la cuenta), y como máximo hay una por día.
+- **FR-004**: Cada guardado MUST crear una versión vigente desde ese día. Las versiones de días
+  anteriores no cambian; como máximo hay una por día, y guardar otra vez el mismo día sustituye la
+  de ese día (con un número de versión nuevo, para que el calendario se actualice).
 - **FR-005**: Las horas MUST guardarse como minutos del día de reloj de pared, sin zona horaria.
 - **FR-006**: "Mi horario" MUST estar accesible desde Cuenta para crear o cambiar el horario después
   de la bienvenida.
@@ -199,16 +222,23 @@ animación.
 
 - **FR-007**: "Añadir a mi calendario" MUST descargar un archivo iCalendar (RFC 5545) con un evento
   semanal por día activo a la hora de acostarse y una alarma de "Avisarme antes" minutos (15–60,
-  30 por defecto).
+  30 por defecto). En los calendarios que ignoran la alarma del archivo (Google Calendar), la guía
+  MUST explicar cómo conseguir el mismo aviso con la notificación por defecto del calendario.
 - **FR-008**: El archivo MUST usar hora flotante, identificadores estables por día y un número de
   secuencia creciente con la versión, para que reimportarlo actualice en vez de duplicar; los días
   que dejan de tener evento MUST emitirse cancelados.
 - **FR-009**: El archivo y sus avisos MUST NOT contener datos de salud; el texto es "Descanso: en
   X min es tu hora de dormir".
-- **FR-010**: El evento MUST enlazar a la app, que abre Noche con "Me voy a dormir" visible.
-- **FR-011**: La guía MUST mostrar primero las instrucciones de la plataforma detectada (Android:
-  Google Calendar web o calendario del fabricante; iPhone: "Añadir todo") e incluir lo que el spike
-  haya demostrado que no funciona y su alternativa.
+- **FR-010**: El evento MUST enlazar a la app, en la descripción y como `URL`, porque Google Calendar
+  descarta `URL`. El enlace abre Noche con "Me voy a dormir" visible.
+- **FR-011**: La guía MUST mostrar primero las instrucciones de la plataforma detectada, según el
+  spike:
+  - **Android**: Google Calendar → "Añadir todo" en un calendario con notificación por defecto = aviso;
+    calendarios de fabricante: borrar los anteriores antes de reimportar y ajustar el recordatorio;
+  - **iPhone**: "Añadir todo" (no verificado).
+
+  MUST avisar de que el modo descanso / No molestar puede silenciar el aviso y, como alternativa,
+  proponer una alarma recurrente en el reloj del móvil.
 
 **Noche abierta con horario (US3)**
 
@@ -259,9 +289,9 @@ animación.
   referencia.
 - **SC-003**: Al pasar de la versión 1 a la 2 del horario, reimportar no aumenta el número de
   eventos en los calendarios donde el spike lo confirme.
-- **SC-004**: El spike cubre Apple Calendar (iPhone), Google Calendar web y el calendario del
-  fabricante (Android). En cada uno se anota si la alarma importada suena a la hora prevista y si
-  reimportar actualiza; donde no, la guía lo dice y ofrece la alternativa.
+- **SC-004**: Cada plataforma de la guía refleja el resultado del spike (suena / actualiza / duplica /
+  no verificado) y, donde algo no funciona, ofrece la alternativa. Hecho en Google Calendar (Android) y
+  en calendario AOSP; Google web y Apple Calendar quedan "no verificados".
 - **SC-005**: 0 datos de salud en el archivo y en los textos de aviso (prueba automática).
 - **SC-006**: Con horario, "¿Ya despertaste?" aparece en el 100 % de las aperturas a partir de 60
   min después de la hora de levantarse con la noche abierta, y en ninguna antes.
@@ -271,8 +301,8 @@ animación.
 ## Assumptions
 
 - La hora de levantarse de una noche es la de la mañana siguiente.
-- El spike lo hace la persona usuaria con sus dispositivos (Android e iPhone) antes del plan, con
-  archivos de prueba que prepara la app; sus resultados se anotan en `research.md` y ajustan la guía.
+- El spike se hizo antes del plan en el emulador de Android (ver Clarifications); el iPhone y Google
+  web pueden verificarse a mano más adelante con la tabla de `spike/README.md`.
 - 011 (rachas) aún no existe: esta feature solo guarda los datos que necesitará (pausas, despertar
   tardío y hora propuesta confirmada).
 - El enlace del evento abre la app pública (`https://descanso-sleep.fly.dev`); si no hay sesión,

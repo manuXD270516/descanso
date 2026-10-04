@@ -1,0 +1,128 @@
+openapi: 3.1.0
+info:
+  title: Descanso API — cambios de la feature 010
+  version: 1.7.0
+  description: |
+    Horario, archivo de calendario y pausas. Todo con sesión y aislado por usuario (008): lo ajeno → 404.
+    Las fechas "hoy" las envía el cliente (su zona horaria) y el servidor las acepta a ±1 día de UTC.
+servers:
+  - url: /api
+
+paths:
+  /schedule:
+    get:
+      summary: Horario vigente en una fecha y ajuste "Avisarme antes" (FR-003, FR-004)
+      parameters:
+        - { name: date, in: query, required: true, schema: { type: string, format: date } }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  version: { oneOf: [{ $ref: '#/components/schemas/ScheduleVersion' }, { type: 'null' }] }
+                  lead_min: { type: integer }
+                  pause: { oneOf: [{ $ref: '#/components/schemas/Pause' }, { type: 'null' }], description: Pausa activa en date }
+        '400': { description: 'Fecha inválida' }
+    put:
+      summary: Guarda el horario como versión vigente desde today (sustituye la de today si existía)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [today, days]
+              properties:
+                today: { type: string, format: date }
+                days:
+                  type: array
+                  minItems: 7
+                  maxItems: 7
+                  items: { $ref: '#/components/schemas/ScheduleDay' }
+      responses:
+        '200': { content: { application/json: { schema: { $ref: '#/components/schemas/ScheduleVersion' } } } }
+        '400': { description: '"El horario debe tener los 7 días" · "Hora no válida" · "Fecha inválida"' }
+
+  /schedule.ics:
+    get:
+      summary: Archivo de calendario del horario vigente hoy (FR-007…FR-010)
+      parameters:
+        - { name: today, in: query, required: true, schema: { type: string, format: date } }
+      responses:
+        '200':
+          description: 'text/calendar; charset=utf-8 · attachment; filename="descanso-horario.ics"'
+        '404': { description: 'No tienes horario' }
+
+  /pauses:
+    get:
+      summary: Mis pausas (recientes y futuras)
+    post:
+      summary: Crear una pausa (FR-015)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [start_date, end_date, today]
+              properties:
+                start_date: { type: string, format: date }
+                end_date: { type: string, format: date }
+                today: { type: string, format: date }
+      responses:
+        '201': { content: { application/json: { schema: { $ref: '#/components/schemas/Pause' } } } }
+        '400': { description: '"La pausa no puede empezar en el pasado" · "La pausa dura como máximo 14 días" · "Solo puedes hacer 2 pausas cada 30 días" · "Fecha inválida"' }
+        '409': { description: 'Se solapa con otra pausa' }
+  /pauses/{id}/end:
+    post:
+      summary: Terminar hoy una pausa activa, o cancelar una futura (FR-017)
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200': { description: Pausa terminada (end_date = today) }
+        '204': { description: Pausa futura cancelada }
+        '404': { description: 'Pausa no encontrada (incluye las de otra persona)' }
+
+  /sleep/wake:
+    post:
+      summary: Igual que 001; acepta from_proposal y fija wake_logged_at (FR-013, FR-014)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                wake_time: { type: string, format: date-time }
+                from_proposal: { type: boolean, default: false }
+  /sleep:
+    get:
+      summary: Cada noche incluye wake_logged_at y wake_from_proposal
+  /me:
+    put:
+      summary: Acepta lead_min (15–60) — 400 "El aviso debe ser entre 15 y 60 minutos antes"
+  /export.json:
+    get:
+      summary: Añade schedule_versions (con days) y pauses
+
+components:
+  schemas:
+    ScheduleDay:
+      type: object
+      required: [weekday, bed_min, wake_min, active]
+      properties:
+        weekday: { type: integer, minimum: 0, maximum: 6, description: 'Día de la noche (0 = domingo)' }
+        bed_min: { type: integer, minimum: 0, maximum: 1439 }
+        wake_min: { type: integer, minimum: 0, maximum: 1439 }
+        active: { type: boolean }
+    ScheduleVersion:
+      type: object
+      properties:
+        id: { type: integer }
+        effective_from: { type: string, format: date }
+        days: { type: array, items: { $ref: '#/components/schemas/ScheduleDay' } }
+    Pause:
+      type: object
+      properties:
+        id: { type: integer }
+        start_date: { type: string, format: date }
+        end_date: { type: string, format: date }
