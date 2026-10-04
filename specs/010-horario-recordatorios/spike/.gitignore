@@ -1,2 +1,4 @@
 # Archivos generados por make-spike-ics.mjs
 *.ics
+# Evidencias con datos de la cuenta personal (no se versionan)
+evidence/privado/

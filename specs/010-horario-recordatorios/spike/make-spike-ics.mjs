@@ -6,6 +6,7 @@
 //   --at    hora de reloj de pared del evento (hoy y cada día de la semana); ponla unos minutos en
 //           el futuro para oír la alarma pronto.
 //   --lead  minutos de antelación de la alarma (por defecto 5, para no esperar 30).
+//   --tag   sufijo de los UID, para repetir la prueba sin chocar con eventos ya importados.
 // Genera spike-v1.ics y spike-v2.ics junto a este script. No contienen datos de salud.
 //
 // v1: 7 eventos semanales (uno por día) a la hora --at, alarma --lead min antes, SEQUENCE 1.
@@ -54,7 +55,7 @@ function calendar(version, minuteShift, cancelled) {
   DAYS.forEach((day, weekday) => {
     lines.push(
       'BEGIN:VEVENT',
-      `UID:sched-spike-${weekday}@descanso-sleep.fly.dev`,
+      `UID:sched-spike${args.tag ? `-${args.tag}` : ""}-${weekday}@descanso-sleep.fly.dev`,
       `SEQUENCE:${version}`,
       `DTSTAMP:${stamp}`,
       `DTSTART:${nextDate(weekday)}T${time}`, // hora flotante: sin TZID ni Z

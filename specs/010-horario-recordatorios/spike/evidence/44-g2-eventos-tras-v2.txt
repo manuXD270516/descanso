@@ -1,0 +1,8 @@
+2026-10-04T03:26:05.3951656-04:00
+filas: 6, no borradas: 6
+Row: 0 _id=186, calendar_id=8, title=Descanso: en 7 min es tu hora de dormir (prueba v2), dtstart=1791272760000, rrule=FREQ=WEEKLY;WKST=MO;BYDAY=TU, hasAlarm=0, deleted=0
+Row: 1 _id=187, calendar_id=8, title=Descanso: en 7 min es tu hora de dormir (prueba v2), dtstart=1791445560000, rrule=FREQ=WEEKLY;WKST=MO;BYDAY=TH, hasAlarm=0, deleted=0
+Row: 2 _id=188, calendar_id=8, title=Descanso: en 7 min es tu hora de dormir (prueba v2), dtstart=1791618360000, rrule=FREQ=WEEKLY;WKST=MO;BYDAY=SA, hasAlarm=0, deleted=0
+Row: 3 _id=190, calendar_id=8, title=Descanso: en 7 min es tu hora de dormir (prueba v2), dtstart=1791099960000, rrule=FREQ=WEEKLY;WKST=MO;BYDAY=SU, hasAlarm=0, deleted=0
+Row: 4 _id=191, calendar_id=8, title=Descanso: en 7 min es tu hora de dormir (prueba v2), dtstart=1791186360000, rrule=FREQ=WEEKLY;WKST=MO;BYDAY=MO, hasAlarm=0, deleted=0
+Row: 5 _id=192, calendar_id=8, title=Descanso: en 7 min es tu hora de dormir (prueba v2), dtstart=1791531960000, rrule=FREQ=WEEKLY;WKST=MO;BYDAY=FR, hasAlarm=0, deleted=0
