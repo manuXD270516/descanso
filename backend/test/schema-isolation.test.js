@@ -9,6 +9,7 @@ const IDENTITY = new Set(['users']);
 const CHILD = {
   metric_entries: 'pertenece al usuario a través de metrics.user_id (FK ON DELETE CASCADE)',
   invites: 'creada por el propietario (created_by) y usada por un usuario (used_by), ambas FK a users',
+  schedule_days: 'pertenece al usuario a través de schedule_versions.user_id (FK ON DELETE CASCADE) (feature 010)',
 };
 
 test('toda tabla tiene user_id o está clasificada (sistema, identidad o hija justificada)', () => {
@@ -36,6 +37,9 @@ test('las hijas justificadas realmente cuelgan de su padre con cascada', () => {
   const fk = db.prepare('PRAGMA foreign_key_list(metric_entries)').all().find((f) => f.from === 'metric_id');
   assert.equal(fk.table, 'metrics');
   assert.equal(fk.on_delete, 'CASCADE');
+  const days = db.prepare('PRAGMA foreign_key_list(schedule_days)').all().find((f) => f.from === 'version_id');
+  assert.equal(days.table, 'schedule_versions');
+  assert.equal(days.on_delete, 'CASCADE');
   const inv = db.prepare('PRAGMA foreign_key_list(invites)').all();
   assert.ok(inv.some((f) => f.from === 'used_by' && f.table === 'users' && f.on_delete === 'CASCADE'));
 });

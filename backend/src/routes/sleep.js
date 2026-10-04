@@ -73,16 +73,22 @@ r.post('/', (req, res) => {
 r.post('/wake', (req, res) => {
   const wake_time = req.body.wake_time;
   if (!isIso(wake_time)) throw new HttpError(400, 'wake_time debe ser ISO');
+  // Feature 010: confirmar la hora propuesta sin cambiarla queda registrado (lo usará 011)
+  const fromProposal = req.body.from_proposal ?? false;
+  if (typeof fromProposal !== 'boolean') throw new HttpError(400, 'from_proposal debe ser true o false');
   const open = repo.open(req.user.id);
   if (!open) throw new HttpError(404, 'No hay una noche abierta para cerrar');
   if (durationMinutes(open.bedtime, wake_time) <= 0) throw new HttpError(400, 'La hora de despertar debe ser posterior a la de dormir');
-  res.json(withDuration(repo.setWake(req.user.id, open.id, wake_time)));
+  res.json(withDuration(repo.setWake(req.user.id, open.id, wake_time, fromProposal)));
 });
 
 r.put('/:id', (req, res) => {
   const existing = repo.get(req.user.id, req.params.id);
   if (!existing) throw new HttpError(404, 'Registro no encontrado');
   const d = validate({ ...existing, ...req.body }, false);
+  // Feature 010: si ya estaba cerrada, se conserva cuándo se anotó; si se cierra ahora, el repo lo fija
+  d.wake_logged_at = existing.wake_time ? existing.wake_logged_at : null;
+  d.wake_from_proposal = existing.wake_time ? existing.wake_from_proposal : 0;
   res.json(withDuration(writeNight(() => repo.update(req.user.id, existing.id, d))));
 });
 

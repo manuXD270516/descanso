@@ -12,6 +12,23 @@ de los últimos 14 días y la regularidad de tus horarios. El objetivo empieza e
 cambiar con atajos de ciclos completos (~90 min cada uno, una orientación); la primera vez que
 entras, una bienvenida te lo pregunta. Cada gráfico tiene descripción en frases y "Ver como tabla".
 
+**Mi horario y recordatorios** (feature 010, sin coste de servidor):
+- **Horario**: se agenda en la bienvenida o en Cuenta → "Mi horario". Pones a qué hora te levantas y
+  la app propone a qué hora acostarte (levantarte − objetivo − 15 min). Puede ser igual todos los
+  días, distinto el fin de semana (noches de sábado y domingo) o distinto cada día. Son horas de
+  reloj de pared: "7:00" sigue siendo las 7:00 si viajas. Cada cambio vale desde hoy y no cambia
+  el pasado.
+- **Calendario**: "Añadir a mi calendario" descarga un `.ics` con un evento semanal por noche y un
+  aviso (15–60 min, 30 por defecto), sin datos de salud. Reimportarlo actualiza los eventos.
+- **Guía por plataforma** (spike en `specs/010-horario-recordatorios/spike/`): en Google Calendar el
+  aviso es la notificación por defecto del calendario de destino; los calendarios de fabricante
+  duplican al reimportar; y el modo No molestar puede silenciar el aviso.
+- **Avisos dentro de la app**:
+  - "¿Ya despertaste?" 60 min después de tu hora de levantarte, si la noche sigue abierta;
+  - aviso a la hora de prepararte, si tienes la app abierta;
+  - "Modo pausa" de hasta 14 días, como máximo 2 cada 30 días.
+- **"Anotado después"**: marca un despertar registrado más de 60 min después de ocurrir.
+
 **Ciclos y honestidad de datos** (feature 006, principio VIII):
 - **Calculadora**: bajo "¿Hora de dormir?" se ven 3 ventanas para despertar tras 4, 5 o 6 ciclos
   ("entre 6:30 y 7:00"). Usa tu ciclo (70–110 min) y el tiempo que tardas en dormirte (0–60 min),
@@ -109,6 +126,9 @@ modifican datos deben venir del propio sitio (`Sec-Fetch-Site`/`Origin`); si no,
 | GET · POST · DELETE | `/api/people…`           | Solo propietario: personas, invitaciones (72 h) y enlaces de recuperación (30 min) |
 | GET    | `/api/export.json`                    | Todos mis datos en JSON versionado                 |
 | GET    | `/api/export/{noches,siestas,metricas,valores}.csv` | Un CSV por tipo (UTF-8 con BOM)      |
+| GET · PUT | `/api/schedule?date` · `{today, days[7]}` | Feature 010: horario vigente en una fecha (con aviso y pausa activa) / guardar el horario desde hoy |
+| GET    | `/api/schedule.ics?today`             | Archivo de calendario del horario (hora flotante, UID estable, SEQUENCE, cancelados) |
+| GET · POST | `/api/pauses` · `/api/pauses/:id/end` | Pausas: 14 días como máximo, 2 cada 30 días, sin solapes (409); terminar hoy o cancelar |
 | GET    | `/api/sleep?from&to`                  | Noches (con `duration_min`)                        |
 | GET    | `/api/sleep/open`                     | Noche abierta (me acosté, aún no despierto)        |
 | POST   | `/api/sleep`                          | `{date, bedtime, wake_time?, notes?}` · `date` = día local de `bedtime` · 409 si ya hay una noche abierta y no se envía `wake_time` |

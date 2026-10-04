@@ -7,7 +7,7 @@ Formato: Decisión / Razón / Alternativas. Diseño de referencia: feature 010 y
 ## R1. Horario versionado en horas de pared
 
 - **Decisión**:
-  - `schedule_versions(id, user_id, effective_from, created_at)` con `UNIQUE(user_id, effective_from)`;
+  - `schedule_versions(id, user_id, effective_from, created_at)`, con índice `(user_id, effective_from, id)`;
   - `schedule_days(version_id, weekday, bed_min, wake_min, active)`, con PK `(version_id, weekday)`.
   - `weekday` es el día de la **noche** (0 = domingo … 6 = sábado, como `Date.getDay()`).
   - `bed_min` y `wake_min` son minutos de reloj de pared (0–1439), sin zona horaria.
@@ -16,11 +16,12 @@ Formato: Decisión / Razón / Alternativas. Diseño de referencia: feature 010 y
       siguiente del calendario;
     - si no, cae el mismo día.
     - La hora de levantarse siempre es de la mañana siguiente a la noche.
-  - Guardar crea una versión con `effective_from = hoy`, la fecha que envía el cliente (como `to`
-    en el dashboard de 005). Si ya había una versión de hoy, se sustituye: se borra la fila y se
-    crea otra, con id nuevo. Así el `SEQUENCE` del calendario siempre crece. Es una edición de la
-    propia persona sobre su horario del día, no un borrado de datos ajenos (principio II).
-  - La versión vigente en una fecha D es la de mayor `effective_from` ≤ D.
+  - Guardar crea siempre una versión nueva con `effective_from = hoy`, la fecha que envía el cliente
+    (como `to` en el dashboard de 005); el `SEQUENCE` del calendario siempre crece.
+  - La versión vigente en D es la de mayor `effective_from` ≤ D y, el mismo día, la de id mayor.
+  - **Nada se borra**: así se conserva qué días estuvieron activos, para emitirlos cancelados en el
+    calendario. Lo detectó la implementación; la primera idea sustituía la del mismo día y perdía
+    ese dato.
 - **Razón**:
   - El horario es una regla recurrente de reloj de pared, no un instante: "7:00" sigue siendo las
     7:00 tras viajar o con el cambio de horario (spec FR-005). El principio III (ISO con offset)
@@ -105,6 +106,11 @@ Formato: Decisión / Razón / Alternativas. Diseño de referencia: feature 010 y
     - la hora propuesta es la agendada;
     - si no se cumplen esas condiciones, se mantiene la regla de 006 (≥ 14 h, dormir + objetivo).
     - El "Aún no" de 006 (`NightUiService`) se reutiliza.
+  - **Pasada la medianoche** (hallado en la implementación): la noche registrada lleva la fecha del
+    día en que te acostaste (principio III), pero en el horario una hora antes de mediodía pertenece a
+    la noche anterior (00:30 del sábado = noche del viernes). Por eso `scheduledWake` mira esa noche
+    y la anterior, y toma la primera hora de levantarse agendada posterior a la hora real de acostarse
+    (como mucho 18 h después).
 - **Razón**: amplía 006-US4 sin otro mecanismo y deja guardado lo que necesita 011 (FR-013,
   FR-014).
 - **Alternativas**:

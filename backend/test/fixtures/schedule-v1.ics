@@ -1,0 +1,125 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Descanso//Horario//ES
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:sched-7-0@descanso-sleep.fly.dev
+SEQUENCE:12
+DTSTAMP:20261005T120000Z
+DTSTART:20261012T011500
+DURATION:PT15M
+RRULE:FREQ=WEEKLY;BYDAY=MO
+SUMMARY:Descanso: en 30 min es tu hora de dormir
+DESCRIPTION:Abrir Descanso: https://descanso-sleep.fly.dev/#noche
+URL:https://descanso-sleep.fly.dev/#noche
+STATUS:CONFIRMED
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Descanso: en 30 min es tu hora de dormir
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:sched-7-1@descanso-sleep.fly.dev
+SEQUENCE:12
+DTSTAMP:20261005T120000Z
+DTSTART:20261005T231500
+DURATION:PT15M
+RRULE:FREQ=WEEKLY;BYDAY=MO
+SUMMARY:Descanso: en 30 min es tu hora de dormir
+DESCRIPTION:Abrir Descanso: https://descanso-sleep.fly.dev/#noche
+URL:https://descanso-sleep.fly.dev/#noche
+STATUS:CONFIRMED
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Descanso: en 30 min es tu hora de dormir
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:sched-7-2@descanso-sleep.fly.dev
+SEQUENCE:12
+DTSTAMP:20261005T120000Z
+DTSTART:20261006T231500
+DURATION:PT15M
+RRULE:FREQ=WEEKLY;BYDAY=TU
+SUMMARY:Descanso: en 30 min es tu hora de dormir
+DESCRIPTION:Abrir Descanso: https://descanso-sleep.fly.dev/#noche
+URL:https://descanso-sleep.fly.dev/#noche
+STATUS:CONFIRMED
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Descanso: en 30 min es tu hora de dormir
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:sched-7-3@descanso-sleep.fly.dev
+SEQUENCE:12
+DTSTAMP:20261005T120000Z
+DTSTART:20261007T231500
+DURATION:PT15M
+RRULE:FREQ=WEEKLY;BYDAY=WE
+SUMMARY:Descanso: en 30 min es tu hora de dormir
+DESCRIPTION:Abrir Descanso: https://descanso-sleep.fly.dev/#noche
+URL:https://descanso-sleep.fly.dev/#noche
+STATUS:CONFIRMED
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Descanso: en 30 min es tu hora de dormir
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:sched-7-4@descanso-sleep.fly.dev
+SEQUENCE:12
+DTSTAMP:20261005T120000Z
+DTSTART:20261008T231500
+DURATION:PT15M
+RRULE:FREQ=WEEKLY;BYDAY=TH
+SUMMARY:Descanso: en 30 min es tu hora de dormir
+DESCRIPTION:Abrir Descanso: https://descanso-sleep.fly.dev/#noche
+URL:https://descanso-sleep.fly.dev/#noche
+STATUS:CONFIRMED
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Descanso: en 30 min es tu hora de dormir
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:sched-7-5@descanso-sleep.fly.dev
+SEQUENCE:12
+DTSTAMP:20261005T120000Z
+DTSTART:20261009T231500
+DURATION:PT15M
+RRULE:FREQ=WEEKLY;BYDAY=FR
+SUMMARY:Descanso: en 30 min es tu hora de dormir
+DESCRIPTION:Abrir Descanso: https://descanso-sleep.fly.dev/#noche
+URL:https://descanso-sleep.fly.dev/#noche
+STATUS:CONFIRMED
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Descanso: en 30 min es tu hora de dormir
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:sched-7-6@descanso-sleep.fly.dev
+SEQUENCE:12
+DTSTAMP:20261005T120000Z
+DTSTART:20261011T011500
+DURATION:PT15M
+RRULE:FREQ=WEEKLY;BYDAY=SU
+SUMMARY:Descanso: en 30 min es tu hora de dormir
+DESCRIPTION:Abrir Descanso: https://descanso-sleep.fly.dev/#noche
+URL:https://descanso-sleep.fly.dev/#noche
+STATUS:CONFIRMED
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Descanso: en 30 min es tu hora de dormir
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+END:VCALENDAR

@@ -14,10 +14,20 @@ import { OriginBadgeComponent, Origin, blockOrigin } from '../../shared/origin/o
 import { CycleCalculatorComponent } from './cycle-calculator.component';
 import { AWAKENINGS_OPTIONS, NightCardComponent, SOL_OPTIONS } from './night-card.component';
 import { NightUiService } from './night-ui.service';
+import { ScheduleService, ScheduleState } from '../../core/schedule.service';
+import { scheduledWakeCheck } from '../../core/schedule';
 
 const RANGE_DAYS = 14;
 /** Una noche abierta desde hace 14 h o más probablemente se olvidó cerrar (feature 006, US4). */
 const FORGOTTEN_MS = 14 * 3600_000;
+/** Un despertar anotado más de 60 min después de ocurrir es "Anotado después" (feature 010). */
+const LATE_MS = 60 * 60_000;
+
+/** Origen de una noche: 'late' si el despertar se anotó más de 60 min después (FR-013). */
+export function nightOrigin(r: SleepRecord): Origin {
+  if (!r.wake_time || !r.wake_logged_at) return 'manual';
+  return Date.parse(r.wake_logged_at) - Date.parse(r.wake_time) > LATE_MS ? 'late' : 'manual';
+}
 
 interface Ribbon {
   date: string;
@@ -36,6 +46,10 @@ export class NightComponent implements OnInit {
   private api = inject(ApiService);
   private account = inject(AccountService);
   private ui = inject(NightUiService);
+  private schedules = inject(ScheduleService);
+
+  /** Horario y pausa de la fecha de la noche abierta (feature 010). */
+  readonly openSchedule = signal<ScheduleState | null>(null);
 
   readonly open = signal<SleepRecord | null>(null);
   readonly records = signal<SleepRecord[]>([]);
@@ -76,14 +90,32 @@ export class NightComponent implements OnInit {
   /** Hora de dormir del panel, en ISO, para la calculadora. */
   readonly bedtimeIso = computed(() => (this.bedtimeInput() ? inputLocalToIso(this.bedtimeInput()) : null));
 
-  /** Recordatorio: la noche abierta lleva ≥ 14 h y la persona no lo descartó en esta apertura. */
-  readonly showReminder = computed(() => {
+  /**
+   * Con horario activo para la noche abierta y sin pausa (010): "¿Ya despertaste?" a partir de la hora de
+   * levantarse agendada + 60 min, proponiendo esa hora. Si no, regla de 006: ≥ 14 h y dormir + objetivo.
+   */
+  readonly scheduledCheck = computed(() => {
     const o = this.open();
-    return !!o && !this.ui.reminderDismissed() && this.loadedAt() - new Date(o.bedtime).getTime() >= FORGOTTEN_MS;
+    const s = this.openSchedule();
+    return o && s ? scheduledWakeCheck(new Date(o.bedtime), o.date, s.version, !!s.pause, new Date(this.loadedAt())) : null;
   });
 
+  /** Recordatorio de noche abierta, salvo que la persona lo descartara en esta apertura. */
+  readonly showReminder = computed(() => {
+    const o = this.open();
+    if (!o || this.ui.reminderDismissed()) return false;
+    const sched = this.scheduledCheck();
+    if (sched) return sched.due;
+    return this.loadedAt() - new Date(o.bedtime).getTime() >= FORGOTTEN_MS;
+  });
+
+  /** Hora propuesta del recordatorio (para saber si se confirmó sin cambiarla). */
+  private proposal = '';
+
   // Todo lo guardado lo anotó la persona; 007 añadirá datos "Del reloj" (feature 006, US1)
-  readonly nightsOrigin = computed<Origin | null>(() => blockOrigin(this.records().map(() => ({ origin: 'manual' as Origin }))));
+  // y desde 010, "Anotado después" si el despertar se anotó tarde: si el bloque mezcla, va por fila
+  readonly nightsOrigin = computed<Origin | null>(() => blockOrigin(this.records().map((r) => ({ origin: nightOrigin(r) }))));
+  readonly nightOrigin = nightOrigin;
 
   /** Ejes de la cinta: de 12:00 a 12:00 del día siguiente (24 h) */
   readonly axisTicks = [12, 18, 0, 6, 12].map((h, i) => ({ h, x: i * 25 }));
@@ -155,7 +187,13 @@ export class NightComponent implements OnInit {
     this.api.openNight().subscribe({
       next: (o) => {
         this.open.set(o);
+        this.openSchedule.set(null);
         this.proposeWake();
+        if (o) {
+          this.schedules.get(o.date).subscribe({
+            next: (s) => { this.openSchedule.set(s); this.proposeWake(); },
+          });
+        }
       },
       error: (e) => this.fail(e),
     });
@@ -164,12 +202,14 @@ export class NightComponent implements OnInit {
     this.api.stats(this.from, this.today).subscribe({ next: (s) => this.stats.set(s) });
   }
 
-  /** Hora propuesta = dormir + objetivo, nunca en el futuro (FR-014). */
+  /** Hora propuesta: la agendada (010) o dormir + objetivo (006), nunca en el futuro. */
   private proposeWake() {
     const o = this.open();
     if (!o) return;
-    const proposal = Math.min(new Date(o.bedtime).getTime() + this.goalMin() * 60_000, Date.now());
-    this.reminderInput.set(toInputLocal(new Date(proposal)));
+    const sched = this.scheduledCheck();
+    const base = sched ? sched.proposal.getTime() : new Date(o.bedtime).getTime() + this.goalMin() * 60_000;
+    this.proposal = toInputLocal(new Date(Math.min(base, Date.now())));
+    this.reminderInput.set(this.proposal);
   }
 
   goToSleep() {
@@ -187,15 +227,16 @@ export class NightComponent implements OnInit {
       this.error.set('La hora de despertar no puede estar en el futuro');
       return;
     }
-    this.closeNight(inputLocalToIso(this.reminderInput()));
+    // Confirmar la hora propuesta sin cambiarla queda registrado (FR-014; lo usará 011)
+    this.closeNight(inputLocalToIso(this.reminderInput()), this.reminderInput() === this.proposal);
   }
 
   dismissReminder() {
     this.ui.reminderDismissed.set(true);
   }
 
-  private closeNight(wakeIso: string) {
-    this.run(this.api.wake(wakeIso), (closed) => {
+  private closeNight(wakeIso: string, fromProposal = false) {
+    this.run(this.api.wake(wakeIso, fromProposal), (closed) => {
       this.bedtimeInput.set(toInputLocal());
       this.lastClosed.set(closed);
     });

@@ -73,6 +73,15 @@ export class Api {
   dashboard(days: 7 | 30 | 90, to: string) {
     return this.request.get(`/api/dashboard?days=${days}&to=${to}`).then(json<{ goal_min: number; summary: { avg_min: number | null; days_with_data: number; goal_met: number }; pending14: { net_min: number | null; days: number } }>);
   }
+  /** Feature 010: horario vigente desde `today` (fecha local de la persona). */
+  saveSchedule(today: string, days: { weekday: number; bed_min: number; wake_min: number; active: boolean }[]) {
+    return this.request.put('/api/schedule', { data: { today, days } }).then(json<{ id: number; effective_from: string }>);
+  }
+  schedule(date: string) {
+    return this.request.get(`/api/schedule?date=${date}`).then(
+      json<{ version: { id: number; days: { weekday: number; bed_min: number; wake_min: number; active: boolean }[] } | null; lead_min: number; pause: { end_date: string } | null }>,
+    );
+  }
   status() {
     return this.request.get('/api/auth/status').then(json<{ state: string; nights?: number; email?: string }>);
   }

@@ -142,7 +142,7 @@ queda marcada "Anotado después"; a las 7:59 no hay aviso. Sin horario, sigue la
 
 ### User Story 4 - Modo pausa (Priority: P2)
 
-Como usuario, activo un único "Modo pausa (viaje, enfermedad, turnos) hasta…" para que la app deje
+Como usuario, activo un único "Modo pausa (viaje, malestar, turnos) hasta…" para que la app deje
 de avisarme durante unos días.
 
 **Why this priority**: evita avisos inútiles cuando el horario no aplica; 011 la usará para la racha.
@@ -192,7 +192,7 @@ animación.
   del sábado, pero el evento del calendario cae el domingo a la 1:15.
 - Cambio de horario oficial (DST): el evento de las 23:15 sigue a las 23:15 (hora flotante).
 - Modo descanso / No molestar activo antes del aviso: el calendario no suena; la guía lo advierte.
-- Dos versiones el mismo día: la segunda sustituye a la primera desde hoy (una sola versión por día).
+- Dos versiones el mismo día: la vigente es la última; la anterior se conserva en el historial.
 - Un día desactivado en la versión nueva que estaba activo antes: el archivo lo emite cancelado.
 - Pausa que termina hoy: los avisos vuelven mañana.
 - Borrar la cuenta borra horario, versiones y pausas; la exportación los incluye.
@@ -211,9 +211,9 @@ animación.
 - **FR-003**: El horario MUST admitir "Igual todos los días" (por defecto), "Distinto el fin de
   semana" (noches del sábado y del domingo) y "Cada día distinto", con días activables y
   desactivables. Cada día del horario es una noche, nombrada por el día en que te acuestas.
-- **FR-004**: Cada guardado MUST crear una versión vigente desde ese día. Las versiones de días
-  anteriores no cambian; como máximo hay una por día, y guardar otra vez el mismo día sustituye la
-  de ese día (con un número de versión nuevo, para que el calendario se actualice).
+- **FR-004**: Cada guardado MUST crear una versión vigente desde ese día, con un número de versión
+  nuevo (para que el calendario se actualice). Las versiones anteriores no cambian ni se borran; si se
+  guarda varias veces el mismo día, la vigente es la última.
 - **FR-005**: Las horas MUST guardarse como minutos del día de reloj de pared, sin zona horaria.
 - **FR-006**: "Mi horario" MUST estar accesible desde Cuenta para crear o cambiar el horario después
   de la bienvenida.

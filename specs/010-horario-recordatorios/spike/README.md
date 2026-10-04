@@ -65,6 +65,10 @@ Las evidencias con datos de la cuenta (capturas tras iniciar sesión) quedan fue
 | C: tocar | ⚠️ Google **descarta la propiedad `URL`** (descripción vacía): no hay enlace a Descanso |
 | D: v2 | ✅ **actualiza** (mismas filas, hora nueva) y **borra el miércoles cancelado**: 7 → 6, sin duplicar (44) |
 
+El archivo real que genera la app (`backend/src/ics.js`) se valida con las mismas reglas:
+`backend/test/fixtures/schedule-v1.ics` y `schedule-v2.ics` → `validate-ics.py`: **OK** (7 → 7 eventos,
+mismos UID, SEQUENCE creciente, miércoles cancelado).
+
 ### 3.3 Conclusiones para el plan y la guía
 
 1. **UID estable + SEQUENCE + `STATUS:CANCELLED` funcionan** en Google Calendar (app, con y sin cuenta). Se mantiene el diseño.

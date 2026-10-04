@@ -51,6 +51,9 @@ Ejemplo de *expand* puro: `008_ciclos_y_diario.js` (feature 006).
   y no reconstruye nada.
 - El código de 005 sigue funcionando porque nombra sus columnas; lo prueba
   `compat-previous-006.test.js`. No deja ningún paso *contract* pendiente.
+- Ejemplo con tablas nuevas: `009_horario.js` (feature 010) usa `CREATE TABLE IF NOT EXISTS` para el
+  horario y las pausas, y `ADD COLUMN` para el aviso y el registro del despertar. El código de 006
+  sigue funcionando (`compat-previous-010.test.js`).
 
 ### Multiusuario (desde la feature 008)
 

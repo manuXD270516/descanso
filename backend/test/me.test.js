@@ -81,3 +81,14 @@ test('ajustes de ciclo (feature 006, FR-009): 90/15 por defecto, rangos, por usu
   assert.deepEqual(db.prepare('SELECT cycle_min, latency_min FROM user_settings WHERE user_id = 1').get(), { cycle_min: 90, latency_min: 15 }, 'el del propietario no cambia');
   await otherApi.put('/api/me').send({ cycle_min: 100, latency_min: 20 }).expect(200);
 });
+
+test('"Avisarme antes" (feature 010): 30 por defecto, de 15 a 60 minutos', async () => {
+  assert.equal((await otherApi.get('/api/me').expect(200)).body.lead_min, 30);
+  for (const lead_min of [14, 61, 30.5, '30', null]) {
+    const r = await otherApi.put('/api/me').send({ lead_min }).expect(400);
+    assert.equal(r.body.error, 'El aviso debe ser entre 15 y 60 minutos antes');
+  }
+  assert.equal((await otherApi.put('/api/me').send({ lead_min: 45 }).expect(200)).body.lead_min, 45);
+  assert.equal(db.prepare('SELECT lead_min FROM user_settings WHERE user_id = 1').get().lead_min, 30, 'el del propietario no cambia');
+  await otherApi.put('/api/me').send({ lead_min: 30 }).expect(200);
+});

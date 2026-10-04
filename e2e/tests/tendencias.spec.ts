@@ -156,6 +156,8 @@ test.describe('bienvenida (US5)', () => {
     await expect(page.getByRole('heading', { name: '¿Cuántas horas quieres dormir?' })).toBeVisible();
     await expect(page.getByRole('navigation', { name: 'Secciones' })).toBeHidden();
     await page.getByRole('button', { name: '7 h 30 · 5 ciclos' }).click();
+    // Feature 010: el atajo elige el objetivo; "Guardar" cierra la bienvenida (el horario es opcional)
+    await page.getByRole('button', { name: 'Guardar', exact: true }).click();
     await expect(page.getByRole('navigation', { name: 'Secciones' })).toBeVisible();
     expect((await api.dashboard(7, TO)).goal_min).toBe(450);
 

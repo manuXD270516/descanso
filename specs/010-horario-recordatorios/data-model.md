@@ -10,7 +10,7 @@ Migración **`backend/src/migrations/009_horario.js`**:
 |---------|------|-------|
 | `id` | INTEGER PK AUTOINCREMENT | También es el `SEQUENCE` del calendario (siempre crece) |
 | `user_id` | INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE | Aislamiento |
-| `effective_from` | TEXT NOT NULL | `AAAA-MM-DD`; `UNIQUE(user_id, effective_from)` |
+| `effective_from` | TEXT NOT NULL | `AAAA-MM-DD`; índice `(user_id, effective_from, id)`. Varias el mismo día: vigente = la de id mayor |
 | `created_at` | TEXT NOT NULL | ISO UTC |
 
 ## schedule_days (nueva, hija de schedule_versions)
@@ -57,7 +57,7 @@ Las noches existentes quedan con `NULL` y 0, es decir, sin origen "Anotado despu
 
 ## Derivados (no persistidos)
 
-- **Versión vigente en D**: la de mayor `effective_from` ≤ D.
+- **Versión vigente en D**: la de mayor `effective_from` ≤ D y, a igualdad, la de id mayor.
 - **Origen de una noche**: `'late'` ("Anotado después") si `wake_logged_at − wake_time > 60 min`; si
   no, `'manual'`.
 - **Pausa activa en D**: hay alguna con `start_date ≤ D ≤ end_date`.

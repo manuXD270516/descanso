@@ -5,7 +5,7 @@ const metrics = require('./metrics');
 
 const PROFILE = `u.id, u.email, u.role, u.display_name, u.timezone, u.consent_version, u.consent_at,
   u.reset_notice_at, u.created_at, s.sleep_goal_min, s.goal_customized, s.onboarded_at,
-  COALESCE(s.cycle_min, 90) AS cycle_min, COALESCE(s.latency_min, 15) AS latency_min`;
+  COALESCE(s.cycle_min, 90) AS cycle_min, COALESCE(s.latency_min, 15) AS latency_min, COALESCE(s.lead_min, 30) AS lead_min`;
 
 const profile = (userId) =>
   db.prepare(`SELECT ${PROFILE} FROM users u LEFT JOIN user_settings s ON s.user_id = u.id WHERE u.id = ?`).get(requireUser(userId));
@@ -29,13 +29,17 @@ function createUser({ email, passwordHash: hash, displayName, consentVersion }) 
   return id;
 }
 
-function updateProfile(userId, { display_name, timezone, sleep_goal_min, cycle_min, latency_min }) {
+function updateProfile(userId, { display_name, timezone, sleep_goal_min, cycle_min, latency_min, lead_min }) {
   const now = new Date().toISOString();
   db.transaction(() => {
     if (display_name !== undefined) db.prepare('UPDATE users SET display_name = ? WHERE id = ?').run(display_name, requireUser(userId));
     if (timezone !== undefined) db.prepare('UPDATE users SET timezone = ? WHERE id = ?').run(timezone, requireUser(userId));
     if (sleep_goal_min !== undefined) setGoal(userId, sleep_goal_min, now);
     if (cycle_min !== undefined || latency_min !== undefined) setCycleSettings(userId, { cycle_min, latency_min }, now);
+    if (lead_min !== undefined) {
+      db.prepare(`INSERT INTO user_settings (user_id, lead_min, updated_at) VALUES (?, ?, ?)
+        ON CONFLICT(user_id) DO UPDATE SET lead_min = excluded.lead_min, updated_at = excluded.updated_at`).run(requireUser(userId), lead_min, now);
+    }
   })();
   return profile(userId);
 }
@@ -68,6 +72,9 @@ function completeOnboarding(userId, goalMin) {
 
 /** Duración del ciclo de la persona (006); 90 min si no la ha cambiado. */
 const cycleOf = (userId) => db.prepare('SELECT cycle_min FROM user_settings WHERE user_id = ?').get(requireUser(userId))?.cycle_min ?? 90;
+
+/** Minutos de aviso antes de acostarse (010); 30 si no lo ha cambiado. */
+const leadOf = (userId) => db.prepare('SELECT lead_min FROM user_settings WHERE user_id = ?').get(requireUser(userId))?.lead_min ?? 30;
 
 const goalOf = (userId) => db.prepare('SELECT sleep_goal_min FROM user_settings WHERE user_id = ?').get(requireUser(userId))?.sleep_goal_min ?? 420;
 
@@ -102,5 +109,5 @@ const deleteUser = (userId) => db.prepare('DELETE FROM users WHERE id = ?').run(
 module.exports = {
   profile, byEmailForLogin, passwordHash, emailTaken, createUser, updateProfile, setEmail, setPassword,
   setResetNotice, changePassword, closeSessions, listPeople, roleOf, othersExist, deleteUser,
-  setGoal, setCycleSettings, completeOnboarding, goalOf, cycleOf, isOnboarded,
+  setGoal, setCycleSettings, completeOnboarding, goalOf, cycleOf, leadOf, isOnboarded,
 };

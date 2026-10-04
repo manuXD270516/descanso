@@ -2,3 +2,5 @@
 backend/src/migrations/* text eol=lf
 # Bash no tolera CRLF: los scripts .sh se mantienen en LF también en checkouts de Windows
 *.sh text eol=lf
+# Archivos de calendario de referencia: CRLF obligatorio (RFC 5545), no normalizar
+*.ics -text

@@ -12,6 +12,7 @@ const ROUTERS = {
   '/api/metrics': require('../src/routes/metrics'),
   '/api/stats': require('../src/routes/stats'),
   '/api': require('../src/routes/export'),
+  '/api/': require('../src/routes/schedule'), // feature 010 (montado en /api; clave distinta para el mapa)
 };
 
 /** Huella de todas las filas de A (por sus tablas y hijas). */
@@ -22,6 +23,8 @@ function fingerprintOf(userId) {
     naps: q('SELECT * FROM naps WHERE user_id = ? ORDER BY id'),
     metrics: q('SELECT * FROM metrics WHERE user_id = ? ORDER BY id'),
     entries: q('SELECT e.* FROM metric_entries e JOIN metrics m ON m.id = e.metric_id WHERE m.user_id = ? ORDER BY e.id'),
+    schedule: q('SELECT v.*, d.* FROM schedule_versions v JOIN schedule_days d ON d.version_id = v.id WHERE v.user_id = ? ORDER BY v.id, d.weekday'),
+    pauses: q('SELECT * FROM pauses WHERE user_id = ? ORDER BY id'),
   };
   return crypto.createHash('sha256').update(JSON.stringify(rows)).digest('hex');
 }
@@ -35,6 +38,11 @@ before(async () => {
   A.metric = (await api.get('/api/metrics').expect(200)).body[0];
   A.date = '2026-09-06';
   await api.put(`/api/metrics/${A.metric.id}/entries/${A.date}`).send({ value: 4 }).expect(200);
+  // Feature 010: horario y pausa de A
+  const today = new Date().toISOString().slice(0, 10);
+  await api.put('/api/schedule').send({ today, days: [0, 1, 2, 3, 4, 5, 6].map((weekday) => ({ weekday, bed_min: 1395, wake_min: 420, active: true })) }).expect(200);
+  db.exec('DELETE FROM pauses');
+  A.pause = (await api.post('/api/pauses').send({ start_date: today, end_date: today, today }).expect(201)).body;
   // B también tiene lo suyo, incluida una noche abierta a la vez que A (FR-008)
   await otherApi.post('/api/sleep').send({ date: '2026-09-07', bedtime: iso('2026-09-07T22:00') }).expect(201);
 });
@@ -45,12 +53,12 @@ const routesOf = (router, prefix) =>
 
 test('B no puede leer, editar ni borrar ningún recurso de A por id: siempre 404 y A intacto (FR-007)', async () => {
   const before = fingerprintOf(A_ID);
-  const routes = Object.entries(ROUTERS).flatMap(([p, r]) => routesOf(r, p)).filter(([, path]) => path.includes(':id'));
+  const routes = Object.entries(ROUTERS).flatMap(([p, r]) => routesOf(r, p.replace(/\/$/, ''))).filter(([, path]) => path.includes(':id'));
   assert.ok(routes.length >= 8, `rutas con id: ${routes.length}`);
   for (const [method, path] of routes) {
-    const id = path.startsWith('/api/sleep') ? A.closed.id : path.startsWith('/api/naps') ? A.nap.id : A.metric.id;
+    const id = path.startsWith('/api/sleep') ? A.closed.id : path.startsWith('/api/naps') ? A.nap.id : path.startsWith('/api/pauses') ? A.pause.id : A.metric.id;
     const url = path.replace(':id', id).replace(':date', A.date);
-    const body = { value: 1, name: 'x', type: 'number', date: '2026-09-05', bedtime: iso('2026-09-05T23:00'), start_time: iso('2026-09-06T14:00'), end_time: iso('2026-09-06T15:00') };
+    const body = { today: new Date().toISOString().slice(0, 10), value: 1, name: 'x', type: 'number', date: '2026-09-05', bedtime: iso('2026-09-05T23:00'), start_time: iso('2026-09-06T14:00'), end_time: iso('2026-09-06T15:00') };
     const res = await otherApi[method](url).send(body);
     assert.equal(res.status, 404, `${method.toUpperCase()} ${url} → ${res.status}`);
   }
@@ -77,6 +85,14 @@ test('los listados, el resumen y la exportación de B no contienen nada de A (FR
     const csv = await otherApi.get(`/api/export/${tipo}.csv`).buffer(true).parse((r, cb) => { let d = ''; r.on('data', (c) => (d += c)); r.on('end', () => cb(null, d)); }).expect(200);
     assert.ok(!csv.body.includes('de A'), tipo);
   }
+  // Feature 010: B no ve el horario, las pausas ni el calendario de A
+  const today = new Date().toISOString().slice(0, 10);
+  const sched = (await otherApi.get(`/api/schedule?date=${today}`).expect(200)).body;
+  assert.equal(sched.version, null);
+  assert.equal(sched.pause, null);
+  assert.deepEqual((await otherApi.get('/api/pauses').expect(200)).body, []);
+  await otherApi.get(`/api/schedule.ics?today=${today}`).expect(404);
+  assert.deepEqual([exp.schedule_versions, exp.pauses], [[], []]);
   // Y ninguna respuesta de datos expone user_id
   assert.ok(!JSON.stringify([nights, metrics, exp]).includes('user_id'));
 });

@@ -265,6 +265,27 @@ async function verify(call, opts) {
   check('006 · respuesta fuera de la lista → 400', badAnswer.status === 400, badAnswer.data?.error ?? '');
   const csv = await call('GET', '/api/export/noches.csv');
   check('006 · el CSV de noches trae tiempo_dormirse y despertares', typeof csv.data === 'string' && csv.data.includes('tiempo_dormirse,despertares') && csv.data.includes(',15-30,1-2'));
+
+  // Feature 010: horario, archivo de calendario, aviso, pausas y registro del despertar
+  const week = [0, 1, 2, 3, 4, 5, 6].map((weekday) => ({ weekday, bed_min: 1395, wake_min: 420, active: weekday !== 3 }));
+  const saved = await call('PUT', '/api/schedule', { today, days: week });
+  check('010 · horario guardado vigente desde hoy', saved.status === 200 && saved.data.effective_from === today, `${saved.status}`);
+  const ics = await call('GET', `/api/schedule.ics?today=${today}`);
+  const icsText = typeof ics.data === 'string' ? ics.data : '';
+  check('010 · .ics con 6 eventos, UID estable, SEQUENCE, alarma y enlace',
+    (icsText.match(/BEGIN:VEVENT/g) ?? []).length === 6 && /UID:sched-\d+-1@/.test(icsText) && /SEQUENCE:\d+/.test(icsText)
+      && icsText.includes('TRIGGER:-PT30M') && icsText.includes('#noche') && icsText.includes('\r\n'));
+  const lead = await call('PUT', '/api/me', { lead_min: 14 });
+  check('010 · aviso de 14 min → 400', lead.status === 400, lead.data?.error ?? '');
+  const plus = (n) => localDate(opts.tz, n);
+  const longPause = await call('POST', '/api/pauses', { start_date: today, end_date: plus(14), today });
+  check('010 · pausa de 15 días → 400', longPause.status === 400, longPause.data?.error ?? '');
+  const okPause = await call('POST', '/api/pauses', { start_date: today, end_date: plus(4), today });
+  check('010 · pausa de 5 días → 201', okPause.status === 201, `${okPause.status}`);
+  const overlap = await call('POST', '/api/pauses', { start_date: plus(2), end_date: plus(3), today });
+  check('010 · pausa solapada → 409', overlap.status === 409, overlap.data?.error ?? '');
+  const withLog = ((await call('GET', '/api/sleep')).data ?? []).filter((n) => n.wake_time && n.wake_logged_at);
+  check('010 · las noches cerradas guardan cuándo se anotó el despertar', withLog.length > 0, `${withLog.length}`);
   return results;
 }
 

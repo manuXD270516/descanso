@@ -4,10 +4,12 @@ import { Component, computed, input } from '@angular/core';
  * Origen de un dato de sueño (feature 006, US1, principio VIII): lo anotó la persona, es una
  * estimación de la app o viene de un reloj (feature 007).
  */
-export type Origin = 'manual' | 'estimated' | 'device';
+export type Origin = 'manual' | 'late' | 'estimated' | 'device';
 
 export const ORIGIN_LABEL: Record<Origin, string> = {
   manual: 'Anotado por ti',
+  // Feature 010: el despertar se anotó más de 60 min después de ocurrir
+  late: 'Anotado después',
   estimated: 'Estimado',
   device: 'Del reloj',
 };

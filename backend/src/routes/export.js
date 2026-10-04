@@ -2,6 +2,8 @@
 // Nunca incluye usuarios, contraseñas, sesiones ni el código de alta.
 const { Router } = require('express');
 const repo = require('../repo/export');
+const schedule = require('../repo/schedule');
+const pauses = require('../repo/pauses');
 const { HttpError } = require('../util');
 
 const r = Router();
@@ -31,6 +33,9 @@ function csvField(v) {
 r.get('/export.json', (req, res) => {
   const out = { format: 'descanso-export', version: 1, exported_at: new Date().toISOString() };
   for (const table of repo.TABLES) out[table] = repo.rows(req.user.id, table);
+  // Feature 010: horario (todas las versiones con sus días) y pausas
+  out.schedule_versions = schedule.all(req.user.id);
+  out.pauses = pauses.list(req.user.id);
   res.set('Content-Disposition', `attachment; filename="descanso-${today()}.json"`);
   res.json(out);
 });

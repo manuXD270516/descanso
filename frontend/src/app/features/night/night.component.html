@@ -3,8 +3,13 @@
 <!-- Feature 006, US4: noche abierta olvidada (≥ 14 h). Sin notificaciones: solo al abrir la app -->
 @if (showReminder()) {
   <section class="panel reminder" role="status" aria-labelledby="reminder-title">
-    <h2 id="reminder-title">¿Olvidaste marcar que despertaste?</h2>
-    <p class="small muted">Tu noche sigue abierta. Te proponemos tu hora de dormir más tu objetivo de sueño; cámbiala si no es correcta.</p>
+    @if (scheduledCheck()) {
+      <h2 id="reminder-title">¿Ya despertaste?</h2>
+      <p class="small muted">Tu noche sigue abierta. Te proponemos tu hora de levantarte agendada; confírmala o corrígela.</p>
+    } @else {
+      <h2 id="reminder-title">¿Olvidaste marcar que despertaste?</h2>
+      <p class="small muted">Tu noche sigue abierta. Te proponemos tu hora de dormir más tu objetivo de sueño; cámbiala si no es correcta.</p>
+    }
     <div class="row wrap">
       <input type="datetime-local" [ngModel]="reminderInput()" (ngModelChange)="reminderInput.set($event)" aria-label="Hora en que desperté">
       <button class="btn btn-dawn" type="button" (click)="acceptReminder()" [disabled]="busy()">Sí, desperté a esa hora</button>
@@ -125,6 +130,7 @@
       } @else {
         <div class="record-main">
           <span class="record-date">{{ fmtDateShort(r.date) }}</span>
+          @if (!nightsOrigin()) { <app-origin-badge [origin]="nightOrigin(r)" /> }
           <span class="tabular">{{ fmtTime(r.bedtime) }} → {{ fmtTime(r.wake_time) }}</span>
           <span class="record-dur tabular" [class.muted]="!r.wake_time">{{ r.wake_time ? fmtDuration(r.duration_min) : 'noche abierta' }}</span>
         </div>
