@@ -111,6 +111,8 @@ Formato: Decisión / Razón / Alternativas. Diseño de referencia: feature 010 y
     la noche anterior (00:30 del sábado = noche del viernes). Por eso `scheduledWake` mira esa noche
     y la anterior, y toma la primera hora de levantarse agendada posterior a la hora real de acostarse
     (como mucho 18 h después).
+  - Se usa el **horario vigente hoy** (no el de la fecha de la noche): si la noche abierta empezó ayer y
+    el horario se guardó hoy, se aplica igual. Lo detectó la CI del despliegue de 010.
 - **Razón**: amplía 006-US4 sin otro mecanismo y deja guardado lo que necesita 011 (FR-013,
   FR-014).
 - **Alternativas**:

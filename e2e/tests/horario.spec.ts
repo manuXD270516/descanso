@@ -65,15 +65,16 @@ test('el enlace del evento (#noche) abre Noche con "Me voy a dormir" a la vista 
 });
 
 test('"¿Ya despertaste?" 61 min después de la hora agendada; confirmarla cierra la noche como "Anotado después" (US3)', async ({ page, api }) => {
-  const wakeAt = wall(new Date(Date.now() - 61 * 60_000));
-  test.skip(wakeAt.date !== TODAY || wakeAt.min < 31, 'necesita que la hora de levantarse de prueba caiga hoy después de las 00:30');
-  // Te acostaste hoy a las 00:30 (noche registrada de hoy; en el horario, la noche de ayer)
-  await api.saveSchedule(TODAY, week(30, wakeAt.min));
-  await api.createNight(`${TODAY}T00:30`);
+  // Hora de levantarse agendada hace 61 min y te acostaste 8 h antes: vale a cualquier hora del día
+  const now = Date.now();
+  const wakeAt = wall(new Date(now - 61 * 60_000));
+  const bedAt = wall(new Date(now - 61 * 60_000 - 8 * 3600_000));
+  await api.saveSchedule(TODAY, week(bedAt.min, wakeAt.min));
+  await api.createNight(`${bedAt.date}T${bedAt.hhmm}`);
   await page.goto('/');
   const reminder = page.getByRole('status').filter({ hasText: '¿Ya despertaste?' });
   await expect(reminder).toBeVisible();
-  await expect(reminder.getByLabel('Hora en que desperté')).toHaveValue(`${TODAY}T${wakeAt.hhmm}`);
+  await expect(reminder.getByLabel('Hora en que desperté')).toHaveValue(`${wakeAt.date}T${wakeAt.hhmm}`);
   await reminder.getByRole('button', { name: 'Sí, desperté a esa hora' }).click();
   await expect(reminder).toHaveCount(0);
   const [n] = (await api.nights()) as unknown as { wake_from_proposal: number; wake_logged_at: string }[];

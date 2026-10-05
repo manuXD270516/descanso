@@ -46,7 +46,7 @@ describe('NightComponent · feature 010', () => {
     http.expectOne('/api/me').flush(PROFILE);
     http.expectOne('/api/sleep/open').flush(open);
     const sched = http.expectOne((r) => r.url === '/api/schedule');
-    expect(sched.request.params.get('date')).toBe(nightDate);
+    expect(sched.request.params.get('date')).toBe(localDate(new Date())); // el horario vigente hoy
     sched.flush({ version: { id: 1, effective_from: '2026-01-01', days }, lead_min: 30, pause: opts.paused ? { id: 1, start_date: nightDate, end_date: nightDate } : null });
     http.expectOne((r) => r.url === '/api/sleep' && r.method === 'GET').flush([]);
     http.expectOne((r) => r.url === '/api/naps').flush([]);

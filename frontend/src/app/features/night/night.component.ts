@@ -48,7 +48,7 @@ export class NightComponent implements OnInit {
   private ui = inject(NightUiService);
   private schedules = inject(ScheduleService);
 
-  /** Horario y pausa de la fecha de la noche abierta (feature 010). */
+  /** Horario y pausa vigentes hoy, que se aplican a la noche abierta (feature 010). */
   readonly openSchedule = signal<ScheduleState | null>(null);
 
   readonly open = signal<SleepRecord | null>(null);
@@ -190,7 +190,8 @@ export class NightComponent implements OnInit {
         this.openSchedule.set(null);
         this.proposeWake();
         if (o) {
-          this.schedules.get(o.date).subscribe({
+          // El horario vigente hoy rige la noche abierta, aunque empezara ayer y el horario se guardara hoy
+          this.schedules.get(localDate()).subscribe({
             next: (s) => { this.openSchedule.set(s); this.proposeWake(); },
           });
         }

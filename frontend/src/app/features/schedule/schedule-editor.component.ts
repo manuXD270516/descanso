@@ -100,6 +100,8 @@ export class ScheduleEditorComponent {
   readonly weekend = signal<Pair>({ wake: '', bed: '' });
   readonly each = signal<Pair[]>(Array.from({ length: 7 }, () => ({ wake: '', bed: '' })));
   readonly active = signal<boolean[]>([true, true, true, true, true, true, true]);
+  /** Horas de acostarse cambiadas a mano: ya no se vuelven a proponer si cambia el objetivo. */
+  private readonly edited = { week: false, weekend: false, each: [false, false, false, false, false, false, false] };
 
   /** Los 7 días, o null si falta alguna hora. */
   readonly days = computed<ScheduleDay[] | null>(() => {
@@ -126,6 +128,21 @@ export class ScheduleEditorComponent {
       if (init?.length === 7) untracked(() => this.load(init));
     });
     effect(() => this.changed.emit(this.days()));
+    // Si el objetivo cambia (incluso justo después de escribir la hora de levantarse), la propuesta lo sigue
+    effect(() => {
+      const goal = this.goalMin();
+      untracked(() => this.repropose(goal));
+    });
+  }
+
+  private repropose(goal: number) {
+    const propose = (p: Pair, edited: boolean): Pair => {
+      const wake = timeToMin(p.wake);
+      return wake === null || edited ? p : { wake: p.wake, bed: minToTime(proposeBed(wake, goal)) };
+    };
+    this.week.update((p) => propose(p, this.edited.week));
+    this.weekend.update((p) => propose(p, this.edited.weekend));
+    this.each.update((all) => all.map((p, w) => propose(p, this.edited.each[w])));
   }
 
   private load(days: ScheduleDay[]) {
@@ -136,6 +153,9 @@ export class ScheduleEditorComponent {
     this.weekend.set(pair(by(6)));
     this.each.set([0, 1, 2, 3, 4, 5, 6].map((w) => pair(by(w))));
     this.active.set([0, 1, 2, 3, 4, 5, 6].map((w) => by(w).active));
+    // Lo guardado se respeta: no se vuelve a proponer
+    this.edited.week = this.edited.weekend = true;
+    this.edited.each = this.edited.each.map(() => true);
   }
 
   /** Al cambiar la hora de levantarse se vuelve a proponer la de acostarse (FR-002). */
@@ -143,16 +163,19 @@ export class ScheduleEditorComponent {
     const wake = timeToMin(value);
     const bed = wake === null ? '' : minToTime(proposeBed(wake, this.goalMin()));
     (which === 'week' ? this.week : this.weekend).set({ wake: value, bed });
+    this.edited[which] = false;
     if (which === 'week' && !this.weekend().wake) this.weekend.set({ wake: value, bed });
   }
 
   setBed(which: 'week' | 'weekend', value: string) {
     (which === 'week' ? this.week : this.weekend).update((p) => ({ ...p, bed: value }));
+    this.edited[which] = true;
   }
 
   setEach(weekday: number, field: 'wake' | 'bed', value: string) {
     this.each.update((all) => all.map((p, w) => {
       if (w !== weekday) return p;
+      this.edited.each[w] = field === 'bed';
       if (field === 'bed') return { ...p, bed: value };
       const wake = timeToMin(value);
       return { wake: value, bed: wake === null ? p.bed : minToTime(proposeBed(wake, this.goalMin())) };
