@@ -68,6 +68,11 @@ test('autocomprobación: detecta términos (con tildes, mayúsculas y comodín) 
   assert.deepEqual(found('No es un dispositivo médico'), []);
   assert.deepEqual(found('Está ahí, al lado de "Me voy a dormir"'), []);
   assert.deepEqual(found('paciencia, tecla, piah'), [], 'límites de palabra');
+  // Culpa y pérdida (feature 011)
+  assert.deepEqual(found('¡Perdiste tu racha!'), ['perdiste']);
+  assert.deepEqual(found('Tu racha está EN PELIGRO'), ['en peligro']);
+  assert.deepEqual(found('sin castigos'), ['castigo*']);
+  assert.deepEqual(found('Fallaste dos días; rompiste la racha'), ['fallaste', 'rompiste']);
 });
 
 test('ningún texto de la interfaz (frontend y mensajes del servidor) usa un término prohibido', () => {
@@ -77,4 +82,9 @@ test('ningún texto de la interfaz (frontend y mensajes del servidor) usa un té
     for (const h of findTerms(fs.readFileSync(file, 'utf8'), terms)) hits.push(`${path.relative(ROOT, file)}:${h.line} → "${h.term}"`);
   }
   assert.deepEqual(hits, [], `Términos prohibidos (docs/sdd/terminos-prohibidos.txt):\n${hits.join('\n')}`);
+});
+
+test('los avisos y el calendario no mencionan la racha (feature 011, FR-023)', () => {
+  const ics = normalize(fs.readFileSync(path.join(ROOT, 'backend', 'src', 'ics.js'), 'utf8'));
+  assert.ok(!/racha|constancia/.test(ics));
 });

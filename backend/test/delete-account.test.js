@@ -31,6 +31,9 @@ before(async () => {
     const m = (await c.get('/api/metrics').expect(200)).body[0];
     await c.put(`/api/metrics/${m.id}/entries/2026-09-06`).send({ value: 3 }).expect(200);
   }
+  // Feature 011: racha activada y una constelación de B (se borran con la cuenta)
+  db.prepare("UPDATE user_settings SET streak_enabled = 1, streak_since = '2026-09-01', streak_best = 7 WHERE user_id = ?").run(OTHER_ID);
+  db.prepare("INSERT INTO streak_achievements (user_id, key, achieved_on, wake_spread_min, created_at) VALUES (?, 7, '2026-09-08', 5, 'x')").run(OTHER_ID);
   db.prepare("INSERT INTO invites (token_hash, created_by, created_at, expires_at, used_by, used_at) VALUES ('usada-por-b', 1, 'x', 'y', ?, 'z')").run(OTHER_ID);
   db.prepare("INSERT INTO audit_log (user_id, actor_user_id, action, created_at) VALUES (?, 1, 'reset_link_created', 'x')").run(OTHER_ID);
 });

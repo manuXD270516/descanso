@@ -5,6 +5,7 @@ import { SleepRecord, Stats } from '../../core/api.service';
 import { daysFor } from '../../core/schedule';
 import { toInputLocal } from '../../core/time';
 import { NightComponent, nightOrigin } from './night.component';
+import { flushStreak } from '../streak/streak.testing';
 
 // Feature 010 en Noche: "¿Ya despertaste?" con horario (US3, FR-012/FR-014) y origen "Anotado después" (FR-013).
 const PROFILE = { id: 1, email: 'yo@x.com', role: 'owner', display_name: 'Yo', timezone: null, sleep_goal_min: 450, cycle_min: 90, latency_min: 15, lead_min: 30, consent_version: null, consent_at: null, created_at: '' };
@@ -26,7 +27,7 @@ describe('NightComponent · feature 010', () => {
     TestBed.configureTestingModule({ imports: [NightComponent], providers: [provideHttpClient(), provideHttpClientTesting()] });
     http = TestBed.inject(HttpTestingController);
   });
-  afterEach(() => http.verify());
+  afterEach(() => { flushStreak(http); http.verify(); });
 
   /** Noche abierta "anoche" y horario cuya hora de levantarse fue hace `minutesAgo` minutos. */
   function start(minutesAgo: number, opts: { paused?: boolean; active?: boolean } = {}) {

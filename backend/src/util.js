@@ -27,6 +27,16 @@ const durationMinutes = (a, b) => Math.round((Date.parse(b) - Date.parse(a)) / 6
 /** Día de pared de un ISO con desfase ("2026-09-05T23:30:00-04:00" → "2026-09-05"); null si no es ISO. */
 const localDateOf = (v) => (typeof v === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(v) ? v.slice(0, 10) : null);
 
+/**
+ * "Hoy" de pared en el desfase de un ISO escrito por el cliente (feature 011, R4): la fecha de ahora
+ * en esa zona. Sin desfase (o con Z) se usa UTC.
+ */
+function todayAt(iso, now = Date.now()) {
+  const m = /([+-])(\d{2}):?(\d{2})$/.exec(iso || '');
+  const offsetMin = m ? (m[1] === '-' ? -1 : 1) * (Number(m[2]) * 60 + Number(m[3])) : 0;
+  return new Date(now + offsetMin * 60000).toISOString().slice(0, 10);
+}
+
 /** Valida ?from&to (fechas reales, from ≤ to). Con required, ambos son obligatorios. */
 function parseRange(query, { required = false } = {}) {
   const { from, to } = query;
@@ -49,4 +59,4 @@ function circularAvg(values) {
   return (Math.round((ang / (2 * Math.PI)) * 1440) % 1440) + 0;
 }
 
-module.exports = { HttpError, isIso, isDate, clientToday, durationMinutes, localDateOf, parseRange, circularAvg };
+module.exports = { HttpError, isIso, isDate, clientToday, todayAt, durationMinutes, localDateOf, parseRange, circularAvg };

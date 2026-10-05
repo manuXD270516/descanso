@@ -92,11 +92,11 @@ en 7 días: la racha se corta, el récord sigue en 10 y el total en 10; la noche
 9. **Given** una noche abierta o sin registrar cuya fecha es hoy o ayer, **When** veo la racha,
    **Then** aparece como "aún no", sin contar ni cortar; si al terminar el día N + 1 sigue sin
    cerrarse, N pasa a no cumplido.
-10. **Given** 2 no cumplidos en cualquier periodo de 7 días seguidos no pausados de la racha en curso,
+10. **Given** 2 no cumplidos en cualquier periodo de 7 días seguidos no pausados,
     **When** veo la racha, **Then** se mantiene; la explicación dice "Puedes fallar hasta 2 días en
     cualquier periodo de 7 días seguidos".
-11. **Given** un no cumplido que deja 3 en el periodo de 7 días no pausados que termina en él (dentro
-    de la racha en curso), **When** veo la racha, **Then** la racha se corta ahí: la siguiente empieza
+11. **Given** un no cumplido que deja 3 en el periodo de 7 días no pausados que termina en él,
+    **When** veo la racha, **Then** la racha se corta ahí: la siguiente empieza
     en el primer día cumplido posterior y "Día N" cuenta solo los días cumplidos desde entonces.
 12. **Given** un récord de 25 y un total de 60, **When** edito o borro noches antiguas que los harían
     bajar, **Then** el récord sigue en 25 y el total en 60.
@@ -300,9 +300,9 @@ ninguna notificación.
 - **FR-006**: El margen MUST ser el mismo para las dos horas, y acostarse o levantarse antes de la
   hora agendada MUST NOT restar.
 - **FR-007**: La tolerancia MUST ser de hasta 2 no cumplidos en cualquier periodo de 7 días seguidos
-  no pausados de la racha en curso, explicada como "Puedes fallar hasta 2 días en cualquier periodo de
-  7 días seguidos". La racha MUST cortarse en el no cumplido que deja 3 en el periodo de 7 días no
-  pausados que termina en él, contando solo días de la racha en curso; la racha viva MUST empezar en el
+  no pausados, explicada como "Puedes fallar hasta 2 días en cualquier periodo de 7 días seguidos". La
+  racha MUST cortarse en el no cumplido que deja 3 en el periodo de 7 días decididos y no pausados que
+  termina en él (desde la activación; el periodo no se vacía al cortar); la racha viva MUST empezar en el
   primer día cumplido posterior al último corte, y "Día N de constancia" MUST ser el número de días
   cumplidos desde entonces.
 - **FR-008**: El margen MUST ser ajustable entre 15 y 60 min (30 por defecto) en Ajustes; la racha se
@@ -429,9 +429,13 @@ ninguna notificación.
 - **Límite conocido**: las horas registradas funcionan por confianza: quien corrige la hora propuesta
   por otra casi igual, o edita la hora de acostarse, sí puede contar "a tu hora". Es aceptable en una
   app personal y queda señalado con el origen de cada dato (006) y la marca "Anotado después".
-- La definición del corte (FR-007) cuenta solo los días de la racha en curso: así, tras un corte, el
-  primer día cumplido ya es "Día 1" (la definición literal de la entrada, "la última ventana con 3 no
-  cumplidos", retrasaba la nueva racha hasta 6 días).
+- La definición del corte (FR-007) usa los 7 últimos días decididos y no pausados, sin vaciarlos al
+  cortar; tras un corte, el primer día cumplido ya es "Día 1" (la definición literal de la entrada, "la
+  última ventana con 3 no cumplidos", retrasaba la nueva racha hasta 6 días). **Corrección de la
+  implementación (2026-10-05)**: la primera versión contaba solo los días de la racha en curso, y las
+  pruebas de propiedades (SC-001) encontraron que así borrar una noche cumplida podía *subir* la racha
+  (un corte anterior vaciaba la ventana), contra FR-003. Consecuencia aceptada: hasta 6 días después de
+  un corte, un no cumplido más puede volver a cortar.
 - Antes del plan se aplica la enmienda MINOR del principio VIII (v2.1.0 → v2.2.0).
 - Fuera de alcance: premiar horas dormidas, calidad o fases; rankings y comparación social; puntos,
   monedas, niveles y premios canjeables; avisos de pérdida; pagar o esforzarse de más para recuperar

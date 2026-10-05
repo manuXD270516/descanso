@@ -11,7 +11,7 @@ Aclaraciones del 2026-10-05 en [`spec.md`](spec.md). Constitución v2.2.0 (princ
   `computeStreak({ nights, versions, pauses, since, today, marginMin })` →
   `{ days: Map<fecha, Día>, current, total, cutAfterBest, spreadMin }`.
   - Recorre las noches de constancia de `since` a `today` en orden, **una sola vez**, con una cola de
-    las posiciones de los no cumplidos de la racha en curso (ventana deslizante de 7 días no pausados):
+    las posiciones de los no cumplidos de los últimos 7 días decididos y no pausados (ventana deslizante):
     O(n).
   - Estado de cada noche N (FR-001…FR-006, FR-024):
     1. noche cerrada asignada a N (R2) → con horario activo: comprobar acostarse y levantarse (R3);
@@ -20,9 +20,9 @@ Aclaraciones del 2026-10-05 en [`spec.md`](spec.md). Constitución v2.2.0 (princ
     3. sin noche cerrada y N ≥ `today − 1` → **aún no** (no entra en la ventana);
     4. si no → **no cumplido**, motivo `no_record`.
   - Corte (FR-007): al añadir un no cumplido, se descartan de la cola los que quedan fuera de los
-    últimos 7 días no pausados **de la racha en curso**; si la cola llega a 3, la racha se corta: la
-    cola se vacía, `current = 0` y la siguiente racha empieza en el siguiente cumplido (los no cumplidos
-    previos a ese primer cumplido no se cuentan en la ventana nueva).
+    últimos 7 días decididos y no pausados; si la cola llega a 3, la racha se corta: `current = 0` y la
+    siguiente racha empieza en el siguiente cumplido. **La cola no se vacía al cortar** (ver la
+    corrección de abajo).
   - `current` = cumplidos desde el último corte; `total` = cumplidos desde `since`.
   - `spreadMin` = desviación circular (σ, `analytics.circularStat`) de la hora de levantarse de los
     cumplidos de la racha viva, redondeada; `null` con menos de 7 (principio VIII, "estadística
@@ -33,7 +33,14 @@ Aclaraciones del 2026-10-05 en [`spec.md`](spec.md). Constitución v2.2.0 (princ
   La definición literal de la entrada ("la última ventana de 7 días con 3 o más no cumplidos") hacía
   que la nueva racha no empezase hasta 6 días después del corte (la ventana con los 3 fallos sigue
   siendo "la última" mientras los contiene), contradiciendo su propio ejemplo ("Día 1" el día
-  siguiente); por eso la ventana cuenta solo días de la racha en curso (spec, Assumptions).
+  siguiente); con la ventana deslizante, el día siguiente al corte ya puede ser "Día 1".
+  **Corrección de la implementación (2026-10-05)**: el plan vaciaba la cola al cortar y contaba solo
+  los no cumplidos de la racha en curso. La propiedad "quitar un registro nunca sube la racha" (R9)
+  falló con la semilla 20261005: con `cumplido, x, x, cumplido, x` la racha se corta (0), pero si se
+  borra el primer cumplido, los `x` previos al inicio no cuentan y la racha queda en 1. Cualquier
+  vaciado es explotable así, de modo que la ventana es deslizante sobre todos los días decididos desde
+  la activación. Coste: durante los 6 días siguientes a un corte, un no cumplido más vuelve a cortar.
+  Rendimiento: el motor trabaja con números de día enteros (≈ 7 ms para 3.650 noches).
 - **Alternativas**:
   - Guardar el estado de cada día (tabla `streak_days`): se desincroniza al editar noches y lo prohíbe
     FR-011.

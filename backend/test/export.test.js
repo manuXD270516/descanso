@@ -79,6 +79,17 @@ test('el JSON incluye el horario con sus versiones y las pausas (feature 010, FR
   db.exec('DELETE FROM schedule_versions; DELETE FROM pauses;');
 });
 
+test('el JSON incluye los ajustes de la racha y las constelaciones (feature 011, FR-026)', async () => {
+  const today = new Date().toISOString().slice(0, 10);
+  await api.put('/api/streak/settings').send({ today, enabled: true, margin_min: 45 }).expect(200);
+  db.prepare("INSERT INTO streak_achievements (user_id, key, achieved_on, wake_spread_min, created_at) VALUES (1, 7, '2026-10-05', 12, 'x')").run();
+  const j = (await api.get('/api/export.json').expect(200)).body;
+  assert.deepEqual(j.streak.settings, { enabled: true, margin_min: 45, since: today, offered_at: j.streak.settings.offered_at, best: 0, total: 0 });
+  assert.deepEqual(j.streak.achievements, [{ key: 7, achieved_on: '2026-10-05', wake_spread_min: 12, seen: false }]);
+  assert.ok(!JSON.stringify(j.streak).includes('user_id'));
+  db.exec('DELETE FROM streak_achievements; UPDATE user_settings SET streak_enabled = 0, streak_since = NULL, streak_offered_at = NULL, streak_margin_min = 30;');
+});
+
 test('tipo desconocido → 404; sin sesión → 401', async () => {
   await api.get('/api/export/usuarios.csv').expect(404);
   await anon.get('/api/export.json').expect(401);

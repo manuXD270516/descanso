@@ -16,6 +16,7 @@ import { AWAKENINGS_OPTIONS, NightCardComponent, SOL_OPTIONS } from './night-car
 import { NightUiService } from './night-ui.service';
 import { ScheduleService, ScheduleState } from '../../core/schedule.service';
 import { scheduledWakeCheck } from '../../core/schedule';
+import { StreakMorningComponent } from '../streak/streak-morning.component';
 
 const RANGE_DAYS = 14;
 /** Una noche abierta desde hace 14 h o más probablemente se olvidó cerrar (feature 006, US4). */
@@ -38,7 +39,7 @@ interface Ribbon {
 
 @Component({
   selector: 'app-night',
-  imports: [FormsModule, ChartTableComponent, OriginBadgeComponent, CycleCalculatorComponent, NightCardComponent],
+  imports: [FormsModule, ChartTableComponent, OriginBadgeComponent, CycleCalculatorComponent, NightCardComponent, StreakMorningComponent],
   templateUrl: './night.component.html',
   styleUrl: './night.component.css',
 })
@@ -73,6 +74,8 @@ export class NightComponent implements OnInit {
 
   /** Noche recién cerrada: muestra la tarjeta "¿Cómo fue la noche?" (feature 006, US5). */
   readonly lastClosed = signal<SleepRecord | null>(null);
+  /** Se acaba de pulsar "Ya desperté": solo entonces se muestra la racha (feature 011, FR-019). */
+  readonly wokeUp = signal(false);
   /** Hora propuesta del recordatorio de noche abierta, editable. */
   readonly reminderInput = signal('');
   private readonly loadedAt = signal(Date.now());
@@ -215,6 +218,7 @@ export class NightComponent implements OnInit {
 
   goToSleep() {
     const iso = inputLocalToIso(this.bedtimeInput());
+    this.wokeUp.set(false);
     this.run(this.api.createSleep({ date: nightDate(iso), bedtime: iso }), () => this.wakeInput.set(toInputLocal()));
   }
 
@@ -240,6 +244,7 @@ export class NightComponent implements OnInit {
     this.run(this.api.wake(wakeIso, fromProposal), (closed) => {
       this.bedtimeInput.set(toInputLocal());
       this.lastClosed.set(closed);
+      this.wokeUp.set(true);
     });
   }
 

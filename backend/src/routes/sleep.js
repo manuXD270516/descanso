@@ -1,6 +1,7 @@
 const { Router } = require('express');
 const repo = require('../repo/sleep');
-const { isIso, isDate, durationMinutes, localDateOf, parseRange, HttpError } = require('../util');
+const streak = require('../repo/streak');
+const { isIso, isDate, durationMinutes, localDateOf, parseRange, todayAt, HttpError } = require('../util');
 
 const r = Router();
 
@@ -54,6 +55,10 @@ function writeNight(fn) {
   }
 }
 
+// Feature 011: las escrituras que pueden subir la racha aplican el trinquete en la misma transacción
+// (récord, total y constelaciones; solo con la racha activada). Borrar nunca la sube.
+const withRatchet = (userId, iso, fn) => streak.withRatchet(userId, todayAt(iso), fn);
+
 // GET /api/sleep?from=YYYY-MM-DD&to=YYYY-MM-DD
 r.get('/', (req, res) => {
   res.json(repo.list(req.user.id, parseRange(req.query)).map(withDuration));
@@ -66,7 +71,8 @@ r.get('/open', (req, res) => {
 
 r.post('/', (req, res) => {
   const d = validate(req.body);
-  res.status(201).json(withDuration(writeNight(() => repo.create(req.user.id, d))));
+  const create = () => repo.create(req.user.id, d);
+  res.status(201).json(withDuration(writeNight(() => (d.wake_time ? withRatchet(req.user.id, d.wake_time, create) : create()))));
 });
 
 // Cierra la noche abierta con la hora de despertar
@@ -79,7 +85,7 @@ r.post('/wake', (req, res) => {
   const open = repo.open(req.user.id);
   if (!open) throw new HttpError(404, 'No hay una noche abierta para cerrar');
   if (durationMinutes(open.bedtime, wake_time) <= 0) throw new HttpError(400, 'La hora de despertar debe ser posterior a la de dormir');
-  res.json(withDuration(repo.setWake(req.user.id, open.id, wake_time, fromProposal)));
+  res.json(withDuration(withRatchet(req.user.id, wake_time, () => repo.setWake(req.user.id, open.id, wake_time, fromProposal))));
 });
 
 r.put('/:id', (req, res) => {
@@ -89,7 +95,7 @@ r.put('/:id', (req, res) => {
   // Feature 010: si ya estaba cerrada, se conserva cuándo se anotó; si se cierra ahora, el repo lo fija
   d.wake_logged_at = existing.wake_time ? existing.wake_logged_at : null;
   d.wake_from_proposal = existing.wake_time ? existing.wake_from_proposal : 0;
-  res.json(withDuration(writeNight(() => repo.update(req.user.id, existing.id, d))));
+  res.json(withDuration(writeNight(() => withRatchet(req.user.id, d.wake_time ?? d.bedtime, () => repo.update(req.user.id, existing.id, d)))));
 });
 
 r.delete('/:id', (req, res) => {

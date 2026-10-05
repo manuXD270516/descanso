@@ -54,6 +54,9 @@ Ejemplo de *expand* puro: `008_ciclos_y_diario.js` (feature 006).
 - Ejemplo con tablas nuevas: `009_horario.js` (feature 010) usa `CREATE TABLE IF NOT EXISTS` para el
   horario y las pausas, y `ADD COLUMN` para el aviso y el registro del despertar. El código de 006
   sigue funcionando (`compat-previous-010.test.js`).
+- `010_rachas.js` (feature 011): `CREATE TABLE IF NOT EXISTS streak_achievements` y 8 `ADD COLUMN`
+  con `DEFAULT` o `NULL` en `user_settings` (racha desactivada, margen 30, contadores a 0). Solo
+  expand: el código de 010 y 006 sigue funcionando (`compat-previous-011.test.js`).
 
 ### Multiusuario (desde la feature 008)
 

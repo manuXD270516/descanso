@@ -13,6 +13,7 @@ const ROUTERS = {
   '/api/stats': require('../src/routes/stats'),
   '/api': require('../src/routes/export'),
   '/api/': require('../src/routes/schedule'), // feature 010 (montado en /api; clave distinta para el mapa)
+  '/api/streak': require('../src/routes/streak'), // feature 011
 };
 
 /** Huella de todas las filas de A (por sus tablas y hijas). */
@@ -25,6 +26,8 @@ function fingerprintOf(userId) {
     entries: q('SELECT e.* FROM metric_entries e JOIN metrics m ON m.id = e.metric_id WHERE m.user_id = ? ORDER BY e.id'),
     schedule: q('SELECT v.*, d.* FROM schedule_versions v JOIN schedule_days d ON d.version_id = v.id WHERE v.user_id = ? ORDER BY v.id, d.weekday'),
     pauses: q('SELECT * FROM pauses WHERE user_id = ? ORDER BY id'),
+    settings: q('SELECT * FROM user_settings WHERE user_id = ?'),
+    achievements: q('SELECT * FROM streak_achievements WHERE user_id = ? ORDER BY id'),
   };
   return crypto.createHash('sha256').update(JSON.stringify(rows)).digest('hex');
 }
@@ -95,6 +98,25 @@ test('los listados, el resumen y la exportación de B no contienen nada de A (FR
   assert.deepEqual([exp.schedule_versions, exp.pauses], [[], []]);
   // Y ninguna respuesta de datos expone user_id
   assert.ok(!JSON.stringify([nights, metrics, exp]).includes('user_id'));
+});
+
+test('la racha de A no aparece ni se toca desde B (feature 011, FR-027, SC-008)', async () => {
+  const today = new Date().toISOString().slice(0, 10);
+  await api.put('/api/streak/settings').send({ today, enabled: true, margin_min: 40 }).expect(200);
+  db.prepare("INSERT INTO streak_achievements (user_id, key, achieved_on, wake_spread_min, created_at) VALUES (1, 7, '2026-09-08', 5, 'x')").run();
+  const before = fingerprintOf(A_ID);
+  // Todas las rutas de /api/streak, recorridas desde B
+  const routes = routesOf(ROUTERS['/api/streak'], '/api/streak');
+  assert.equal(routes.length, 3);
+  assert.deepEqual((await otherApi.get(`/api/streak?today=${today}`).expect(200)).body, { enabled: false, offered: false, margin_min: 30, offer: false });
+  await otherApi.put('/api/streak/settings').send({ today, margin_min: 15, dismiss_summary: true }).expect(200);
+  await otherApi.post('/api/streak/achievements/7/seen').expect(404);
+  assert.equal(fingerprintOf(A_ID), before, 'B no cambió los ajustes ni los logros de A');
+  assert.equal(db.prepare('SELECT seen_at FROM streak_achievements WHERE user_id = 1 AND key = 7').get().seen_at, null);
+  const exp = (await otherApi.get('/api/export.json').expect(200)).body;
+  assert.deepEqual(exp.streak.achievements, []);
+  assert.equal(exp.streak.settings.enabled, false);
+  db.exec('DELETE FROM streak_achievements; UPDATE user_settings SET streak_enabled = 0, streak_since = NULL, streak_offered_at = NULL, streak_margin_min = 30, streak_summary_dismissed = NULL;');
 });
 
 test('el dashboard de B no refleja nada de A (feature 005)', async () => {

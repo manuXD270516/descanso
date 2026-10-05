@@ -7,6 +7,7 @@ import { ScheduleService } from '../../core/schedule.service';
 import { addDays, fmtDateShort } from '../../core/time';
 import { CalendarGuideComponent } from './calendar-guide.component';
 import { ScheduleEditorComponent } from './schedule-editor.component';
+import { StreakSettingsComponent } from '../streak/streak-settings.component';
 
 /**
  * Cuenta → "Mi horario" (feature 010): horario (US1), calendario con aviso y guía (US2) y modo pausa
@@ -14,7 +15,7 @@ import { ScheduleEditorComponent } from './schedule-editor.component';
  */
 @Component({
   selector: 'app-my-schedule',
-  imports: [FormsModule, ScheduleEditorComponent, CalendarGuideComponent],
+  imports: [FormsModule, ScheduleEditorComponent, CalendarGuideComponent, StreakSettingsComponent],
   template: `
     <section class="panel account-card" aria-labelledby="schedule-title">
       <h2 id="schedule-title">Mi horario</h2>
@@ -65,6 +66,9 @@ import { ScheduleEditorComponent } from './schedule-editor.component';
           }
         </ul>
       }
+
+      <!-- Feature 011: la racha se ajusta junto al horario y la pausa -->
+      <app-streak-settings />
     </section>
   `,
   styles: `

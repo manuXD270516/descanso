@@ -41,3 +41,10 @@ iah
 puntuacion de sueno
 hipnograma
 % de rem
+
+# Culpa y pérdida (011, FR-022): la racha nunca culpa ni amenaza con perder lo logrado
+perdiste
+fallaste
+rompiste
+en peligro
+castigo*

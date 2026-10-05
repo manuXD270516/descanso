@@ -68,3 +68,12 @@ test('circularAvg: siempre en 0..1439, nunca 1440 (DT-21)', () => {
   assert.equal(circularAvg([60, 120]), 90);
   assert.equal(circularAvg([]), null);
 });
+
+test('todayAt da la fecha de pared de ahora en el desfase del ISO (feature 011)', () => {
+  const { todayAt } = require('../src/util');
+  const now = Date.parse('2026-10-05T02:30:00Z');
+  assert.equal(todayAt('2026-10-04T23:00:00-04:00', now), '2026-10-04');
+  assert.equal(todayAt('2026-10-05T07:00:00+05:30', now), '2026-10-05');
+  assert.equal(todayAt('2026-10-05T07:00:00Z', now), '2026-10-05');
+  assert.equal(todayAt('2026-10-05T07:00:00-0300', now), '2026-10-04');
+});
