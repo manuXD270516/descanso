@@ -3,7 +3,8 @@ const db = require('../db');
 const { requireUser, rangeClause } = require('./scope');
 
 // sol_bucket y awakenings_bucket: respuestas opcionales de la tarjeta (feature 006); NULL = sin respuesta
-const COLS = 'id, date, bedtime, wake_time, notes, sol_bucket, awakenings_bucket, created_at';
+// wake_logged_at y wake_from_proposal (feature 010): cuándo se anotó el despertar y si se confirmó la hora propuesta
+const COLS = 'id, date, bedtime, wake_time, notes, sol_bucket, awakenings_bucket, wake_logged_at, wake_from_proposal, created_at';
 
 function list(userId, range = {}) {
   const params = [requireUser(userId)];
@@ -18,20 +19,24 @@ const open = (userId) =>
 
 function create(userId, d) {
   const info = db
-    .prepare('INSERT INTO sleep_records (user_id, date, bedtime, wake_time, notes) VALUES (?,?,?,?,?)')
-    .run(requireUser(userId), d.date, d.bedtime, d.wake_time ?? null, d.notes ?? null);
+    .prepare('INSERT INTO sleep_records (user_id, date, bedtime, wake_time, notes, wake_logged_at) VALUES (?,?,?,?,?,?)')
+    .run(requireUser(userId), d.date, d.bedtime, d.wake_time ?? null, d.notes ?? null, d.wake_time ? new Date().toISOString() : null);
   return get(userId, info.lastInsertRowid);
 }
 
 function update(userId, id, d) {
+  // Cuándo se anotó el despertar (010): se fija al pasar de abierta a cerrada y se borra al reabrir
+  const loggedAt = !d.wake_time ? null : d.wake_logged_at ?? new Date().toISOString();
+  const fromProposal = d.wake_time ? d.wake_from_proposal ?? 0 : 0;
   const info = db
-    .prepare('UPDATE sleep_records SET date=?, bedtime=?, wake_time=?, notes=?, sol_bucket=?, awakenings_bucket=? WHERE user_id = ? AND id = ?')
-    .run(d.date, d.bedtime, d.wake_time ?? null, d.notes ?? null, d.sol_bucket ?? null, d.awakenings_bucket ?? null, requireUser(userId), id);
+    .prepare('UPDATE sleep_records SET date=?, bedtime=?, wake_time=?, notes=?, sol_bucket=?, awakenings_bucket=?, wake_logged_at=?, wake_from_proposal=? WHERE user_id = ? AND id = ?')
+    .run(d.date, d.bedtime, d.wake_time ?? null, d.notes ?? null, d.sol_bucket ?? null, d.awakenings_bucket ?? null, loggedAt, fromProposal, requireUser(userId), id);
   return info.changes ? get(userId, id) : undefined;
 }
 
-function setWake(userId, id, wakeTime) {
-  db.prepare('UPDATE sleep_records SET wake_time = ? WHERE user_id = ? AND id = ?').run(wakeTime, requireUser(userId), id);
+function setWake(userId, id, wakeTime, fromProposal = false) {
+  db.prepare('UPDATE sleep_records SET wake_time = ?, wake_logged_at = ?, wake_from_proposal = ? WHERE user_id = ? AND id = ?')
+    .run(wakeTime, new Date().toISOString(), fromProposal ? 1 : 0, requireUser(userId), id);
   return get(userId, id);
 }
 

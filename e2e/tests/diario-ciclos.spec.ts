@@ -107,7 +107,8 @@ test('aviso de no dispositivo médico en Noche, Tendencias y Siestas, no en Mét
   await page.goto('/');
   const notice = page.getByRole('note');
   await expect(notice).toContainText('No es un dispositivo médico');
-  await expect(page.locator('app-night .block-head').first()).toContainText('Anotado por ti');
+  // Una noche pasada registrada después de despertar es "Anotado después" (feature 010, FR-013)
+  await expect(page.locator('app-night .block-head').first()).toContainText('Anotado después');
 
   await openTab(page, 'Tendencias');
   await expect(notice).toContainText('No es un dispositivo médico');

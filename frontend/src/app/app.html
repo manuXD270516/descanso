@@ -20,6 +20,7 @@
         <p class="small muted account-email">{{ auth.displayName() || auth.email() }}</p>
         <div class="account-links">
           <button type="button" class="btn btn-ghost btn-sm" (click)="openAccount('profile', menu)">Mi perfil</button>
+          <button type="button" class="btn btn-ghost btn-sm" (click)="openAccount('schedule', menu)">Mi horario</button>
           @if (auth.role() === 'owner') {
             <button type="button" class="btn btn-ghost btn-sm" (click)="openAccount('people', menu)">Personas</button>
           }
@@ -72,8 +73,11 @@
           @if (!auth.onboarded()) {
             <app-welcome />
           } @else {
+          <!-- Feature 010 (US5): aviso a la hora de prepararse, con la app abierta -->
+          <app-bedtime-notice />
           @switch (accountView()) {
             @case ('profile') { <app-profile (deleted)="accountView.set(null)" /> }
+            @case ('schedule') { <app-my-schedule /> }
             @case ('people') { <app-people /> }
             @case ('privacy') { <app-privacy /> }
             @default {

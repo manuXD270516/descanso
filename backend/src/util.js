@@ -12,6 +12,16 @@ const isDate = (v) =>
   /^\d{4}-\d{2}-\d{2}$/.test(v) &&
   !Number.isNaN(Date.parse(v)) &&
   new Date(`${v}T00:00:00Z`).toISOString().slice(0, 10) === v;
+/**
+ * "Hoy" del cliente (feature 010): la fecha de su zona horaria. Se acepta a ±1 día de la fecha UTC del
+ * servidor, que cubre cualquier zona; el servidor no adivina "hoy" (principio III).
+ */
+function clientToday(v) {
+  const utc = new Date().toISOString().slice(0, 10);
+  const shift = (n) => { const d = new Date(`${utc}T00:00:00Z`); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+  if (!isDate(v) || v < shift(-1) || v > shift(1)) throw new HttpError(400, 'Fecha inválida');
+  return v;
+}
 const durationMinutes = (a, b) => Math.round((Date.parse(b) - Date.parse(a)) / 60000);
 
 /** Día de pared de un ISO con desfase ("2026-09-05T23:30:00-04:00" → "2026-09-05"); null si no es ISO. */
@@ -39,4 +49,4 @@ function circularAvg(values) {
   return (Math.round((ang / (2 * Math.PI)) * 1440) % 1440) + 0;
 }
 
-module.exports = { HttpError, isIso, isDate, durationMinutes, localDateOf, parseRange, circularAvg };
+module.exports = { HttpError, isIso, isDate, clientToday, durationMinutes, localDateOf, parseRange, circularAvg };

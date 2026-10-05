@@ -12,6 +12,9 @@ export interface SleepRecord {
   /** Respuestas opcionales de "¿Cómo fue la noche?" (feature 006); null = sin respuesta. */
   sol_bucket?: SolBucket | null;
   awakenings_bucket?: AwakeningsBucket | null;
+  /** Feature 010: cuándo se anotó el despertar y si se confirmó la hora propuesta sin cambiarla. */
+  wake_logged_at?: string | null;
+  wake_from_proposal?: number;
 }
 
 export type SolBucket = 'lt15' | '15_30' | 'gt30';
@@ -89,8 +92,8 @@ export class ApiService {
   createSleep(body: Partial<SleepRecord>): Observable<SleepRecord> {
     return this.http.post<SleepRecord>(`${this.base}/sleep`, body);
   }
-  wake(wake_time: string): Observable<SleepRecord> {
-    return this.http.post<SleepRecord>(`${this.base}/sleep/wake`, { wake_time });
+  wake(wake_time: string, from_proposal = false): Observable<SleepRecord> {
+    return this.http.post<SleepRecord>(`${this.base}/sleep/wake`, from_proposal ? { wake_time, from_proposal } : { wake_time });
   }
   updateSleep(id: number, body: Partial<SleepRecord>): Observable<SleepRecord> {
     return this.http.put<SleepRecord>(`${this.base}/sleep/${id}`, body);

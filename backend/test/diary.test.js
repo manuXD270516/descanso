@@ -51,3 +51,28 @@ test('las respuestas en la noche de otra persona → 404 y sin cambios', async (
   await otherApi.put(`/api/sleep/${night.id}`).send({ sol_bucket: 'gt30' }).expect(404);
   assert.equal(db.prepare('SELECT sol_bucket FROM sleep_records WHERE id = ?').get(night.id).sol_bucket, null);
 });
+
+test('feature 010: cerrar la noche registra cuándo se anotó el despertar y si se confirmó la hora propuesta', async () => {
+  await api.post('/api/sleep').send({ date: '2026-09-30', bedtime: iso('2026-09-30T23:00') }).expect(201);
+  const t0 = Date.now();
+  const closed = (await api.post('/api/sleep/wake').send({ wake_time: iso('2026-10-01T07:00'), from_proposal: true }).expect(200)).body;
+  assert.ok(Math.abs(Date.parse(closed.wake_logged_at) - t0) < 5000, 'wake_logged_at ≈ ahora');
+  assert.equal(closed.wake_from_proposal, 1);
+  assert.ok(night.wake_logged_at, 'una noche pasada registrada a mano también guarda cuándo se anotó');
+
+  await api.post('/api/sleep').send({ date: '2026-10-01', bedtime: iso('2026-10-01T23:00') }).expect(201);
+  const plain = (await api.post('/api/sleep/wake').send({ wake_time: iso('2026-10-02T07:00') }).expect(200)).body;
+  assert.equal(plain.wake_from_proposal, 0);
+
+  await api.post('/api/sleep').send({ date: '2026-10-02', bedtime: iso('2026-10-02T23:00') }).expect(201);
+  await api.post('/api/sleep/wake').send({ wake_time: iso('2026-10-03T07:00'), from_proposal: 'sí' }).expect(400);
+  // Cerrar con PUT (editar la noche abierta y ponerle despertar) también registra el momento
+  const open = (await api.get('/api/sleep/open').expect(200)).body;
+  assert.equal(open.wake_logged_at, null);
+  const viaPut = (await api.put(`/api/sleep/${open.id}`).send({ wake_time: iso('2026-10-03T07:00') }).expect(200)).body;
+  assert.ok(viaPut.wake_logged_at);
+  assert.equal(viaPut.wake_from_proposal, 0);
+  // Editar notas no cambia cuándo se anotó
+  const again = (await api.put(`/api/sleep/${open.id}`).send({ notes: 'x' }).expect(200)).body;
+  assert.equal(again.wake_logged_at, viaPut.wake_logged_at);
+});

@@ -65,6 +65,20 @@ test('un CSV por tipo: BOM, cabeceras en español, RFC 4180 y una fila por regis
   assert.ok(noches.includes('2026-09-06T23:30:00-04:00,,'), 'noche abierta: despertar vacío');
 });
 
+test('el JSON incluye el horario con sus versiones y las pausas (feature 010, FR-019)', async () => {
+  const today = new Date().toISOString().slice(0, 10);
+  db.exec('DELETE FROM schedule_versions; DELETE FROM pauses;');
+  await api.put('/api/schedule').send({ today, days: [0, 1, 2, 3, 4, 5, 6].map((weekday) => ({ weekday, bed_min: 1395, wake_min: 420, active: weekday !== 3 })) }).expect(200);
+  await api.post('/api/pauses').send({ start_date: today, end_date: today, today }).expect(201);
+  const j = (await api.get('/api/export.json').expect(200)).body;
+  assert.equal(j.schedule_versions.length, 1);
+  assert.equal(j.schedule_versions[0].days.length, 7);
+  assert.equal(j.schedule_versions[0].days[3].active, false);
+  assert.equal(j.pauses.length, 1);
+  assert.ok(!JSON.stringify(j).includes('user_id'));
+  db.exec('DELETE FROM schedule_versions; DELETE FROM pauses;');
+});
+
 test('tipo desconocido → 404; sin sesión → 401', async () => {
   await api.get('/api/export/usuarios.csv').expect(404);
   await anon.get('/api/export.json').expect(401);

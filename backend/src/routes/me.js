@@ -54,6 +54,12 @@ r.put('/', (req, res) => {
     if (!Number.isInteger(v) || v < 0 || v > 60) throw new HttpError(400, 'El tiempo en dormirte debe estar entre 0 y 60 minutos');
     changes.latency_min = v;
   }
+  // Aviso antes de acostarse (feature 010, FR-007)
+  if (req.body.lead_min !== undefined) {
+    const v = req.body.lead_min;
+    if (!Number.isInteger(v) || v < 15 || v > 60) throw new HttpError(400, 'El aviso debe ser entre 15 y 60 minutos antes');
+    changes.lead_min = v;
+  }
   res.json(users.updateProfile(req.user.id, changes));
 });
 

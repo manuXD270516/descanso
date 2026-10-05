@@ -1,0 +1,3 @@
+2026-10-04T06:19:14.606Z
+filas: 1, no borradas: 1
+Row: 0 _id=1, calendar_id=1, title=Descanso: en 10 min es tu hora de dormir (prueba v1), dtstart=1791095400000, rrule=FREQ=WEEKLY;BYDAY=SU, deleted=0, uid2445=NULL, eventStatus=1, hasAlarm=1

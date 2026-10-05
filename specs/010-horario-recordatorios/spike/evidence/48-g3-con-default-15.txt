@@ -1,0 +1,17 @@
+2026-10-04T03:30:12.5452934-04:00 at=03:49
+eventos g3: 7
+Row: 6 _id=193, title=Descanso: en 7 min es tu hora de dormir (prueba v1), dtstart=1791272940000, hasAlarm=1
+Row: 7 _id=194, title=Descanso: en 7 min es tu hora de dormir (prueba v1), dtstart=1791359340000, hasAlarm=1
+Row: 8 _id=195, title=Descanso: en 7 min es tu hora de dormir (prueba v1), dtstart=1791532140000, hasAlarm=1
+Row: 9 _id=196, title=Descanso: en 7 min es tu hora de dormir (prueba v1), dtstart=1791100140000, hasAlarm=1
+Row: 10 _id=197, title=Descanso: en 7 min es tu hora de dormir (prueba v1), dtstart=1791618540000, hasAlarm=1
+Row: 11 _id=198, title=Descanso: en 7 min es tu hora de dormir (prueba v1), dtstart=1791186540000, hasAlarm=1
+Row: 12 _id=199, title=Descanso: en 7 min es tu hora de dormir (prueba v1), dtstart=1791445740000, hasAlarm=1
+--- recordatorios
+Row: 133 event_id=193, minutes=15, method=1
+Row: 134 event_id=194, minutes=15, method=1
+Row: 135 event_id=195, minutes=15, method=1
+Row: 136 event_id=196, minutes=15, method=1
+Row: 137 event_id=197, minutes=15, method=1
+Row: 138 event_id=198, minutes=15, method=1
+Row: 139 event_id=199, minutes=15, method=1

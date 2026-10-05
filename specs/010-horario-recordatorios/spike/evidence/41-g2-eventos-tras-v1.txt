@@ -1,0 +1,11 @@
+2026-10-04T03:20:47.2196294-04:00
+eventos en Descanso-spike: 7
+Row: 0 _id=186, calendar_id=8, title=Descanso: en 7 min es tu hora de dormir (prueba v1), dtstart=1791271860000, duration=P900S, rrule=FREQ=WEEKLY;WKST=MO;BYDAY=TU, hasAlarm=0, deleted=0
+Row: 1 _id=187, calendar_id=8, title=Descanso: en 7 min es tu hora de dormir (prueba v1), dtstart=1791444660000, duration=P900S, rrule=FREQ=WEEKLY;WKST=MO;BYDAY=TH, hasAlarm=0, deleted=0
+Row: 2 _id=188, calendar_id=8, title=Descanso: en 7 min es tu hora de dormir (prueba v1), dtstart=1791617460000, duration=P900S, rrule=FREQ=WEEKLY;WKST=MO;BYDAY=SA, hasAlarm=0, deleted=0
+Row: 3 _id=189, calendar_id=8, title=Descanso: en 7 min es tu hora de dormir (prueba v1), dtstart=1791358260000, duration=P900S, rrule=FREQ=WEEKLY;WKST=MO;BYDAY=WE, hasAlarm=0, deleted=0
+Row: 4 _id=190, calendar_id=8, title=Descanso: en 7 min es tu hora de dormir (prueba v1), dtstart=1791099060000, duration=P900S, rrule=FREQ=WEEKLY;WKST=MO;BYDAY=SU, hasAlarm=0, deleted=0
+Row: 5 _id=191, calendar_id=8, title=Descanso: en 7 min es tu hora de dormir (prueba v1), dtstart=1791185460000, duration=P900S, rrule=FREQ=WEEKLY;WKST=MO;BYDAY=MO, hasAlarm=0, deleted=0
+Row: 6 _id=192, calendar_id=8, title=Descanso: en 7 min es tu hora de dormir (prueba v1), dtstart=1791531060000, duration=P900S, rrule=FREQ=WEEKLY;WKST=MO;BYDAY=FR, hasAlarm=0, deleted=0
+--- recordatorios de esos eventos
+

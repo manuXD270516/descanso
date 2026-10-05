@@ -1,0 +1,11 @@
+2026-10-04T06:24:29.640Z
+filas: 9, no borradas: 9
+Row: 0 _id=1, calendar_id=1, title=Descanso: en 10 min es tu hora de dormir (prueba v1), dtstart=1791095400000, rrule=FREQ=WEEKLY;BYDAY=SU, deleted=0, uid2445=NULL, eventStatus=1, hasAlarm=1
+Row: 1 _id=2, calendar_id=1, title=Descanso: en 10 min es tu hora de dormir (prueba v2), dtstart=1791096300000, rrule=FREQ=WEEKLY;BYDAY=SU, deleted=0, uid2445=NULL, eventStatus=1, hasAlarm=1
+Row: 2 _id=3, calendar_id=1, title=Descanso: en 10 min es tu hora de dormir (prueba v1), dtstart=1791095400000, rrule=FREQ=WEEKLY;BYDAY=SU, deleted=0, uid2445=NULL, eventStatus=NULL, hasAlarm=0
+Row: 3 _id=4, calendar_id=1, title=Descanso: en 10 min es tu hora de dormir (prueba v1), dtstart=1791181800000, rrule=FREQ=WEEKLY;BYDAY=MO, deleted=0, uid2445=NULL, eventStatus=NULL, hasAlarm=0
+Row: 4 _id=5, calendar_id=1, title=Descanso: en 10 min es tu hora de dormir (prueba v1), dtstart=1791268200000, rrule=FREQ=WEEKLY;BYDAY=TU, deleted=0, uid2445=NULL, eventStatus=NULL, hasAlarm=0
+Row: 5 _id=6, calendar_id=1, title=Descanso: en 10 min es tu hora de dormir (prueba v1), dtstart=1791354600000, rrule=FREQ=WEEKLY;BYDAY=WE, deleted=0, uid2445=NULL, eventStatus=NULL, hasAlarm=0
+Row: 6 _id=7, calendar_id=1, title=Descanso: en 10 min es tu hora de dormir (prueba v1), dtstart=1791441000000, rrule=FREQ=WEEKLY;BYDAY=TH, deleted=0, uid2445=NULL, eventStatus=NULL, hasAlarm=0
+Row: 7 _id=8, calendar_id=1, title=Descanso: en 10 min es tu hora de dormir (prueba v1), dtstart=1791527400000, rrule=FREQ=WEEKLY;BYDAY=FR, deleted=0, uid2445=NULL, eventStatus=NULL, hasAlarm=0
+Row: 8 _id=9, calendar_id=1, title=Descanso: en 10 min es tu hora de dormir (prueba v1), dtstart=1791613800000, rrule=FREQ=WEEKLY;BYDAY=SA, deleted=0, uid2445=NULL, eventStatus=NULL, hasAlarm=0

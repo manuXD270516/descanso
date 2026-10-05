@@ -15,10 +15,12 @@ import { ProfileComponent } from './features/account/profile.component';
 import { PeopleComponent } from './features/account/people.component';
 import { TrendsComponent } from './features/trends/trends.component';
 import { WelcomeComponent } from './features/onboarding/welcome.component';
+import { MyScheduleComponent } from './features/schedule/my-schedule.component';
+import { BedtimeNoticeComponent } from './shared/bedtime-notice.component';
 
 type Tab = 'night' | 'trends' | 'naps' | 'metrics';
 /** Vistas del menú Cuenta (feature 008). */
-type AccountView = 'profile' | 'people' | 'privacy';
+type AccountView = 'profile' | 'schedule' | 'people' | 'privacy';
 /** Pantallas sin sesión que se abren desde un enlace o desde "Entrar". */
 type PublicView = 'register' | 'reset' | 'forgot' | 'privacy';
 
@@ -27,7 +29,7 @@ type PublicView = 'register' | 'reset' | 'forgot' | 'privacy';
   imports: [
     NightComponent, NapsComponent, MetricsComponent, LoginComponent, SetupComponent,
     RegisterComponent, ResetPasswordComponent, ForgotComponent, PrivacyComponent, ProfileComponent, PeopleComponent,
-    TrendsComponent, WelcomeComponent,
+    TrendsComponent, WelcomeComponent, MyScheduleComponent, BedtimeNoticeComponent,
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',
@@ -64,8 +66,10 @@ export class App implements OnInit {
 
   ngOnInit() {
     this.applyLinkTokens();
+    this.openNightLink();
     // Abrir un enlace con la app ya abierta en la pestaña solo cambia el fragmento (sin recarga)
     window.addEventListener('hashchange', () => {
+      this.openNightLink();
       if (this.applyLinkTokens()) this.auth.refresh();
     });
     this.auth.refresh();
@@ -73,6 +77,17 @@ export class App implements OnInit {
       next: (h) => this.version.set(/^[0-9a-f]{40}$/.test(h.version) ? h.version.slice(0, 7) : h.version),
       error: () => this.version.set(null),
     });
+  }
+
+  /**
+   * Enlace del evento del calendario (feature 010, FR-010): #noche abre la pestaña Noche, con
+   * "Me voy a dormir" a la vista, y limpia el fragmento.
+   */
+  private openNightLink() {
+    if (location.hash !== '#noche') return;
+    this.accountView.set(null);
+    this.tab.set('night');
+    history.replaceState(null, '', location.pathname + location.search);
   }
 
   /** Lee #invitacion= / #restablecer= y abre la pantalla correspondiente; true si había alguno. */

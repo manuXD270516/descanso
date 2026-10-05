@@ -5,8 +5,8 @@ import { OriginBadgeComponent, Origin, blockOrigin } from './origin-badge.compon
 describe('OriginBadgeComponent y blockOrigin', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
-  it('pinta los tres orígenes con su texto', () => {
-    const texts: Record<Origin, string> = { manual: 'Anotado por ti', estimated: 'Estimado', device: 'Del reloj' };
+  it('pinta los cuatro orígenes con su texto (010 añade "Anotado después")', () => {
+    const texts: Record<Origin, string> = { manual: 'Anotado por ti', late: 'Anotado después', estimated: 'Estimado', device: 'Del reloj' };
     for (const [origin, text] of Object.entries(texts)) {
       const f = TestBed.createComponent(OriginBadgeComponent);
       f.componentRef.setInput('origin', origin);

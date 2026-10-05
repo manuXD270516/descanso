@@ -31,6 +31,8 @@ describe('NightComponent · feature 006', () => {
   }
   function flushLoad(open: SleepRecord | null = null, records: SleepRecord[] = []) {
     http.expectOne('/api/sleep/open').flush(open);
+    // Feature 010: con una noche abierta se pide el horario de su fecha (aquí, sin horario)
+    for (const r of http.match((r) => r.url === '/api/schedule')) r.flush({ version: null, lead_min: 30, pause: null });
     http.expectOne((r) => r.url === '/api/sleep' && r.method === 'GET').flush(records);
     http.expectOne((r) => r.url === '/api/naps').flush([]);
     http.expectOne((r) => r.url === '/api/stats').flush(EMPTY_STATS);

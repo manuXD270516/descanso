@@ -1,0 +1,961 @@
+    NotificationRecord(0x056cd061: pkg=ws.xsoh.etar user=UserHandle{0} id=1 tag=null importance=4 key=0|ws.xsoh.etar|1|null|10209: Notification(channel=calendar1 shortcut=null contentView=null vibrate=null sound=content://settings/system/notification_sound tick defaults=LIGHTS flags=SHOW_LIGHTS color=0xff6076ac actions=1 vis=PRIVATE))
+      uid=10209 userId=0
+      opPkg=ws.xsoh.etar
+      icon=Icon(typ=RESOURCE pkg=ws.xsoh.etar id=0x7f0801e6)
+      flags=SHOW_LIGHTS
+      originalFlags=SHOW_LIGHTS
+      pri=1
+      key=0|ws.xsoh.etar|1|null|10209
+      seen=false
+      groupKey=0|ws.xsoh.etar|1|null|10209
+      notification=
+            fullscreenIntent=null
+            contentIntent=PendingIntent{2d87786: PendingIntentRecord{a0df8dd ws.xsoh.etar startActivity (allowlist: 1a35beb:+30s0ms/0/NOTIFICATION_SERVICE/NotificationManagerService)}}
+            deleteIntent=PendingIntent{239e847: PendingIntentRecord{d1e2d87 ws.xsoh.etar startService (allowlist: 1a35beb:+30s0ms/0/NOTIFICATION_SERVICE/NotificationManagerService)}}
+            number=0
+            groupAlertBehavior=0
+            when=0/0
+            tickerText=Descanso: en 10 min es tu hora de dormir (prueba v1)
+            vis=0
+            contentView=null
+            bigContentView=null
+            headsUpContentView=null
+            color=0xff6076ac
+            timeout=PT0S
+            actions={
+                [0] "Snooze" -> PendingIntent{557b874: PendingIntentRecord{522b4b4 ws.xsoh.etar startService (allowlist: 1a35beb:+30s0ms/0/NOTIFICATION_SERVICE/NotificationManagerService)}}
+              }
+            extras={
+                android.title=String (Descanso: en 10 min es tu hora de dormir (prueba v1))
+                android.reduced.images=Boolean (true)
+                android.template=String (android.app.Notification$BigTextStyle)
+                android.text=String (2:30 AM)
+                android.appInfo=ApplicationInfo (ApplicationInfo{e45119d ws.xsoh.etar})
+                android.bigText=SpannableString (2:30 AM
+
+Descanso: en 10 min es tu hora de dormir)
+            }
+      publicNotification=
+            None
+      stats=SingleNotificationStats{posttimeElapsedMs=439253, posttimeToFirstClickMs=-1, posttimeToDismissMs=-1, airtimeCount=0, airtimeMs=0, currentAirtimeStartElapsedMs=-1, airtimeExpandedMs=0, posttimeToFirstVisibleExpansionMs=-1, currentAirtimeExpandedStartElapsedMs=-1, requestedImportance=4, naturalImportance=4, isNoisy=true}
+      mContactAffinity=0.0
+      mRecentlyIntrusive=false
+      mPackagePriority=0
+      mPackageVisibility=-1000
+      mSystemImportance=UNSPECIFIED
+      mAsstImportance=UNSPECIFIED
+      mImportance=HIGH
+      mImportanceExplanation=app
+      mProposedImportance=UNSPECIFIED
+      mIsAppImportanceLocked=false
+      mSensitiveContent=false
+      mIntercept=false
+      mHidden==false
+      mGlobalSortKey=crtcl=0x0002:intrsv=1:grnk=0x0000:gsmry=1:nsk:rnk=0x0000
+      mRankingTimeMs=1791094801050
+      mCreationTimeMs=1791094801050
+      mVisibleSinceMs=0
+      mUpdateTimeMs=1791094801050
+      mInterruptionTimeMs=1791094801260
+      mSuppressedVisualEffects= 0
+      mSound= content://settings/system/notification_sound
+      mVibration= null
+      mAttributes= AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null
+      mLight= Light{color=-1, onMs=500, offMs=2000}
+      mShowBadge=true
+      mColorized=false
+      mAllowBubble=false
+      isBubble=false
+      mIsInterruptive=true
+      effectiveNotificationChannel=NotificationChannel{mId='calendar1', mName=Descanso-prueba, mDescription=, mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=true, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='alert_channel_group_01', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+      mAdjustments=[]
+      shortcut=null found valid? false
+      mUserVisOverride=-1000
+    NotificationRecord(0x0b348612: pkg=android user=UserHandle{-1} id=19 tag=null importance=2 key=-1|android|19|null|1000: Notification(channel=PHYSICAL_KEYBOARD shortcut=null contentView=null vibrate=null sound=null defaults=0 flags=AUTO_CANCEL|CAN_COLORIZE color=0x00000000 vis=PRIVATE))
+      uid=1000 userId=-1
+      opPkg=android
+      icon=Icon(typ=RESOURCE pkg=android id=0x0108058f)
+      flags=AUTO_CANCEL|CAN_COLORIZE
+      originalFlags=AUTO_CANCEL|CAN_COLORIZE
+      pri=0
+      key=-1|android|19|null|1000
+      seen=false
+      groupKey=-1|android|19|null|1000
+      notification=
+            fullscreenIntent=null
+            contentIntent=PendingIntent{a22c1e3: PendingIntentRecord{a49e04d android startActivity}}
+            deleteIntent=null
+            number=0
+            groupAlertBehavior=0
+            when=1791094402882/1791094402882
+            tickerText=null
+            vis=0
+            contentView=null
+            bigContentView=null
+            headsUpContentView=null
+            color=0x00000000
+            timeout=PT0S
+            extras={
+                android.title=String (AT Translated Set 2 keyboard configured)
+                android.reduced.images=Boolean (true)
+                android.text=String (Keyboard layout set to English (US). Tap to change.)
+                android.appInfo=ApplicationInfo (ApplicationInfo{71e7e0 android})
+            }
+      publicNotification=
+            None
+      stats=SingleNotificationStats{posttimeElapsedMs=38232, posttimeToFirstClickMs=-1, posttimeToDismissMs=-1, airtimeCount=0, airtimeMs=0, currentAirtimeStartElapsedMs=-1, airtimeExpandedMs=0, posttimeToFirstVisibleExpansionMs=-1, currentAirtimeExpandedStartElapsedMs=-1, requestedImportance=3, naturalImportance=2, isNoisy=true}
+      mContactAffinity=0.0
+      mRecentlyIntrusive=false
+      mPackagePriority=0
+      mPackageVisibility=-1000
+      mSystemImportance=UNSPECIFIED
+      mAsstImportance=UNSPECIFIED
+      mImportance=LOW
+      mImportanceExplanation=app
+      mProposedImportance=UNSPECIFIED
+      mIsAppImportanceLocked=false
+      mSensitiveContent=false
+      mIntercept=false
+      mHidden==false
+      mGlobalSortKey=crtcl=0x0002:intrsv=1:grnk=0x0001:gsmry=1:nsk:rnk=0x0001
+      mRankingTimeMs=1791094402882
+      mCreationTimeMs=1791094398564
+      mVisibleSinceMs=0
+      mUpdateTimeMs=1791094402888
+      mInterruptionTimeMs=1791094402888
+      mSuppressedVisualEffects= 0
+      mSound= content://settings/system/notification_sound
+      mVibration= null
+      mAttributes= AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null
+      mLight= null
+      mShowBadge=false
+      mColorized=false
+      mAllowBubble=false
+      isBubble=false
+      mIsInterruptive=false
+      effectiveNotificationChannel=NotificationChannel{mId='PHYSICAL_KEYBOARD', mName=Physical keyboard, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=true, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+      mAdjustments=[]
+      shortcut=null found valid? false
+      mUserVisOverride=-1000
+  
+  mMaxPackageEnqueueRate=5.0
+  hideSilentStatusBar=false
+
+  Notification attention state:
+      mSoundNotificationKey=0|ws.xsoh.etar|1|null|10209
+      mVibrateNotificationKey=null
+      mDisableNotificationEffects=false
+      mCallState=CALL_STATE_IDLE
+      mSystemReady=true
+      mNotificationPulseEnabled=true
+  mArchive=Archive (0 notifications)
+
+  Snoozed notifications:
+
+ Pending snoozed notifications
+
+  Ranking Config:
+    mSignalExtractors.length = 11
+      NotificationChannelExtractor
+      NotificationAdjustmentExtractor
+      BubbleExtractor
+      ValidateNotificationPeople
+      PriorityExtractor
+      ZenModeExtractor
+      ImportanceExtractor
+      NotificationIntrusivenessExtractor
+      VisibilityExtractor
+      BadgeExtractor
+      CriticalNotificationExtractor
+
+ Notification Preferences:
+    per-package config version: 4
+PackagePreferences:
+      AppSettings: com.android.ons (1001) fixedImportance=true
+      AppSettings: com.google.android.safetycenter.resources (10196)
+      AppSettings: com.google.android.providers.media.module (10203) importance=DEFAULT userSet=false fixedImportance=true
+        NotificationChannel{mId='PhotoPickerSyncChannel', mName=Media picker, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='native_transcode_alert_channel', mName=Native Transcode Alerts, mDescription=, mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='native_transcode_progress_channel', mName=Native Transcode Progress, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+      AppSettings: com.android.internal.display.cutout.emulation.corner (10009)
+      AppSettings: com.android.emergency (10183)
+      AppSettings: com.android.managedprovisioning.auto_generated_rro_product__ (10042)
+      AppSettings: com.android.settings.auto_generated_rro_product__ (10046)
+      AppSettings: com.android.localtransport (1000) fixedImportance=true
+      AppSettings: com.android.pacprocessor (10122)
+      AppSettings: com.android.wallpaper (10179) importance=NONE userSet=false
+      AppSettings: com.android.systemui.emulation.pixel_3 (10053)
+      AppSettings: com.google.android.printservice.recommendation (10121)
+      AppSettings: com.google.android.server.deviceconfig.resources (10198)
+      AppSettings: com.android.credentialmanager (10096)
+      AppSettings: com.google.android.wifi.dialog (10206)
+      AppSettings: com.google.mainline.adservices (10158)
+      AppSettings: com.android.htmlviewer (10120)
+      AppSettings: com.android.microdroid.empty_payload (10208)
+      AppSettings: com.google.android.apps.docs (10153) importance=NONE userSet=false
+      AppSettings: com.android.systemui.auto_generated_rro_product__ (10075)
+      AppSettings: com.google.android.configupdater (10128) importance=NONE userSet=false
+      AppSettings: com.android.systemui.emulation.pixel_8 (10067)
+      AppSettings: com.google.android.onetimeinitializer (10131)
+      AppSettings: com.android.internal.emulation.pixel_7 (10021)
+      AppSettings: com.android.internal.emulation.pixel_3a_xl (10015)
+      AppSettings: com.android.storagemanager (10177) importance=DEFAULT userSet=false fixedImportance=true
+      AppSettings: com.google.android.apps.wallpaper (10180)
+      AppSettings: com.google.android.appsearch.apk (10189)
+      AppSettings: com.android.systemui.plugin.globalactions.wallet (10175)
+      AppSettings: com.android.carrierconfig.auto_generated_rro_product__ (10001)
+      AppSettings: com.android.dynsystem (1000) importance=DEFAULT userSet=false fixedImportance=true
+        NotificationChannel{mId='com.android.dynsystem', mName=Dynamic System Updates, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+      AppSettings: com.google.android.dialer (10138) importance=DEFAULT userSet=false defaultAppLocked=true
+      AppSettings: com.android.internal.display.cutout.emulation.double (10005)
+      AppSettings: com.android.internal.emulation.pixel_8_pro (10028)
+      AppSettings: com.android.providers.partnerbookmarks (10123)
+      AppSettings: com.google.android.apps.customization.pixel (10155)
+      AppSettings: com.android.systemui.emulation.pixel_6a (10066)
+      AppSettings: com.android.internal.display.cutout.emulation.emu01 (10008)
+      AppSettings: com.android.internal.systemui.navbar.transparent (10082)
+      AppSettings: com.google.android.captiveportallogin (10114) importance=DEFAULT userSet=false
+      AppSettings: com.google.android.overlay.largescreensettingsprovider (10041)
+      AppSettings: com.android.systemui.accessibility.accessibilitymenu.auto_generated_rro_product__ (10002)
+      AppSettings: com.android.certinstaller (10115)
+      AppSettings: com.google.android.partnersetup (10135)
+      AppSettings: com.android.providers.contacts (10091)
+      AppSettings: com.android.proxyhandler (10105)
+      AppSettings: com.android.providers.contacts.auto_generated_rro_product__ (10004)
+      AppSettings: com.android.wallpaper.livepicker (10103)
+      AppSettings: com.google.android.apps.messaging (10142) importance=DEFAULT userSet=false
+        NotificationChannel{mId='bugle_misc_channel', mName=Other notifications, mDescription=, mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=true, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=true, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_UNKNOWN flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='bugle_default_channel', mName=Incoming messages, mDescription=, mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=true, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=true, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='_bugle_default_settings_group', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='bugle_broadcast_receiver_channel', mName=Background tasks, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=false, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannelGroup{mId='bugle_web_group', mName=Messages for web, mDescription=, mBlocked=false, mChannels=[], mUserLockedFields=0}
+        NotificationChannelGroup{mId='_bugle_default_settings_group', mName=Default settings, mDescription=, mBlocked=false, mChannels=[], mUserLockedFields=0}
+        NotificationChannelGroup{mId='bugle_conversations_group', mName=Conversations, mDescription=, mBlocked=false, mChannels=[], mUserLockedFields=0}
+      AppSettings: com.google.android.googlequicksearchbox (10145) importance=DEFAULT userSet=false
+        NotificationChannel{mId='com.google.android.apps.gsa.plugins.podcastplayer.channel', mName=Audio Playback, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+      AppSettings: com.android.theme.font.notoserifsource (10037)
+      AppSettings: com.android.internal.emulation.pixel_4a (10027)
+      AppSettings: com.google.android.apps.youtube.music (10164) importance=NONE userSet=false
+      AppSettings: com.android.bluetoothmidiservice (10113)
+      AppSettings: com.google.android.gsf (10144)
+      AppSettings: com.android.providers.telephony.auto_generated_characteristics_rro (10079)
+      AppSettings: com.android.providers.telephony (1001) fixedImportance=true
+      AppSettings: com.android.systemui.emulation.pixel_7_pro (10065)
+      AppSettings: com.google.android.modulemetadata (10152)
+      AppSettings: android.auto_generated_rro_vendor__ (10089)
+      AppSettings: com.google.android.packageinstaller (10100) importance=DEFAULT userSet=false fixedImportance=true
+      AppSettings: com.android.internal.emulation.pixel_fold (10033)
+      AppSettings: com.android.systemui.emulation.pixel_4 (10057)
+      AppSettings: com.android.bluetooth (1002) fixedImportance=true
+      AppSettings: com.android.wallpapercropper (10178)
+      AppSettings: com.android.systemui.emulation.pixel_4_xl (10058)
+      AppSettings: com.android.internal.emulation.pixel_3 (10011)
+      AppSettings: com.android.internal.systemui.navbar.gestural (10045)
+      AppSettings: com.android.compos.payload (10191)
+      AppSettings: com.android.cellbroadcastreceiver (10095)
+      AppSettings: com.android.systemui.emulation.pixel_9 (10070)
+      AppSettings: com.android.calllogbackup (10091)
+      AppSettings: android (1000) importance=DEFAULT userSet=false fixedImportance=true
+        NotificationChannel{mId='ABUSIVE_BACKGROUND_APPS', mName=Background Activity, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='NETWORK_ALERTS', mName=Network alerts, mDescription=, mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=true, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='DEVELOPER', mName=Developer messages, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=true, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='APM_ALERTS', mName=APM alerts, mDescription=, mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=true, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='SYSTEM_CHANGES_ALERTS', mName=System changes, mDescription=, mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=null, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='safety_center_critical_warning', mName=Critical warnings, mDescription=, mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='safety_center_channels', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='NETWORK_STATUS', mName=Network status, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='PHYSICAL_KEYBOARD', mName=Physical keyboard, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=true, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='HEAVY_WEIGHT_APP', mName=App running, mDescription=, mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=null, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=false, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION_EVENT content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='ACCOUNT', mName=Account status, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='DEVICE_ADMIN_ALERTS', mName=Alerts from your IT admin, mDescription=, mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='ACCESSIBILITY_SECURITY_POLICY', mName=Accessibility usage, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='FOREGROUND_SERVICE', mName=Apps consuming battery, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=true, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='DO_NOT_DISTURB', mName=Do Not Disturb, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='USB', mName=USB connection, mDescription=, mImportance=1, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=1, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='VPN', mName=VPN status, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='safety_center_recommendation', mName=Warnings, mDescription=, mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='safety_center_channels', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='UPDATES', mName=Updates, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='safety_center_information', mName=Recommendations, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='safety_center_channels', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=true, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='RETAIL_MODE', mName=Retail demo, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='CAR_MODE', mName=Car mode, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=true, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='ACCESSIBILITY_MAGNIFICATION', mName=Magnification, mDescription=, mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=true, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='SECURITY', mName=Security, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='NETWORK_AVAILABLE', mName=Network available, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=true, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='DEVELOPER_IMPORTANT', mName=Important developer messages, mDescription=, mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='ALERTS', mName=Alerts, mDescription=, mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannelGroup{mId='safety_center_channels', mName=Security & privacy, mDescription=, mBlocked=false, mChannels=[], mUserLockedFields=0}
+      AppSettings: com.android.systemui.emulation.pixel_9_pro_xl (10073)
+      AppSettings: com.google.android.overlay.googleconfig (10036)
+      AppSettings: com.android.internal.emulation.pixel_8 (10026)
+      AppSettings: com.google.android.inputmethod.latin (10157)
+        NotificationChannel{mId='com.google.android.apps.inputmethod.libs.dataservice.superpacks', mName=Downloads, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=true, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='com.google.android.inputmethod.latin', mName=Downloads, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+      AppSettings: com.android.internal.ranchu.commonoverlay (10048)
+      AppSettings: com.android.internal.systemui.navbar.threebutton (10044)
+      AppSettings: com.android.systemui.emulation.pixel_3_xl (10054)
+      AppSettings: com.google.android.marvin.talkback (10167) importance=NONE userSet=false
+      AppSettings: com.google.android.networkstack (1073) fixedImportance=true
+        NotificationChannel{mId='connected_note', mName=Network venue information, mDescription=hasDescription , mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='connected_note_loud', mName=Captive portal authentication, mDescription=hasDescription , mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+      AppSettings: com.android.intentresolver (10101)
+      AppSettings: com.android.providers.userdictionary (10091)
+      AppSettings: com.google.android.settings.intelligence (10140) importance=DEFAULT userSet=false
+      AppSettings: com.android.phone.auto_generated_rro_vendor__ (10087)
+      AppSettings: com.android.systemui.emulation.pixel_4a (10056)
+      AppSettings: com.google.android.sdksandbox (10202)
+      AppSettings: com.android.mms.service (1001) fixedImportance=true
+      AppSettings: com.google.android.cellbroadcastservice (1073) fixedImportance=true
+      AppSettings: com.google.android.cellbroadcastreceiver (10190) importance=DEFAULT userSet=false fixedImportance=true
+      AppSettings: android.auto_generated_characteristics_rro (10083)
+      AppSettings: com.android.devicediagnostics.auto_generated_rro_product__ (10007)
+      AppSettings: com.android.systemui.emulation.pixel_9_pro (10071)
+      AppSettings: com.google.android.adservices.api (10201) importance=DEFAULT userSet=false
+      AppSettings: com.android.server.telecom (1000) importance=DEFAULT userSet=false fixedImportance=true
+        NotificationChannel{mId='TelecomMissedCalls', mName=Missed calls, mDescription=, mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=, mLights=true, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=true, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_UNKNOWN flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='TelecomDisconnectedCalls', mName=Disconnected calls, mDescription=, mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=, mLights=true, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=true, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_UNKNOWN flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='TelecomCallStreaming', mName=Call streaming, mDescription=, mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=false, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='TelecomInCallServiceCrash', mName=Call streaming, mDescription=, mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=false, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='TelecomCallBlocking', mName=Call Blocking, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=false, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='TelecomIncomingCalls', mName=Incoming calls, mDescription=, mImportance=5, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=, mLights=true, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=false, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_UNKNOWN flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=5, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='TelecomBackgroundAudioProcessing', mName=Background calls, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=false, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+      AppSettings: com.android.shell (2000) importance=DEFAULT userSet=false fixedImportance=true
+      AppSettings: com.android.wallpaperbackup (10126)
+      AppSettings: com.google.android.hotspot2.osulogin (10205)
+      AppSettings: com.google.android.rkpdapp (10192)
+      AppSettings: com.android.emulator.multidisplay (1000) fixedImportance=true
+      AppSettings: com.android.internal.emulation.pixel_7a (10023)
+      AppSettings: com.android.providers.calendar (10092)
+      AppSettings: com.android.emulator.radio.config (10170)
+      AppSettings: com.google.android.ext.services (10187)
+      AppSettings: com.android.companiondevicemanager (10118)
+      AppSettings: com.android.simappdialog (10125)
+      AppSettings: com.google.android.healthconnect.controller (10194)
+      AppSettings: com.android.vpndialogs (10109)
+      AppSettings: com.google.android.apps.restore (10137) importance=DEFAULT userSet=false
+      AppSettings: com.google.mainline.telemetry (10159)
+      AppSettings: com.google.android.marvin.talkbackoverlay (10085) importance=NONE userSet=false
+      AppSettings: com.android.systemui.emulation.pixel_5 (10060)
+      AppSettings: com.google.android.markup (10151)
+      AppSettings: com.google.android.gms (10144) importance=DEFAULT userSet=false
+        NotificationChannel{mId='gms.pay_default', mName=All notifications, mDescription=, mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=false, mDeleted=false, mDeletedTimeMs=-1, mGroup='gms.gpay_wallet', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='nearby_sharing_alert', mName=Alerts, mDescription=hasDescription , mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=null, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='NEARBY_SHARING_CHANNEL_GROUP_ID', mAudioAttributes=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='eew_notification_v2', mName=Earthquake Early Warning Notification, mDescription=hasDescription , mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=android.resource://com.google.android.gms/raw/be_aware_alert_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='Personal_Safety_Id', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION_EVENT content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='eew_update', mName=Earthquake Early Warning Updates, mDescription=hasDescription , mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=null, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='Personal_Safety_Id', mAudioAttributes=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='DEVICES_WITH_YOUR_ACCOUNT', mName=Devices with your account, mDescription=, mImportance=1, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='DEVICES_CHANNEL_GROUP_ID', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=1, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='com.google.android.gms.backup.g1.storagealerts.notification.channel.id', mName=Storage alerts, mDescription=, mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='com.google.android.gms.backup.g1.notification.group.id', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='mt-notification-instant-hotspot-hun-channel-id', mName=Instant hotspot, mDescription=, mImportance=4, mBypassDnd=true, mLockscreenVisibility=-1000, mSound=null, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='com.google.android.gms.multidevice.NOTIFICATION_GROUP_ID', mAudioAttributes=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='com.google.android.gms.mobiledataplan.NOTIFICATION.EXPIRATION_REMINDER', mName=Expiration reminders, mDescription=, mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='com.google.android.gms.mobiledataplan.NOTIFICATION', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='eew_alert_v2', mName=Earthquake Early Warning Alert, mDescription=hasDescription , mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=android.resource://com.google.android.gms/raw/be_aware_alert_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=true, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='Personal_Safety_Id', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION_EVENT content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='com.google.android.gms.mobiledataplan.NOTIFICATION.NETWORK_SETUP', mName=Network setup, mDescription=, mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='com.google.android.gms.mobiledataplan.NOTIFICATION', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='com.google.android.gms.mobiledataplan.NOTIFICATION.LOW_BALANCE', mName=Data balance updates, mDescription=, mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='com.google.android.gms.mobiledataplan.NOTIFICATION', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='com.google.android.gms.mobiledataplan.NOTIFICATION.ACCOUNT_ALERT', mName=Account alerts, mDescription=, mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='com.google.android.gms.mobiledataplan.NOTIFICATION', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='tapandpay.transactions.low', mName=Purchases, mDescription=hasDescription , mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=true, mShowBadge=false, mDeleted=true, mDeletedTimeMs=1791094560269, mGroup='tapandpay', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='nearby_sharing_app', mName=App Installs, mDescription=hasDescription , mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=null, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='NEARBY_SHARING_CHANNEL_GROUP_ID', mAudioAttributes=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='DEVICES_WITHIN_REACH_REBRANDED', mName=Devices within reach, mDescription=, mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=null, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='DEVICES_CHANNEL_GROUP_ID', mAudioAttributes=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='DEVICES_REBRANDED', mName=Devices, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='DEVICES_CHANNEL_GROUP_ID', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='mt-notification-channel-id', mName=Provide data connection, mDescription=, mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='mt-notification-channel-group-id', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='crisis_alerts_1_1', mName=Crisis Alert High Importance Notification, mDescription=hasDescription , mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=true, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='Personal_Safety_Id', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION_EVENT content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='crisis_alerts_2_1', mName=Crisis Alert Notification, mDescription=hasDescription , mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='Personal_Safety_Id', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION_EVENT content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='crisis_alerts_3_1', mName=Crisis Alert Notification, mDescription=hasDescription , mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=null, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=true, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='Personal_Safety_Id', mAudioAttributes=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='com.google.android.gms.mobiledataplan.NOTIFICATION.OTHER', mName=Other, mDescription=, mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='com.google.android.gms.mobiledataplan.NOTIFICATION', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='tapandpay.tips.low', mName=Tips, mDescription=hasDescription , mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=true, mShowBadge=false, mDeleted=true, mDeletedTimeMs=1791094560269, mGroup='tapandpay', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='mt-notification-connected-channel-id', mName=Sharing data connection, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='mt-notification-channel-group-id', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='com.google.android.gms.mobiledataplan.NOTIFICATION.ACCOUNT_BALANCE_UPDATE', mName=Account balance top ups, mDescription=, mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='com.google.android.gms.mobiledataplan.NOTIFICATION', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='nearby_sharing_file', mName=File Transfers, mDescription=hasDescription , mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=null, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='NEARBY_SHARING_CHANNEL_GROUP_ID', mAudioAttributes=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='com.google.android.gms.mobiledataplan.NOTIFICATION.OUT_OF_DATA', mName=Out of data, mDescription=, mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='com.google.android.gms.mobiledataplan.NOTIFICATION', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='com.google.android.gms.backup.g1.featureupdates.notification.channel.id', mName=Feature updates, mDescription=, mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='com.google.android.gms.backup.g1.notification.group.id', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='tapandpay.alerts', mName=Important updates, mDescription=hasDescription , mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=true, mShowBadge=false, mDeleted=true, mDeletedTimeMs=1791094560269, mGroup='tapandpay', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='com.google.android.gms.backup.g1.statusalerts.notification.channel.id', mName=Status alerts, mDescription=, mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='com.google.android.gms.backup.g1.notification.group.id', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='com.google.android.gms.mobiledataplan.NOTIFICATION.UPSELL_OFFER', mName=Data offers, mDescription=, mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='com.google.android.gms.mobiledataplan.NOTIFICATION', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='com.google.android.gms.mobiledataplan.NOTIFICATION.PURCHASE', mName=Purchases, mDescription=, mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='com.google.android.gms.mobiledataplan.NOTIFICATION', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='tapandpay.promotions', mName=Promotional notifications, mDescription=hasDescription , mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=false, mDeleted=true, mDeletedTimeMs=1791094560269, mGroup='tapandpay', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='nearby_sharing_privacy', mName=Privacy Reminder, mDescription=hasDescription , mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=null, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='NEARBY_SHARING_CHANNEL_GROUP_ID', mAudioAttributes=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='dck.alerts', mName=Important updates, mDescription=hasDescription , mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=true, mShowBadge=false, mDeleted=false, mDeletedTimeMs=-1, mGroup='dck', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='wallet.transit', mName=Transit, mDescription=hasDescription , mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=true, mShowBadge=false, mDeleted=true, mDeletedTimeMs=1791094560269, mGroup='wallet', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='com.google.android.gms.mobiledataplan.NOTIFICATION.PAY_AS_YOU_GO', mName=Pay as you go alerts, mDescription=, mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='com.google.android.gms.mobiledataplan.NOTIFICATION', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='wallet.passes', mName=Passes, mDescription=hasDescription , mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=true, mShowBadge=false, mDeleted=true, mDeletedTimeMs=1791094560269, mGroup='wallet', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannelGroup{mId='mt-notification-channel-group-id', mName=Instant Tethering, mDescription=, mBlocked=false, mChannels=[], mUserLockedFields=0}
+        NotificationChannelGroup{mId='DEVICES_CHANNEL_GROUP_ID', mName=Devices, mDescription=, mBlocked=false, mChannels=[], mUserLockedFields=0}
+        NotificationChannelGroup{mId='com.google.android.gms.backup.g1.notification.group.id', mName=Back up and restore, mDescription=, mBlocked=false, mChannels=[], mUserLockedFields=0}
+        NotificationChannelGroup{mId='com.google.android.gms.mobiledataplan.NOTIFICATION', mName=Device Plans, mDescription=, mBlocked=false, mChannels=[], mUserLockedFields=0}
+        NotificationChannelGroup{mId='NEARBY_CHANNEL_GROUP_ID', mName=Nearby, mDescription=, mBlocked=false, mChannels=[], mUserLockedFields=0}
+        NotificationChannelGroup{mId='com.google.android.gms.multidevice.NOTIFICATION_GROUP_ID', mName=Cross-device services, mDescription=, mBlocked=false, mChannels=[], mUserLockedFields=0}
+        NotificationChannelGroup{mId='gms.gpay_wallet', mName=Google Pay & Wallet, mDescription=, mBlocked=false, mChannels=[], mUserLockedFields=0}
+        NotificationChannelGroup{mId='NEARBY_SHARING_CHANNEL_GROUP_ID', mName=Quick Share, mDescription=, mBlocked=false, mChannels=[], mUserLockedFields=0}
+        NotificationChannelGroup{mId='dck', mName=Digital Car Key, mDescription=, mBlocked=false, mChannels=[], mUserLockedFields=0}
+        NotificationChannelGroup{mId='Personal_Safety_Id', mName=Personal Safety, mDescription=, mBlocked=false, mChannels=[], mUserLockedFields=0}
+      AppSettings: com.google.android.health.connect.backuprestore (10195)
+      AppSettings: com.android.systemui.accessibility.accessibilitymenu (10182)
+      AppSettings: com.android.internal.emulation.pixel_4 (10019)
+      AppSettings: com.android.DeviceAsWebcam (1000) fixedImportance=true
+      AppSettings: com.android.internal.display.cutout.emulation.tall (10010)
+      AppSettings: com.google.android.bluetooth (1002) importance=DEFAULT userSet=false fixedImportance=true
+        NotificationChannel{mId='opp_notification_channel', mName=Bluetooth Share, mDescription=, mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+      AppSettings: com.android.camera2 (10147) importance=NONE userSet=false
+      AppSettings: com.android.internal.emulation.pixel_9 (10031)
+      AppSettings: com.android.providers.telephony.auto_generated_rro_product__ (10080)
+      AppSettings: com.google.android.networkstack.tethering (1073) importance=DEFAULT userSet=false fixedImportance=true
+        NotificationChannel{mId='TETHERING_STATUS', mName=Hotspot & tethering status, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+      AppSettings: com.google.android.uwb.resources (10193)
+      AppSettings: com.google.android.webview (10162) importance=NONE userSet=false
+      AppSettings: com.android.musicfx (10104)
+      AppSettings: com.google.android.odad (10134) importance=DEFAULT userSet=false
+      AppSettings: com.google.android.feedback (10173)
+      AppSettings: com.google.android.contacts (10149) importance=NONE userSet=false
+      AppSettings: com.google.android.apps.nexuslauncher (10176) importance=DEFAULT userSet=false
+      AppSettings: com.android.internal.emulation.pixel_7_pro (10022)
+      AppSettings: com.android.simappdialog.auto_generated_rro_product__ (10051)
+      AppSettings: com.android.systemui.emulation.pixel_7a (10063)
+      AppSettings: com.android.role.notes.enabled (10052)
+      AppSettings: com.android.externalstorage (10098)
+      AppSettings: com.google.android.documentsui (10099) importance=DEFAULT userSet=false
+      AppSettings: com.android.imsserviceentitlement (10132)
+      AppSettings: com.android.cts.priv.ctsshim (10185) importance=NONE userSet=false
+      AppSettings: com.android.providers.blockednumber (10091)
+      AppSettings: com.android.soundpicker (10097) fixedImportance=true
+      AppSettings: com.google.android.permissioncontroller (10197) importance=DEFAULT userSet=false fixedImportance=true
+      AppSettings: com.android.carrierconfig.auto_generated_rro_vendor__ (10086)
+      AppSettings: com.google.android.ondevicepersonalization.services (10199)
+      AppSettings: com.google.android.apps.wellbeing (10143) importance=DEFAULT userSet=false
+        NotificationChannel{mId='app_limit_updates', mName=Updates, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+      AppSettings: com.android.systemui.emulation.pixel_6_pro (10062)
+      AppSettings: com.google.android.tag (10108)
+      AppSettings: com.android.keychain (1000) fixedImportance=true
+      AppSettings: com.android.inputdevices (1000) fixedImportance=true
+      AppSettings: com.google.android.as (10136) importance=DEFAULT userSet=false
+        NotificationChannel{mId='com.google.intelligence.sense.ambientmusic.MusicNotificationChannel', mName=Recognized Music Notifications, mDescription=, mImportance=1, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=1, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+      AppSettings: com.android.se (1068)
+      AppSettings: com.android.bips.auto_generated_rro_product__ (10000)
+      AppSettings: com.android.storagemanager.auto_generated_rro_product__ (10049)
+      AppSettings: com.android.systemui.emulation.pixel_6 (10061)
+      AppSettings: com.android.internal.emulation.pixel_5 (10018)
+      AppSettings: com.google.android.overlay.permissioncontroller (10038)
+      AppSettings: com.google.android.apps.safetyhub (10139) importance=DEFAULT userSet=false defaultAppLocked=true
+      AppSettings: com.android.mtp (10097) importance=DEFAULT userSet=false fixedImportance=true
+        NotificationChannel{mId='device_notification_channel', mName=Uncategorized, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+      AppSettings: com.android.internal.display.cutout.emulation.hole (10006)
+      AppSettings: com.android.internal.emulation.pixel_9_pro (10032)
+      AppSettings: com.android.systemui.emulation.pixel_fold (10074)
+      AppSettings: com.android.phone.auto_generated_characteristics_rro (10076)
+      AppSettings: com.android.traceur.auto_generated_rro_product__ (10081)
+      AppSettings: com.google.android.apps.wallpaper.nexus (10154) importance=NONE userSet=false
+      AppSettings: com.google.android.overlay.pixelconfigcommon (10047)
+      AppSettings: com.android.chrome (10146) importance=NONE userSet=false
+      AppSettings: com.android.providers.contactkeys (10091)
+      AppSettings: com.android.bips (10094) importance=DEFAULT userSet=false fixedImportance=true
+      AppSettings: com.android.printspooler (10124) importance=DEFAULT userSet=false fixedImportance=true
+        NotificationChannel{mId='PRINT_PROGRESS', mName=Running print jobs, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='PRINT_FAILURES', mName=Failed print jobs, mDescription=, mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+      AppSettings: com.android.internal.emulation.pixel_9_pro_xl (10034)
+      AppSettings: com.google.android.wifi.resources (10204)
+      AppSettings: com.android.sharedstoragebackup (10106)
+      AppSettings: com.android.systemui.emulation.pixel_3a_xl (10059)
+      AppSettings: com.google.android.connectivity.resources.goldfish.overlay (10090)
+      AppSettings: com.android.carrierdefaultapp (10116) importance=DEFAULT userSet=false fixedImportance=true
+      AppSettings: com.android.traceur (10127) importance=DEFAULT userSet=false fixedImportance=true
+        NotificationChannel{mId='trace-is-being-recorded', mName=Trace is being recorded, mDescription=, mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=null, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=true, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=null, mBlockableSystem=true, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='system-tracing', mName=Saving trace, mDescription=, mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=null, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=true, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=null, mBlockableSystem=true, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+      AppSettings: com.google.android.federatedcompute (10200)
+      AppSettings: com.google.android.deskclock (10163) importance=DEFAULT userSet=false
+      AppSettings: com.android.providers.settings (1000) importance=DEFAULT userSet=false fixedImportance=true
+      AppSettings: com.android.systemui.auto_generated_rro_vendor__ (10088)
+      AppSettings: com.google.android.calendar (10150) importance=DEFAULT userSet=false
+      AppSettings: com.android.internal.emulation.pixel_3a (10012)
+      AppSettings: com.google.android.networkstack.tethering.emulator (10035)
+      AppSettings: com.android.internal.emulation.pixel_4_xl (10017)
+      AppSettings: com.google.android.devicelockcontroller (10188) importance=NONE userSet=false
+      AppSettings: com.android.systemui.emulation.pixel_8_pro (10068)
+      AppSettings: com.google.android.as.oss (10129)
+      AppSettings: com.android.providers.media (10097) fixedImportance=true
+      AppSettings: com.android.internal.emulation.pixel_8a (10029)
+      AppSettings: com.android.stk (1001) importance=DEFAULT userSet=false fixedImportance=true
+      AppSettings: com.google.android.apps.maps (10156) importance=NONE userSet=false
+      AppSettings: com.android.location.fused (1000) fixedImportance=true
+      AppSettings: com.google.android.tts (10148)
+      AppSettings: com.google.android.telephony.satellite (10169)
+      AppSettings: com.google.android.projection.gearhead (10130) importance=DEFAULT userSet=false
+      AppSettings: com.android.internal.emulation.pixel_3_xl (10014)
+      AppSettings: com.android.providers.downloads.ui (10097) fixedImportance=true
+      AppSettings: com.android.systemui (10181) importance=DEFAULT userSet=false fixedImportance=true
+        NotificationChannel{mId='ALR', mName=Alerts, mDescription=, mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='BAT', mName=Battery, mDescription=, mImportance=5, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=file:///product/media/audio/ui/LowBattery.ogg, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION_EVENT content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=true, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=5, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='DSK', mName=Storage, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='HNT', mName=Hints, mDescription=, mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='INS', mName=Instant Apps, mDescription=, mImportance=1, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=1, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='STP', mName=Setup, mDescription=, mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=null, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='SCN_HEADSUP', mName=Screenshots, mDescription=, mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=null, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_UNKNOWN flags=0x800 tags= bundle=null, mBlockableSystem=true, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+      AppSettings: com.google.android.gm (10168) importance=NONE userSet=false
+      AppSettings: com.android.nfc (1027) importance=DEFAULT userSet=false fixedImportance=true
+      AppSettings: com.google.android.youtube (10165) importance=NONE userSet=false
+      AppSettings: com.google.android.googlesdksetup (10172)
+      AppSettings: com.android.devicediagnostics (10102)
+      AppSettings: ws.xsoh.etar (10209) importance=DEFAULT userSet=false
+        NotificationChannel{mId='calendar1', mName=Descanso-prueba, mDescription=, mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=true, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='alert_channel_group_01', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='foreground_channel_01', mName=Background tasks, mDescription=hasDescription , mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=true, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannelGroup{mId='alert_channel_group_01', mName=Calendars, mDescription=, mBlocked=false, mChannels=[], mUserLockedFields=0}
+      AppSettings: com.google.android.avatarpicker (10174)
+      AppSettings: com.android.systemui.emulation.pixel_7 (10064)
+      AppSettings: com.android.internal.systemui.navbar.twobutton (10043)
+      AppSettings: com.android.internal.emulation.pixel_9_pro_fold (10030)
+      AppSettings: com.android.carrierconfig (10171)
+      AppSettings: android.auto_generated_rro_product__ (10084)
+      AppSettings: com.google.android.apps.photos (10166) importance=NONE userSet=false
+      AppSettings: com.android.settings (1000) importance=DEFAULT userSet=false fixedImportance=true
+      AppSettings: com.android.companiondevicemanager.auto_generated_characteristics_rro (10003)
+      AppSettings: com.android.internal.emulation.pixel_2_xl (10013)
+      AppSettings: com.android.internal.emulation.pixel_6 (10024)
+      AppSettings: com.android.systemui.emulation.pixel_9_pro_fold (10072)
+      AppSettings: com.android.backupconfirm (10093)
+      AppSettings: com.android.server.telecom.auto_generated_rro_product__ (10078)
+      AppSettings: com.google.android.connectivity.resources (10184)
+      AppSettings: com.android.egg (10119) importance=DEFAULT userSet=false fixedImportance=true
+      AppSettings: com.android.systemui.emulation.pixel_3a (10055)
+      AppSettings: com.android.cts.ctsshim (10186) importance=NONE userSet=false
+      AppSettings: com.android.phone.auto_generated_rro_product__ (10077)
+      AppSettings: com.google.android.ext.shared (10117)
+      AppSettings: com.android.dreams.basic (10112)
+      AppSettings: com.google.android.overlay.googlewebview (10039)
+      AppSettings: com.android.phone (1001) importance=DEFAULT userSet=false fixedImportance=true
+        NotificationChannel{mId='voiceMail', mName=Voicemail messages, mDescription=, mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_UNKNOWN flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='mobileDataAlertNew', mName=Mobile data status, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=true, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='sim', mName=SIM status, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=null, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='sms', mName=SMS messages, mDescription=, mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='wfc', mName=Wi-Fi calling, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='alert', mName=Alerts, mDescription=, mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_UNKNOWN flags=0x800 tags= bundle=null, mBlockableSystem=true, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='simHighPriority', mName=High priority SIM status, mDescription=, mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='callForwardNew', mName=Call forwarding, mDescription=, mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+      AppSettings: com.android.internal.display.cutout.emulation.waterfall (10016)
+      AppSettings: com.google.android.overlay.largescreenconfig (10040)
+      AppSettings: com.android.bookmarkprovider (10111)
+      AppSettings: com.android.systemui.emulation.pixel_8a (10069)
+      AppSettings: com.android.managedprovisioning (10107) importance=DEFAULT userSet=false fixedImportance=true
+      AppSettings: com.android.vending (10141) importance=DEFAULT userSet=false
+        NotificationChannel{mId='your-community', mName=Your gaming community, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='alerts', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='security-and-errors', mName=Security and errors, mDescription=, mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='essentials', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='account', mName=Account, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='alerts', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='leagues-updates', mName=Leagues updates, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='alerts', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='community-posts', mName=Community posts, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='alerts', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='wishlist', mName=Wishlist, mDescription=, mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='alerts', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='follow-genres', mName=Genres you follow, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='alerts', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='updates-completed', mName=Updates completed, mDescription=, mImportance=0, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='alerts', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=0, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='open-app-reminders', mName=Open app reminders, mDescription=, mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='alerts', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='required', mName=Required, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='essentials', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='updates-available', mName=Updates available, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='alerts', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='play-protect', mName=Play Protect, mDescription=, mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='essentials', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='setup', mName=Setup, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='essentials', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='gaming-streaks-restore', mName=Gaming streak restore, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='alerts', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='maintenance-v2', mName=Maintenance, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=true, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='essentials', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=1, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='payments-deals-and-recommendations', mName=Payments, Deals, and Recommendations, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='alerts', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='auto-open', mName=App auto open, mDescription=, mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='alerts', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannelGroup{mId='alerts', mName=Alerts, mDescription=, mBlocked=false, mChannels=[], mUserLockedFields=0}
+        NotificationChannelGroup{mId='essentials', mName=Essentials, mDescription=, mBlocked=false, mChannels=[], mUserLockedFields=0}
+      AppSettings: com.google.android.gms.supervision (10133) importance=NONE userSet=false
+      AppSettings: com.android.internal.emulation.pixel_6_pro (10025)
+      AppSettings: com.android.virtualmachine.res (10207)
+      AppSettings: com.android.providers.settings.auto_generated_rro_product__ (10050)
+      AppSettings: com.google.android.soundpicker (10160)
+      AppSettings: com.android.cameraextensions (10110)
+      AppSettings: com.android.providers.downloads (10097) importance=DEFAULT userSet=false fixedImportance=true
+        NotificationChannel{mId='active', mName=In progress, mDescription=, mImportance=1, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=true, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=1, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='complete', mName=Done, mDescription=, mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=true, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+        NotificationChannel{mId='waiting', mName=Queued, mDescription=, mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibrationPattern=null, mVibrationEffect=null, mUserLockedFields=0, mUserVisibleTaskShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=true, mAllowBubbles=-1, mImportanceLockedDefaultApp=true, mOriginalImp=3, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false, mLastNotificationUpdateTimeMs=0}
+      AppSettings: com.android.internal.emulation.pixel_6a (10020)
+Restored without uid:
+
+  Notification listeners:
+    Allowed notification listeners:
+      com.google.android.as/com.google.android.apps.miphone.aiai.common.notification.service.AiAiNotificationListenerService:com.google.android.apps.nexuslauncher/com.android.launcher3.notification.NotificationListener (user: 0 isPrimary: true)
+    Has user set:
+      userId=0 value={com.google.android.as/com.google.android.apps.miphone.aiai.common.notification.service.AiAiNotificationListenerService, com.google.android.apps.nexuslauncher/com.android.launcher3.notification.NotificationListener}
+    All notification listeners (2) enabled for current profiles:
+      ComponentInfo{com.google.android.apps.nexuslauncher/com.android.launcher3.notification.NotificationListener}
+      ComponentInfo{com.google.android.as/com.google.android.apps.miphone.aiai.common.notification.service.AiAiNotificationListenerService}
+    Live notification listeners (9):
+      ComponentInfo{android/com.android.server.biometrics.BiometricNotificationLogger} (user -1): android.service.notification.NotificationListenerService$NotificationListenerWrapper@4abe171 SYSTEM
+      ComponentInfo{android/com.android.server.am.AppFGSTracker$NotificationListener} (user -1): android.service.notification.NotificationListenerService$NotificationListenerWrapper@a459b56 SYSTEM
+      ComponentInfo{com.android.server.telecom.voip/com.android.server.telecom.voip.VoipCallMonitor} (user 0): android.service.notification.NotificationListenerService$NotificationListenerWrapper@f7b87d7 SYSTEM
+      ComponentInfo{com.android.systemui/com.android.systemui.statusbar.NotificationListener} (user -1): android.service.notification.INotificationListener$Stub$Proxy@85d9374 SYSTEM
+      ComponentInfo{android/com.android.server.SensitiveContentProtectionManagerService$NotificationListener} (user -1): android.service.notification.NotificationListenerService$NotificationListenerWrapper@27d509d SYSTEM
+      ComponentInfo{com.google.android.as/com.google.android.apps.miphone.aiai.common.notification.service.AiAiNotificationAssistantService} (user 0): android.service.notification.INotificationListener$Stub$Proxy@583b3f1 GUEST
+      ComponentInfo{com.google.android.apps.nexuslauncher/com.android.launcher3.notification.NotificationListener} (user 0): android.service.notification.INotificationListener$Stub$Proxy@82bcb60
+      ComponentInfo{com.google.android.as/com.google.android.apps.miphone.aiai.common.notification.service.AiAiNotificationListenerService} (user 0): android.service.notification.INotificationListener$Stub$Proxy@edd0819
+      ComponentInfo{android/com.android.server.people.data.DataManager} (user 0): android.service.notification.NotificationListenerService$NotificationListenerWrapper@d34611d SYSTEM
+    Snoozed notification listeners (0):
+    mListenerHints: 0
+    mListenersDisablingEffects: ()
+
+  Notification assistant services:
+    Allowed notification assistants:
+      com.google.android.as/com.google.android.apps.miphone.aiai.common.notification.service.AiAiNotificationAssistantService (user: 0 isPrimary: true isUserChanged: false)
+    Has user set:
+    All notification assistants (1) enabled for current profiles:
+      ComponentInfo{com.google.android.as/com.google.android.apps.miphone.aiai.common.notification.service.AiAiNotificationAssistantService}
+    Live notification assistants (1):
+      ComponentInfo{com.google.android.as/com.google.android.apps.miphone.aiai.common.notification.service.AiAiNotificationAssistantService} (user 0): android.service.notification.INotificationListener$Stub$Proxy@583b3f1
+    Snoozed notification assistants (0):
+
+  Zen Mode:
+    mInterruptionFilter=1
+    mZenMode=ZEN_MODE_OFF
+    mConsolidatedPolicy=NotificationManager.Policy[priorityCategories=PRIORITY_CATEGORY_ALARMS,PRIORITY_CATEGORY_MEDIA,PRIORITY_CATEGORY_MESSAGES,PRIORITY_CATEGORY_CALLS,PRIORITY_CATEGORY_REPEAT_CALLERS,PRIORITY_CATEGORY_CONVERSATIONS,priorityCallSenders=PRIORITY_SENDERS_STARRED,priorityMessageSenders=PRIORITY_SENDERS_STARRED,priorityConvSenders=important,suppressedVisualEffects=SUPPRESSED_EFFECT_SCREEN_OFF,SUPPRESSED_EFFECT_SCREEN_ON,SUPPRESSED_EFFECT_FULL_SCREEN_INTENT,SUPPRESSED_EFFECT_LIGHTS,SUPPRESSED_EFFECT_PEEK,SUPPRESSED_EFFECT_AMBIENT,hasPriorityChannels=true,allowPriorityChannels=true]
+    mConfigs[u=0]=ZenModeConfig[user=0,allowAlarms=true,allowMedia=true,allowSystem=false,allowReminders=false,allowEvents=false,allowCalls=true,allowRepeatCallers=true,allowMessages=true,allowConversations=true,allowCallsFrom=stars,allowMessagesFrom=stars,allowConvFrom=important
+suppressedVisualEffects=157
+hasPriorityChannels=true,allowPriorityChannels=true,
+automaticRules={
+ZenRule[id=EVENTS_DEFAULT_RULE,state=STATE_FALSE,enabled=FALSE,snoozing=false,name=Event,zenMode=ZEN_MODE_IMPORTANT_INTERRUPTIONS,conditionId=condition://android/event?userId=-10000&calendar=&reply=1,pkg=android,component=ComponentInfo{android/com.android.server.notification.EventConditionProvider},configActivity=null,creationTime=0,enabler=null,zenPolicy=ZenPolicy{priorityCategories=[reminders=disallow events=disallow messages=allow calls=allow repeatCallers=allow alarms=allow media=allow system=disallow convs=allow ], visualEffects=[fullScreenIntent=disallow lights=disallow peek=disallow statusBar=allow badge=allow ambient=disallow notificationList=allow ], priorityCallsSenders=starred_contacts, priorityMessagesSenders=starred_contacts, priorityConversationSenders=important, allowChannels=priority},modified=false,condition=Condition[state=STATE_FALSE,id=condition://android/event?userId=-10000&calendar=&reply=1,summary=...,line1=...,line2=...,icon=0,source=SOURCE_UNKNOWN,flags=2],deviceEffects=null,allowManualInvocation=false,iconResName=null,triggerDescription=null,type=-1],
+ZenRule[id=EVERY_NIGHT_DEFAULT_RULE,state=STATE_TRUE,enabled=FALSE,snoozing=false,name=Sleeping,zenMode=ZEN_MODE_IMPORTANT_INTERRUPTIONS,conditionId=condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=true,pkg=android,component=ComponentInfo{android/com.android.server.notification.ScheduleConditionProvider},configActivity=null,creationTime=0,enabler=null,zenPolicy=ZenPolicy{priorityCategories=[reminders=disallow events=disallow messages=allow calls=allow repeatCallers=allow alarms=allow media=allow system=disallow convs=allow ], visualEffects=[fullScreenIntent=disallow lights=disallow peek=disallow statusBar=allow badge=allow ambient=disallow notificationList=allow ], priorityCallsSenders=starred_contacts, priorityMessagesSenders=starred_contacts, priorityConversationSenders=important, allowChannels=priority},modified=false,condition=Condition[state=STATE_TRUE,id=condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=true,summary=...,line1=...,line2=...,icon=0,source=SOURCE_UNKNOWN,flags=2],deviceEffects=null,allowManualInvocation=false,iconResName=null,triggerDescription=null,type=-1]},
+manualRule=null,
+deletedRules={}]
+    mUser=0
+    mConfig=ZenModeConfig[user=0,allowAlarms=true,allowMedia=true,allowSystem=false,allowReminders=false,allowEvents=false,allowCalls=true,allowRepeatCallers=true,allowMessages=true,allowConversations=true,allowCallsFrom=stars,allowMessagesFrom=stars,allowConvFrom=important
+suppressedVisualEffects=157
+hasPriorityChannels=true,allowPriorityChannels=true,
+automaticRules={
+ZenRule[id=EVENTS_DEFAULT_RULE,state=STATE_FALSE,enabled=FALSE,snoozing=false,name=Event,zenMode=ZEN_MODE_IMPORTANT_INTERRUPTIONS,conditionId=condition://android/event?userId=-10000&calendar=&reply=1,pkg=android,component=ComponentInfo{android/com.android.server.notification.EventConditionProvider},configActivity=null,creationTime=0,enabler=null,zenPolicy=ZenPolicy{priorityCategories=[reminders=disallow events=disallow messages=allow calls=allow repeatCallers=allow alarms=allow media=allow system=disallow convs=allow ], visualEffects=[fullScreenIntent=disallow lights=disallow peek=disallow statusBar=allow badge=allow ambient=disallow notificationList=allow ], priorityCallsSenders=starred_contacts, priorityMessagesSenders=starred_contacts, priorityConversationSenders=important, allowChannels=priority},modified=false,condition=Condition[state=STATE_FALSE,id=condition://android/event?userId=-10000&calendar=&reply=1,summary=...,line1=...,line2=...,icon=0,source=SOURCE_UNKNOWN,flags=2],deviceEffects=null,allowManualInvocation=false,iconResName=null,triggerDescription=null,type=-1],
+ZenRule[id=EVERY_NIGHT_DEFAULT_RULE,state=STATE_TRUE,enabled=FALSE,snoozing=false,name=Sleeping,zenMode=ZEN_MODE_IMPORTANT_INTERRUPTIONS,conditionId=condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=true,pkg=android,component=ComponentInfo{android/com.android.server.notification.ScheduleConditionProvider},configActivity=null,creationTime=0,enabler=null,zenPolicy=ZenPolicy{priorityCategories=[reminders=disallow events=disallow messages=allow calls=allow repeatCallers=allow alarms=allow media=allow system=disallow convs=allow ], visualEffects=[fullScreenIntent=disallow lights=disallow peek=disallow statusBar=allow badge=allow ambient=disallow notificationList=allow ], priorityCallsSenders=starred_contacts, priorityMessagesSenders=starred_contacts, priorityConversationSenders=important, allowChannels=priority},modified=false,condition=Condition[state=STATE_TRUE,id=condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=true,summary=...,line1=...,line2=...,icon=0,source=SOURCE_UNKNOWN,flags=2],deviceEffects=null,allowManualInvocation=false,iconResName=null,triggerDescription=null,type=-1]},
+manualRule=null,
+deletedRules={}]
+    mSuppressedEffects=0
+    mDefaultPhoneApp=ComponentInfo{com.google.android.dialer/com.google.android.dialer.extensions.GoogleDialtactsActivity}
+    RepeatCallers.mThresholdMinutes=0
+    mSubscriptions={condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=true=ComponentInfo{android/com.android.server.notification.ScheduleConditionProvider}, condition://android/event?userId=-10000&calendar=&reply=1=ComponentInfo{android/com.android.server.notification.EventConditionProvider}}
+
+  Zen Log:
+    Interception Events:
+    State Changes:
+    2026-10-04T02:13:17.451374 - set_zen_mode: off,init
+    2026-10-04T02:13:17.451429 - set_zen_mode: off,updated setting
+    2026-10-04T02:13:21.298645 - config: zmc.onServiceAdded:ComponentInfo{com.google.android.apps.wellbeing/com.google.android.apps.wellbeing.azr.impl.AzrConditionProviderService} no changes
+    2026-10-04T02:13:21.298860 - set_zen_mode: off,zmc.onServiceAdded:ComponentInfo{com.google.android.apps.wellbeing/com.google.android.apps.wellbeing.azr.impl.AzrConditionProviderService}
+    2026-10-04T02:13:21.298881 - set_zen_mode: off,updated setting
+    2026-10-04T02:13:21.299091 - subscribe: condition://android/event?userId=-10000&calendar=&reply=1,ok
+    2026-10-04T02:13:21.299298 - subscribe: condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=true,ok
+    2026-10-04T02:13:21.327677 - config: conditionChanged - ComponentInfo{android/com.android.server.notification.ScheduleConditionProvider} : 1000,
+ZenModeConfig[user=0,allowAlarms=true,allowMedia=true,allowSystem=false,allowReminders=false,allowEvents=false,allowCalls=true,allowRepeatCallers=true,allowMessages=true,allowConversations=true,allowCallsFrom=stars,allowMessagesFrom=stars,allowConvFrom=important
+suppressedVisualEffects=157
+hasPriorityChannels=false,allowPriorityChannels=true,
+automaticRules={
+ZenRule[id=EVENTS_DEFAULT_RULE,state=STATE_FALSE,enabled=FALSE,snoozing=false,name=Event,zenMode=ZEN_MODE_IMPORTANT_INTERRUPTIONS,conditionId=condition://android/event?userId=-10000&calendar=&reply=1,pkg=android,component=ComponentInfo{android/com.android.server.notification.EventConditionProvider},configActivity=null,creationTime=0,enabler=null,zenPolicy=ZenPolicy{priorityCategories=[reminders=disallow events=disallow messages=allow calls=allow repeatCallers=allow alarms=allow media=allow system=disallow convs=allow ], visualEffects=[fullScreenIntent=disallow lights=disallow peek=disallow statusBar=allow badge=allow ambient=disallow notificationList=allow ], priorityCallsSenders=starred_contacts, priorityMessagesSenders=starred_contacts, priorityConversationSenders=important, allowChannels=priority},modified=false,condition=null,deviceEffects=null,allowManualInvocation=false,iconResName=null,triggerDescription=null,type=-1],
+ZenRule[id=EVERY_NIGHT_DEFAULT_RULE,state=STATE_TRUE,enabled=FALSE,snoozing=false,name=Sleeping,zenMode=ZEN_MODE_IMPORTANT_INTERRUPTIONS,conditionId=condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=true,pkg=android,component=ComponentInfo{android/com.android.server.notification.ScheduleConditionProvider},configActivity=null,creationTime=0,enabler=null,zenPolicy=ZenPolicy{priorityCategories=[reminders=disallow events=disallow messages=allow calls=allow repeatCallers=allow alarms=allow media=allow system=disallow convs=allow ], visualEffects=[fullScreenIntent=disallow lights=disallow peek=disallow statusBar=allow badge=allow ambient=disallow notificationList=allow ], priorityCallsSenders=starred_contacts, priorityMessagesSenders=starred_contacts, priorityConversationSenders=important, allowChannels=priority},modified=false,condition=Condition[state=STATE_TRUE,id=condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=true,summary=...,line1=...,line2=...,icon=0,source=SOURCE_UNKNOWN,flags=2],deviceEffects=null,allowManualInvocation=false,iconResName=null,triggerDescription=null,type=-1]},
+manualRule=null,
+deletedRules={}],
+Diff[automaticRule[EVERY_NIGHT_DEFAULT_RULE]:ZenRuleDiff{condition:null->Condition[state=STATE_TRUE,id=condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=true,summary=...,line1=...,line2=...,icon=0,source=SOURCE_UNKNOWN,flags=2]}]
+    2026-10-04T02:13:21.328295 - set_zen_mode: off,conditionChanged
+    2026-10-04T02:13:21.328496 - set_zen_mode: off,updated setting
+    2026-10-04T02:13:21.353028 - config: conditionChanged - ComponentInfo{android/com.android.server.notification.EventConditionProvider} : 1000,
+ZenModeConfig[user=0,allowAlarms=true,allowMedia=true,allowSystem=false,allowReminders=false,allowEvents=false,allowCalls=true,allowRepeatCallers=true,allowMessages=true,allowConversations=true,allowCallsFrom=stars,allowMessagesFrom=stars,allowConvFrom=important
+suppressedVisualEffects=157
+hasPriorityChannels=false,allowPriorityChannels=true,
+automaticRules={
+ZenRule[id=EVENTS_DEFAULT_RULE,state=STATE_FALSE,enabled=FALSE,snoozing=false,name=Event,zenMode=ZEN_MODE_IMPORTANT_INTERRUPTIONS,conditionId=condition://android/event?userId=-10000&calendar=&reply=1,pkg=android,component=ComponentInfo{android/com.android.server.notification.EventConditionProvider},configActivity=null,creationTime=0,enabler=null,zenPolicy=ZenPolicy{priorityCategories=[reminders=disallow events=disallow messages=allow calls=allow repeatCallers=allow alarms=allow media=allow system=disallow convs=allow ], visualEffects=[fullScreenIntent=disallow lights=disallow peek=disallow statusBar=allow badge=allow ambient=disallow notificationList=allow ], priorityCallsSenders=starred_contacts, priorityMessagesSenders=starred_contacts, priorityConversationSenders=important, allowChannels=priority},modified=false,condition=Condition[state=STATE_FALSE,id=condition://android/event?userId=-10000&calendar=&reply=1,summary=...,line1=...,line2=...,icon=0,source=SOURCE_UNKNOWN,flags=2],deviceEffects=null,allowManualInvocation=false,iconResName=null,triggerDescription=null,type=-1],
+ZenRule[id=EVERY_NIGHT_DEFAULT_RULE,state=STATE_TRUE,enabled=FALSE,snoozing=false,name=Sleeping,zenMode=ZEN_MODE_IMPORTANT_INTERRUPTIONS,conditionId=condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=true,pkg=android,component=ComponentInfo{android/com.android.server.notification.ScheduleConditionProvider},configActivity=null,creationTime=0,enabler=null,zenPolicy=ZenPolicy{priorityCategories=[reminders=disallow events=disallow messages=allow calls=allow repeatCallers=allow alarms=allow media=allow system=disallow convs=allow ], visualEffects=[fullScreenIntent=disallow lights=disallow peek=disallow statusBar=allow badge=allow ambient=disallow notificationList=allow ], priorityCallsSenders=starred_contacts, priorityMessagesSenders=starred_contacts, priorityConversationSenders=important, allowChannels=priority},modified=false,condition=Condition[state=STATE_TRUE,id=condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=true,summary=...,line1=...,line2=...,icon=0,source=SOURCE_UNKNOWN,flags=2],deviceEffects=null,allowManualInvocation=false,iconResName=null,triggerDescription=null,type=-1]},
+manualRule=null,
+deletedRules={}],
+Diff[automaticRule[EVENTS_DEFAULT_RULE]:ZenRuleDiff{condition:null->Condition[state=STATE_FALSE,id=condition://android/event?userId=-10000&calendar=&reply=1,summary=...,line1=...,line2=...,icon=0,source=SOURCE_UNKNOWN,flags=2]}]
+    2026-10-04T02:13:21.353509 - set_zen_mode: off,conditionChanged
+    2026-10-04T02:13:21.353553 - set_zen_mode: off,updated setting
+    2026-10-04T02:16:02.332892 - config: zmc.onServiceAdded:ComponentInfo{com.google.android.gms/com.google.android.location.settings.DrivingConditionProvider} no changes
+    2026-10-04T02:16:02.337447 - set_zen_mode: off,zmc.onServiceAdded:ComponentInfo{com.google.android.gms/com.google.android.location.settings.DrivingConditionProvider}
+    2026-10-04T02:16:02.337501 - set_zen_mode: off,updated setting
+    2026-10-04T02:17:16.846209 - config: zmc.onServiceAdded:ComponentInfo{com.google.android.gms/com.google.android.location.settings.DrivingConditionProvider} no changes
+    2026-10-04T02:17:16.847043 - set_zen_mode: off,zmc.onServiceAdded:ComponentInfo{com.google.android.gms/com.google.android.location.settings.DrivingConditionProvider}
+    2026-10-04T02:17:16.847085 - set_zen_mode: off,updated setting
+    2026-10-04T02:17:18.991659 - config: zmc.onServiceAdded:ComponentInfo{com.google.android.gms/com.google.android.location.settings.DrivingConditionProvider} no changes
+    2026-10-04T02:17:18.991845 - set_zen_mode: off,zmc.onServiceAdded:ComponentInfo{com.google.android.gms/com.google.android.location.settings.DrivingConditionProvider}
+    2026-10-04T02:17:18.991866 - set_zen_mode: off,updated setting
+    2026-10-04T02:17:19.657703 - config: setNotificationPolicy - null : 10144,
+ZenModeConfig[user=0,allowAlarms=true,allowMedia=true,allowSystem=false,allowReminders=false,allowEvents=false,allowCalls=true,allowRepeatCallers=true,allowMessages=true,allowConversations=true,allowCallsFrom=stars,allowMessagesFrom=stars,allowConvFrom=important
+suppressedVisualEffects=157
+hasPriorityChannels=true,allowPriorityChannels=true,
+automaticRules={
+ZenRule[id=EVENTS_DEFAULT_RULE,state=STATE_FALSE,enabled=FALSE,snoozing=false,name=Event,zenMode=ZEN_MODE_IMPORTANT_INTERRUPTIONS,conditionId=condition://android/event?userId=-10000&calendar=&reply=1,pkg=android,component=ComponentInfo{android/com.android.server.notification.EventConditionProvider},configActivity=null,creationTime=0,enabler=null,zenPolicy=ZenPolicy{priorityCategories=[reminders=disallow events=disallow messages=allow calls=allow repeatCallers=allow alarms=allow media=allow system=disallow convs=allow ], visualEffects=[fullScreenIntent=disallow lights=disallow peek=disallow statusBar=allow badge=allow ambient=disallow notificationList=allow ], priorityCallsSenders=starred_contacts, priorityMessagesSenders=starred_contacts, priorityConversationSenders=important, allowChannels=priority},modified=false,condition=Condition[state=STATE_FALSE,id=condition://android/event?userId=-10000&calendar=&reply=1,summary=...,line1=...,line2=...,icon=0,source=SOURCE_UNKNOWN,flags=2],deviceEffects=null,allowManualInvocation=false,iconResName=null,triggerDescription=null,type=-1],
+ZenRule[id=EVERY_NIGHT_DEFAULT_RULE,state=STATE_TRUE,enabled=FALSE,snoozing=false,name=Sleeping,zenMode=ZEN_MODE_IMPORTANT_INTERRUPTIONS,conditionId=condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=true,pkg=android,component=ComponentInfo{android/com.android.server.notification.ScheduleConditionProvider},configActivity=null,creationTime=0,enabler=null,zenPolicy=ZenPolicy{priorityCategories=[reminders=disallow events=disallow messages=allow calls=allow repeatCallers=allow alarms=allow media=allow system=disallow convs=allow ], visualEffects=[fullScreenIntent=disallow lights=disallow peek=disallow statusBar=allow badge=allow ambient=disallow notificationList=allow ], priorityCallsSenders=starred_contacts, priorityMessagesSenders=starred_contacts, priorityConversationSenders=important, allowChannels=priority},modified=false,condition=Condition[state=STATE_TRUE,id=condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=true,summary=...,line1=...,line2=...,icon=0,source=SOURCE_UNKNOWN,flags=2],deviceEffects=null,allowManualInvocation=false,iconResName=null,triggerDescription=null,type=-1]},
+manualRule=null,
+deletedRules={}],
+Diff[areChannelsBypassingDnd:false->true]
+    2026-10-04T02:17:19.665479 - set_consolidated_policy: NotificationManager.Policy[priorityCategories=PRIORITY_CATEGORY_ALARMS,PRIORITY_CATEGORY_MEDIA,PRIORITY_CATEGORY_MESSAGES,PRIORITY_CATEGORY_CALLS,PRIORITY_CATEGORY_REPEAT_CALLERS,PRIORITY_CATEGORY_CONVERSATIONS,priorityCallSenders=PRIORITY_SENDERS_STARRED,priorityMessageSenders=PRIORITY_SENDERS_STARRED,priorityConvSenders=important,suppressedVisualEffects=SUPPRESSED_EFFECT_SCREEN_OFF,SUPPRESSED_EFFECT_SCREEN_ON,SUPPRESSED_EFFECT_FULL_SCREEN_INTENT,SUPPRESSED_EFFECT_LIGHTS,SUPPRESSED_EFFECT_PEEK,SUPPRESSED_EFFECT_AMBIENT,hasPriorityChannels=true,allowPriorityChannels=true],setNotificationPolicy
+    2026-10-04T02:17:19.665841 - set_zen_mode: off,setNotificationPolicy
+    2026-10-04T02:17:19.665870 - set_zen_mode: off,updated setting
+
+  Condition providers:
+    Allowed condition providers:
+      com.google.android.apps.diagnosticstool:com.google.android.apps.safetyhub:com.google.intelligence.sense:com.google.android.apps.wellbeing:com.google.android.dialer:com.google.android.gms:com.google.android.settings.intelligence:com.google.android.GoogleCamera (user: 0 isPrimary: true)
+      com.google.android.as:com.google.android.apps.nexuslauncher (user: 0 isPrimary: false)
+    Has user set:
+      userId=0 value={com.google.android.apps.diagnosticstool, com.google.android.as/com.google.android.apps.miphone.aiai.common.notification.service.AiAiNotificationAssistantService, com.google.android.as/com.google.android.apps.miphone.aiai.common.notification.service.AiAiNotificationListenerService, com.google.android.apps.safetyhub, com.google.intelligence.sense, com.google.android.apps.nexuslauncher/com.android.launcher3.notification.NotificationListener, com.google.android.apps.wellbeing, com.google.android.dialer, com.google.android.gms, com.google.android.settings.intelligence, com.google.android.GoogleCamera}
+    All condition providers (2) enabled for current profiles:
+      ComponentInfo{com.google.android.apps.wellbeing/com.google.android.apps.wellbeing.azr.impl.AzrConditionProviderService}
+      ComponentInfo{com.google.android.gms/com.google.android.location.settings.DrivingConditionProvider}
+    Live condition providers (3):
+      ComponentInfo{android/com.android.server.notification.CountdownConditionProvider} (user 0): android.service.notification.ConditionProviderService$Provider@c662a99 SYSTEM
+      ComponentInfo{android/com.android.server.notification.ScheduleConditionProvider} (user 0): android.service.notification.ConditionProviderService$Provider@3d0f15e SYSTEM
+      ComponentInfo{android/com.android.server.notification.EventConditionProvider} (user 0): android.service.notification.ConditionProviderService$Provider@635993f SYSTEM
+    Snoozed condition providers (1):
+      User: 0
+        com.google.android.apps.wellbeing/.azr.impl.AzrConditionProviderService
+        com.google.android.gms/com.google.android.location.settings.DrivingConditionProvider
+    mRecords(2):
+      ConditionRecord[id=condition://android/event?userId=-10000&calendar=&reply=1,component=ComponentInfo{android/com.android.server.notification.EventConditionProvider},subscribed=true]
+      ConditionRecord[id=condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=true,component=ComponentInfo{android/com.android.server.notification.ScheduleConditionProvider},subscribed=true]
+    mSystemConditionProviders: {schedule, event, countdown}
+    ScheduleConditionProvider:
+      mConnected=true
+      mRegistered=true
+      mSubscriptions=
+        * condition://android/schedule?days=1.2.3.4.5.6.7&start=22.0&end=7.0&exitAtAlarm=true
+            ScheduleCalendar[mDays={1, 2, 3, 4, 5, 6, 7}, mSchedule=ScheduleInfo{days=[1, 2, 3, 4, 5, 6, 7], startHour=22, startMinute=0, endHour=7, endMinute=0, exitAtAlarm=true, nextAlarm=Wed Dec 31 20:00:00 GMT-04:00 1969 (0)}]
+      snoozed due to alarm: 
+      mNextAlarmTime=Sun Oct 04 07:00:00 GMT-04:00 2026 (1791111600000), in +4h39m17s867ms, now=Sun Oct 04 02:20:42 GMT-04:00 2026 (1791094842133)
+    CountdownConditionProvider:
+      mConnected=true
+      mTime=0
+    EventConditionProvider:
+      mConnected=true
+      mRegistered=true
+      mBootComplete=true
+      mNextAlarmTime=Sun Oct 04 02:30:00 GMT-04:00 2026 (1791095400000), in +9m17s866ms, now=Sun Oct 04 02:20:42 GMT-04:00 2026 (1791094842134)
+      mSubscriptions=
+        condition://android/event?userId=-10000&calendar=&reply=1
+      mTrackers=
+        user=0
+          mCallback=com.android.server.notification.EventConditionProvider$2@f3da20c
+          mRegistered=true
+          u=0
+
+  Group summaries:
+
+  Usage Stats:
+    AggregatedStats{
+      key='com.google.android.apps.wellbeing',
+      numEnqueuedByApp=1,
+      numPostedByApp=0,
+      numUpdatedByApp=0,
+      numRemovedByApp=1,
+      numPeopleCacheHit=0,
+      numWithStaredPeople=0,
+      numWithValidPeople=0,
+      numPeopleCacheMiss=0,
+      numBlocked=0,
+      numSuspendedByAdmin=0,
+      numWithActions=0,
+      numPrivate=0,
+      numSecret=0,
+      numInterrupt=0,
+      numWithBigText=0,
+      numWithBigPicture=0
+      numForegroundService=0
+      numUserInitiatedJob=0
+      numOngoing=0
+      numAutoCancel=0
+      numWithLargeIcon=0
+      numWithInbox=0
+      numWithMediaSession=0
+      numWithTitle=0
+      numWithText=0
+      numWithSubText=0
+      numWithInfoText=0
+      numRateViolations=0
+      numAlertViolations=0
+      numQuotaViolations=0
+      numImagesRemoved=0
+      numTooOld=0
+      note_imp_noisy_: [0, 0, 0, 0, 0, 0]
+      note_imp_quiet_: [0, 0, 0, 0, 0, 0]
+      note_importance_: [0, 0, 0, 0, 0, 0]
+      numUndecorateRVs=0
+    }
+    AggregatedStats{
+      key='android',
+      numEnqueuedByApp=9,
+      numPostedByApp=2,
+      numUpdatedByApp=6,
+      numRemovedByApp=1,
+      numPeopleCacheHit=7,
+      numWithStaredPeople=0,
+      numWithValidPeople=0,
+      numPeopleCacheMiss=0,
+      numBlocked=0,
+      numSuspendedByAdmin=0,
+      numWithActions=0,
+      numPrivate=2,
+      numSecret=0,
+      numInterrupt=0,
+      numWithBigText=0,
+      numWithBigPicture=0
+      numForegroundService=0
+      numUserInitiatedJob=0
+      numOngoing=6
+      numAutoCancel=2
+      numWithLargeIcon=0
+      numWithInbox=0
+      numWithMediaSession=0
+      numWithTitle=8
+      numWithText=2
+      numWithSubText=0
+      numWithInfoText=0
+      numRateViolations=0
+      numAlertViolations=0
+      numQuotaViolations=0
+      numImagesRemoved=0
+      numTooOld=0
+      note_imp_noisy_: [0, 0, 0, 8, 0, 0]
+      note_imp_quiet_: [0, 0, 0, 0, 0, 0]
+      note_importance_: [0, 0, 8, 0, 0, 0]
+      numUndecorateRVs=0
+    }
+    AggregatedStats{
+      key='com.android.vending',
+      numEnqueuedByApp=9,
+      numPostedByApp=2,
+      numUpdatedByApp=6,
+      numRemovedByApp=1,
+      numPeopleCacheHit=12,
+      numWithStaredPeople=0,
+      numWithValidPeople=0,
+      numPeopleCacheMiss=0,
+      numBlocked=1,
+      numSuspendedByAdmin=0,
+      numWithActions=7,
+      numPrivate=1,
+      numSecret=7,
+      numInterrupt=0,
+      numWithBigText=1,
+      numWithBigPicture=0
+      numForegroundService=6
+      numUserInitiatedJob=0
+      numOngoing=7
+      numAutoCancel=1
+      numWithLargeIcon=8
+      numWithInbox=0
+      numWithMediaSession=0
+      numWithTitle=8
+      numWithText=4
+      numWithSubText=7
+      numWithInfoText=0
+      numRateViolations=0
+      numAlertViolations=0
+      numQuotaViolations=0
+      numImagesRemoved=0
+      numTooOld=0
+      note_imp_noisy_: [0, 0, 7, 0, 1, 0]
+      note_imp_quiet_: [0, 0, 0, 0, 0, 0]
+      note_importance_: [0, 0, 8, 0, 0, 0]
+      numUndecorateRVs=0
+    }
+    AggregatedStats{
+      key='ws.xsoh.etar',
+      numEnqueuedByApp=4,
+      numPostedByApp=2,
+      numUpdatedByApp=2,
+      numRemovedByApp=1,
+      numPeopleCacheHit=4,
+      numWithStaredPeople=0,
+      numWithValidPeople=0,
+      numPeopleCacheMiss=0,
+      numBlocked=0,
+      numSuspendedByAdmin=0,
+      numWithActions=1,
+      numPrivate=4,
+      numSecret=0,
+      numInterrupt=1,
+      numWithBigText=1,
+      numWithBigPicture=0
+      numForegroundService=3
+      numUserInitiatedJob=0
+      numOngoing=0
+      numAutoCancel=0
+      numWithLargeIcon=3
+      numWithInbox=0
+      numWithMediaSession=0
+      numWithTitle=4
+      numWithText=1
+      numWithSubText=0
+      numWithInfoText=0
+      numRateViolations=0
+      numAlertViolations=0
+      numQuotaViolations=0
+      numImagesRemoved=0
+      numTooOld=0
+      note_imp_noisy_: [0, 0, 0, 3, 1, 0]
+      note_imp_quiet_: [0, 0, 0, 0, 0, 0]
+      note_importance_: [0, 0, 3, 0, 1, 0]
+      numUndecorateRVs=0
+    }
+    AggregatedStats{
+      key='com.google.android.inputmethod.latin',
+      numEnqueuedByApp=10,
+      numPostedByApp=0,
+      numUpdatedByApp=0,
+      numRemovedByApp=0,
+      numPeopleCacheHit=0,
+      numWithStaredPeople=0,
+      numWithValidPeople=0,
+      numPeopleCacheMiss=0,
+      numBlocked=10,
+      numSuspendedByAdmin=0,
+      numWithActions=0,
+      numPrivate=0,
+      numSecret=0,
+      numInterrupt=0,
+      numWithBigText=0,
+      numWithBigPicture=0
+      numForegroundService=0
+      numUserInitiatedJob=0
+      numOngoing=0
+      numAutoCancel=0
+      numWithLargeIcon=0
+      numWithInbox=0
+      numWithMediaSession=0
+      numWithTitle=0
+      numWithText=0
+      numWithSubText=0
+      numWithInfoText=0
+      numRateViolations=0
+      numAlertViolations=0
+      numQuotaViolations=0
+      numImagesRemoved=0
+      numTooOld=0
+      note_imp_noisy_: [0, 0, 0, 0, 0, 0]
+      note_imp_quiet_: [0, 0, 0, 0, 0, 0]
+      note_importance_: [0, 0, 0, 0, 0, 0]
+      numUndecorateRVs=0
+    }
+    AggregatedStats{
+      key='__global',
+      numEnqueuedByApp=33,
+      numPostedByApp=6,
+      numUpdatedByApp=14,
+      numRemovedByApp=4,
+      numPeopleCacheHit=23,
+      numWithStaredPeople=0,
+      numWithValidPeople=0,
+      numPeopleCacheMiss=0,
+      numBlocked=11,
+      numSuspendedByAdmin=0,
+      numWithActions=8,
+      numPrivate=7,
+      numSecret=7,
+      numInterrupt=1,
+      numWithBigText=2,
+      numWithBigPicture=0
+      numForegroundService=9
+      numUserInitiatedJob=0
+      numOngoing=13
+      numAutoCancel=3
+      numWithLargeIcon=11
+      numWithInbox=0
+      numWithMediaSession=0
+      numWithTitle=20
+      numWithText=7
+      numWithSubText=7
+      numWithInfoText=0
+      numRateViolations=0
+      numAlertViolations=0
+      numQuotaViolations=0
+      numImagesRemoved=0
+      numTooOld=0
+      note_imp_noisy_: [0, 0, 7, 11, 2, 0]
+      note_imp_quiet_: [0, 0, 0, 0, 0, 0]
+      note_importance_: [0, 0, 19, 0, 1, 0]
+      numUndecorateRVs=0
+    }
+    mStatsArrays.size(): 1
+    mStats.size(): 6

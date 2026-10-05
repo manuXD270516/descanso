@@ -1,0 +1,17 @@
+        com.android.providers.calendar
+    RTC_WAKEUP #3: Alarm{55ef359 type 0 origWhen 1791094800000 whenElapsed 438000 com.android.providers.calendar}
+      operation=PendingIntent{768eb1e: PendingIntentRecord{6836fff com.android.providers.calendar broadcastIntent}}
+    RTC_WAKEUP #4: Alarm{5091cc type 0 origWhen 1791094801000 whenElapsed 439000 ws.xsoh.etar}
+      tag=*walarm*:com.android.calendar.EVENT_REMINDER_APP
+      operation=PendingIntent{e826c15: PendingIntentRecord{7b49b2a ws.xsoh.etar broadcastIntent}}
+    RTC #12: Alarm{b6785e8 type 1 origWhen 1791095400000 whenElapsed 1038000 ws.xsoh.etar}
+      tag=*alarm*:com.android.calendar.APPWIDGET_SCHEDULED_UPDATE
+      operation=PendingIntent{f50e401: PendingIntentRecord{4af92a6 ws.xsoh.etar broadcastIntent}}
+    ELAPSED_WAKEUP #27: Alarm{5f33292 type 2 origWhen 21600000 whenElapsed 21600000 com.android.providers.calendar}
+      tag=*walarm*:com.android.providers.calendar.intent.CalendarProvider2
+      operation=PendingIntent{e13463: PendingIntentRecord{56ba860 com.android.providers.calendar broadcastIntent}}
+    com.android.providers.calendar, u0: -10s769ms, -10s773ms, -2m5s804ms, -5m38s569ms, 
+          type=RTC tag=*alarm*:com.android.calendar.APPWIDGET_SCHEDULED_UPDATE 
+    +241ms running, 2 wakeups, 2 alarms: u0a92:com.android.providers.calendar
+  u0a92:com.android.providers.calendar +312ms running, 4 wakeups:
+      *walarm*:com.android.providers.calendar.intent.CalendarProvider2

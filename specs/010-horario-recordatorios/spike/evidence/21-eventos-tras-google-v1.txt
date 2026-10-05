@@ -1,0 +1,4 @@
+2026-10-04T06:24:12.244Z
+filas: 2, no borradas: 2
+Row: 0 _id=1, calendar_id=1, title=Descanso: en 10 min es tu hora de dormir (prueba v1), dtstart=1791095400000, rrule=FREQ=WEEKLY;BYDAY=SU, deleted=0, uid2445=NULL, eventStatus=1, hasAlarm=1
+Row: 1 _id=2, calendar_id=1, title=Descanso: en 10 min es tu hora de dormir (prueba v2), dtstart=1791096300000, rrule=FREQ=WEEKLY;BYDAY=SU, deleted=0, uid2445=NULL, eventStatus=1, hasAlarm=1
