@@ -1,6 +1,6 @@
 # Borrador de enmienda: principio VIII, ampliación (v2.1.0 → v2.2.0)
 
-**Estado**: borrador, **no aplicado**. Se aplica con `/speckit-constitution` antes del plan de 011
+**Estado**: **aplicado** el 2026-10-05 en `.specify/memory/constitution.md` (v2.2.0), antes del plan de 011
 (calendario de enmiendas de `docs/sdd/propuestas/2026-09-29-set-de-features.md`).
 
 **Tipo**: MINOR (se amplía materialmente una guía; no se elimina ni redefine nada).
@@ -38,13 +38,13 @@ constancia en conductas controlables, con feedback informativo y opcional, no lo
 Se añade como primera fila de la tabla:
 
 ```markdown
-| 2.2.0 | AAAA-MM-DD | MINOR | **Principio VIII**, ampliación: la motivación se basa solo en conductas controlables; se prohíben las puntuaciones de resultado, la comparación social, las recompensas canjeables y los avisos de pérdida; los logros no se retiran y saltarse un registro no mejora la constancia; toda gamificación es opcional (desactivada por defecto) y ocultable. Necesaria antes del plan de 011. |
+| 2.2.0 | 2026-10-05 | MINOR | **Principio VIII**, ampliación: la motivación se basa solo en conductas controlables; se prohíben las puntuaciones de resultado, la comparación social, las recompensas canjeables y los avisos de pérdida; los logros no se retiran y saltarse un registro no mejora la constancia; toda gamificación es opcional (desactivada por defecto) y ocultable. Necesaria antes del plan de 011. |
 ```
 
 Y el pie pasa a:
 
 ```markdown
-**Version**: 2.2.0 | **Ratified**: 2026-09-29 | **Last Amended**: AAAA-MM-DD
+**Version**: 2.2.0 | **Ratified**: 2026-09-29 | **Last Amended**: 2026-10-05
 ```
 
 ## Impacto
