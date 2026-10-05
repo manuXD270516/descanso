@@ -63,3 +63,23 @@ describe('ScheduleEditorComponent', () => {
     f.destroy();
   });
 });
+
+describe('ScheduleEditorComponent · cambio de objetivo', () => {
+  beforeEach(() => TestBed.configureTestingModule({}));
+
+  it('si el objetivo cambia después de escribir la hora de levantarse, la propuesta lo sigue (salvo cambio a mano)', () => {
+    const f = TestBed.createComponent(ScheduleEditorComponent);
+    f.componentRef.setInput('goalMin', 420);
+    f.detectChanges();
+    const c = f.componentInstance;
+    c.setWake('week', '07:00');
+    expect(c.week().bed).toBe('23:45');
+    f.componentRef.setInput('goalMin', 450); // p. ej. el atajo "7 h 30" llega un instante después
+    f.detectChanges();
+    expect(c.week().bed).toBe('23:15');
+    c.setBed('week', '22:30');
+    f.componentRef.setInput('goalMin', 540);
+    f.detectChanges();
+    expect(c.week().bed).toBe('22:30', 'lo cambiado a mano se respeta');
+  });
+});
