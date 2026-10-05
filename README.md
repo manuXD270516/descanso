@@ -29,6 +29,16 @@ entras, una bienvenida te lo pregunta. Cada gráfico tiene descripción en frase
   - "Modo pausa" de hasta 14 días, como máximo 2 cada 30 días.
 - **"Anotado después"**: marca un despertar registrado más de 60 min después de ocurrir.
 
+**Racha de constancia** (feature 011, opcional y desactivada por defecto):
+- Cuenta un día si te acuestas y te levantas a tu hora (la agendada + un margen de 30 min, ajustable
+  de 15 a 60; adelantarte no resta), o si registras la noche cuando no tienes horario o estás en pausa.
+  Nunca puntúa horas dormidas ni calidad.
+- Tolera 2 días no cumplidos en cualquier periodo de 7 días no pausados; una noche de hoy o de ayer sin
+  cerrar es "aún no". El récord, el total y las constelaciones (7, 21, 66, 100, 180 y 365 días) se
+  guardan y no bajan nunca.
+- Solo se ve tras "Ya desperté" y en el plegable "Constancia" de Tendencias; nunca en la pantalla de
+  acostarse ni en avisos. Se activa o se ajusta en Cuenta → "Mi horario".
+
 **Ciclos y honestidad de datos** (feature 006, principio VIII):
 - **Calculadora**: bajo "¿Hora de dormir?" se ven 3 ventanas para despertar tras 4, 5 o 6 ciclos
   ("entre 6:30 y 7:00"). Usa tu ciclo (70–110 min) y el tiempo que tardas en dormirte (0–60 min),
@@ -129,6 +139,9 @@ modifican datos deben venir del propio sitio (`Sec-Fetch-Site`/`Origin`); si no,
 | GET · PUT | `/api/schedule?date` · `{today, days[7]}` | Feature 010: horario vigente en una fecha (con aviso y pausa activa) / guardar el horario desde hoy |
 | GET    | `/api/schedule.ics?today`             | Archivo de calendario del horario (hora flotante, UID estable, SEQUENCE, cancelados) |
 | GET · POST | `/api/pauses` · `/api/pauses/:id/end` | Pausas: 14 días como máximo, 2 cada 30 días, sin solapes (409); terminar hoy o cancelar |
+| GET    | `/api/streak?today`                   | Feature 011: racha, semana de estrellas, constelaciones y resumen (sin efectos; desactivada → solo ajustes) |
+| PUT    | `/api/streak/settings`                | `{today, enabled?, margin_min?, offered?, dismiss_summary?}` |
+| POST   | `/api/streak/achievements/:key/seen`  | Marca una constelación como vista (204; 404 si no es tuya) |
 | GET    | `/api/sleep?from&to`                  | Noches (con `duration_min`)                        |
 | GET    | `/api/sleep/open`                     | Noche abierta (me acosté, aún no despierto)        |
 | POST   | `/api/sleep`                          | `{date, bedtime, wake_time?, notes?}` · `date` = día local de `bedtime` · 409 si ya hay una noche abierta y no se envía `wake_time` |

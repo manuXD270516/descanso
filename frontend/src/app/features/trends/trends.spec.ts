@@ -9,6 +9,7 @@ import { GoalEditorComponent } from './goal-editor.component';
 import { DailyBarsComponent } from '../../shared/charts/daily-bars.component';
 import { WelcomeComponent } from '../onboarding/welcome.component';
 import { AuthService } from '../../core/auth.service';
+import { flushStreak } from '../streak/streak.testing';
 
 const day = (date: string, status: DashboardDay['status'], total: number | null, nap: number | null = null): DashboardDay => ({
   date, status, night_min: status === 'data' && total !== null ? total - (nap ?? 0) : null, nap_min: nap, total_min: total,
@@ -34,7 +35,7 @@ describe('Tendencias (feature 005)', () => {
     TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
     http = TestBed.inject(HttpTestingController);
   });
-  afterEach(() => http.verify());
+  afterEach(() => { flushStreak(http); http.verify(); });
 
   function render(d: Dashboard = dashboard()) {
     const fixture = TestBed.createComponent(TrendsComponent);
@@ -109,7 +110,7 @@ describe('Objetivo y ciclos (US4, US5)', () => {
     TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
     http = TestBed.inject(HttpTestingController);
   });
-  afterEach(() => http.verify());
+  afterEach(() => { flushStreak(http); http.verify(); });
 
   it('cyclesFor y fmtGoal: 7 h ≈ 4,7 ciclos; atajos de 6 h, 7 h 30 y 9 h', () => {
     expect(cyclesFor(420)).toEqual({ equivalent: 4.7, shortcuts: [{ cycles: 4, minutes: 360 }, { cycles: 5, minutes: 450 }, { cycles: 6, minutes: 540 }] });
@@ -164,7 +165,7 @@ describe('Feature 006 en Tendencias', () => {
     TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
     http = TestBed.inject(HttpTestingController);
   });
-  afterEach(() => http.verify());
+  afterEach(() => { flushStreak(http); http.verify(); });
 
   function render(watchImport?: boolean) {
     const fixture = TestBed.createComponent(TrendsComponent);

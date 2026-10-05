@@ -6,6 +6,7 @@ import { WATCH_IMPORT_AVAILABLE } from '../../core/features';
 import { DailyBarsComponent } from '../../shared/charts/daily-bars.component';
 import { OriginBadgeComponent } from '../../shared/origin/origin-badge.component';
 import { GoalEditorComponent } from './goal-editor.component';
+import { StreakPanelComponent } from '../streak/streak-panel.component';
 
 type Period = 7 | 30 | 90;
 
@@ -15,7 +16,7 @@ type Period = 7 | 30 | 90;
  */
 @Component({
   selector: 'app-trends',
-  imports: [DailyBarsComponent, GoalEditorComponent, OriginBadgeComponent],
+  imports: [DailyBarsComponent, GoalEditorComponent, OriginBadgeComponent, StreakPanelComponent],
   templateUrl: './trends.component.html',
   styleUrl: './trends.component.css',
 })

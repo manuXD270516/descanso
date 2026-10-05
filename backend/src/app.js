@@ -31,6 +31,7 @@ app.use('/api/people', require('./routes/people'));
 app.use('/api/me', require('./routes/me'));
 app.use('/api/dashboard', require('./routes/dashboard'));
 app.use('/api', require('./routes/schedule')); // feature 010: horario, calendario y pausas
+app.use('/api/streak', require('./routes/streak')); // feature 011: racha de constancia
 
 // Sirve el frontend compilado de Angular si existe (despliegue en un solo servicio)
 const distDir = process.env.FRONTEND_DIST || path.join(__dirname, '..', '..', 'frontend', 'dist', 'frontend', 'browser');

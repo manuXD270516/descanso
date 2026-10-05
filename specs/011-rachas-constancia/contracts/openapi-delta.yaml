@@ -1,0 +1,134 @@
+openapi: 3.1.0
+info:
+  title: Descanso API — cambios de la feature 011
+  version: 1.8.0
+  description: |
+    Racha de constancia, ajustes y logros. Todo con sesión y aislado por usuario (008): lo ajeno → 404.
+    Las fechas "hoy" las envía el cliente (su zona horaria) y el servidor las acepta a ±1 día de UTC (010).
+    Ningún texto de respuesta usa palabras de culpa ni de pérdida (FR-022).
+servers:
+  - url: /api
+
+paths:
+  /streak:
+    get:
+      summary: Estado de la racha en `today`, sin efectos secundarios (FR-010)
+      description: |
+        Con la racha desactivada no calcula nada (FR-018, SC-006) y devuelve solo StreakOff.
+        best y total son los mostrados: nunca menores que los guardados (FR-009).
+      parameters:
+        - { name: today, in: query, required: true, schema: { type: string, format: date } }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: { oneOf: [{ $ref: '#/components/schemas/StreakOff' }, { $ref: '#/components/schemas/StreakOn' }] }
+        '400': { description: 'Fecha inválida' }
+        '401': { description: Sin sesión }
+
+  /streak/settings:
+    put:
+      summary: Activar, desactivar, responder a la oferta, cambiar el margen o descartar el resumen
+      description: |
+        enabled true → streak_since = today, streak_total_base = streak_total y offered.
+        enabled false → solo desactiva (récord, total y logros se conservan).
+        offered true → "Ahora no" (la oferta no vuelve a salir).
+        dismiss_summary true → el resumen de la semana de today no vuelve a salir.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [today]
+              properties:
+                today: { type: string, format: date }
+                enabled: { type: boolean }
+                margin_min: { type: integer, minimum: 15, maximum: 60 }
+                offered: { type: boolean, enum: [true] }
+                dismiss_summary: { type: boolean, enum: [true] }
+      responses:
+        '200': { content: { application/json: { schema: { $ref: '#/components/schemas/StreakOff' } } }, description: Ajustes resultantes }
+        '400': { description: '"El margen debe ser entre 15 y 60 minutos" · "Fecha inválida" · "Ajuste no válido"' }
+
+  /streak/achievements/{key}/seen:
+    post:
+      summary: Marca un logro como visto (la tarjeta no vuelve a salir; FR-015)
+      parameters:
+        - { name: key, in: path, required: true, schema: { type: integer, enum: [7, 21, 66, 100, 180, 365] } }
+      responses:
+        '204': { description: Visto (idempotente) }
+        '404': { description: 'Logro no encontrado (incluye los de otra persona o aún no desbloqueados)' }
+
+  /sleep:
+    post:
+      summary: 'Igual que 010; si la racha está activada y la noche se crea cerrada, aplica el trinquete en la misma transacción (FR-009, FR-013)'
+  /sleep/wake:
+    post:
+      summary: 'Igual que 010; con la racha activada, aplica el trinquete en la misma transacción'
+  /sleep/{id}:
+    put:
+      summary: 'Igual que 010; con la racha activada, aplica el trinquete en la misma transacción'
+    delete:
+      summary: 'Sin cambios: borrar nunca sube la racha, así que no aplica el trinquete'
+  /export.json:
+    get:
+      summary: 'Añade streak: { settings: StreakSettings, achievements: Achievement[] } (FR-026)'
+
+components:
+  schemas:
+    StreakOff:
+      type: object
+      required: [enabled, offered, margin_min, offer]
+      properties:
+        enabled: { type: boolean }
+        offered: { type: boolean, description: La oferta ya se respondió }
+        margin_min: { type: integer }
+        offer: { type: boolean, description: 'Mostrar la oferta: desactivada, sin ofrecer y con 3 o más noches cerradas' }
+    StreakOn:
+      allOf:
+        - $ref: '#/components/schemas/StreakOff'
+        - type: object
+          properties:
+            current: { type: integer, description: '"Día N de constancia"' }
+            best: { type: integer }
+            total: { type: integer, description: 'Días cumplidos en total (mostrado, nunca baja)' }
+            cut: { type: boolean, description: 'current = 0 y best > 0: mostrar "nuevo comienzo" (FR-020)' }
+            week: { type: array, minItems: 7, maxItems: 7, items: { $ref: '#/components/schemas/Day' }, description: Noches de lunes a domingo de la semana de today }
+            last_night: { $ref: '#/components/schemas/Day', description: 'Noche de ayer (línea tras "Ya desperté")' }
+            achievements: { type: array, items: { $ref: '#/components/schemas/Achievement' } }
+            summary:
+              oneOf:
+                - type: 'null'
+                - type: object
+                  description: Semana anterior (FR-025); null si ya se descartó
+                  properties:
+                    week_start: { type: string, format: date }
+                    met: { type: integer }
+                    of: { type: integer, description: Días no pausados y decididos }
+                    avg_min: { type: [integer, 'null'], description: 'Media de horas registradas; null = sin datos (menos de 3 noches cerradas; nunca 0)' }
+    Day:
+      type: object
+      required: [date, state]
+      properties:
+        date: { type: string, format: date, description: Fecha de la noche }
+        state: { type: string, enum: [met, missed, paused, pending, off], description: 'off = noche anterior a la activación (neutra, sin estrella)' }
+        reason: { type: [string, 'null'], enum: [late_bed, proposal, late_wake, no_record, null] }
+        bed_time: { type: [string, 'null'], description: 'HH:MM de pared (para el motivo)' }
+        wake_time: { type: [string, 'null'], description: 'HH:MM de pared (para el motivo)' }
+        late_logged: { type: boolean, description: 'Marca "Anotado después"' }
+    Achievement:
+      type: object
+      properties:
+        key: { type: integer, enum: [7, 21, 66, 100, 180, 365] }
+        achieved_on: { type: string, format: date }
+        wake_spread_min: { type: integer }
+        seen: { type: boolean }
+    StreakSettings:
+      type: object
+      properties:
+        enabled: { type: boolean }
+        margin_min: { type: integer }
+        since: { type: [string, 'null'], format: date }
+        offered_at: { type: [string, 'null'], format: date-time }
+        best: { type: integer }
+        total: { type: integer }

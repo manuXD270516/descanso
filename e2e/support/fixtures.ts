@@ -8,11 +8,14 @@ export interface TestServer {
   readonly url: string;
   /** Reinicio abrupto del proceso sobre la misma base (solo servidores aislados). */
   restart(): Promise<void>;
+  /** SQL directo sobre la base del servidor aislado (feature 011); el compartido no lo permite. */
+  sql(statement: string, ...params: unknown[]): void;
 }
 
 const shared: TestServer = {
   url: SHARED_URL,
   restart: () => Promise.reject(new Error('El servidor compartido no se puede reiniciar; usa isolate: true')),
+  sql: () => { throw new Error('El servidor compartido es de solo lectura; usa isolate: true'); },
 };
 
 interface Options {

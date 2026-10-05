@@ -1,3 +1,17 @@
+<!--
+Sync Impact Report
+- Versión: 2.1.0 → 2.2.0 (MINOR: se amplía materialmente el principio VIII; nada se elimina ni redefine)
+- Principios modificados: VIII. Datos de salud: privacidad y honestidad (3 viñetas nuevas y una frase en
+  la Razón: motivación solo por conductas controlables; sin comparación, sin canje, sin pérdida;
+  gamificación opcional y ocultable)
+- Secciones añadidas: ninguna. Secciones eliminadas: ninguna.
+- Plantillas: ✅ .specify/templates/plan-template.md (el "Constitution Check" recorre los principios
+  sin enumerarlos; no cambia) · ✅ spec-template.md y tasks-template.md (sin referencias a principios
+  concretos; no cambian) · ✅ docs/sdd/terminos-prohibidos.txt (sin cambios por la enmienda; las
+  palabras de culpa de 011 las vigila la prueba de la propia feature)
+- Features existentes: ninguna tiene gamificación; no hay incumplimientos.
+- TODO pendientes: ninguno. Motivo: requisito previo al plan de 011 (rachas de constancia).
+-->
 # Descanso Constitution
 
 ## Core Principles
@@ -94,10 +108,22 @@ atención; debe ser clara y accesible.
   datos de esa fuente (principio II). Los tokens de acceso a terceros MUST guardarse cifrados.
 - **Notificaciones sin datos de salud**: ningún aviso fuera de la app (push, correo) MUST incluir
   datos de sueño ni de salud.
+- **Motivación solo por conductas controlables**: toda racha, logro o refuerzo MUST basarse solo en
+  conductas que la persona controla (por ejemplo, levantarse a su hora o registrar la noche). MUST
+  NOT puntuarse ni premiarse un resultado de sueño (horas dormidas, calidad, fases ni puntuaciones
+  derivadas).
+- **Sin comparación, sin canje, sin pérdida**: MUST NOT existir comparación social ni rankings,
+  recompensas canjeables (puntos, monedas, niveles, premios) ni avisos o textos que adviertan de
+  perder un logro o una racha. Los logros ganados MUST NOT retirarse, y saltarse un registro MUST
+  NOT mejorar nunca un indicador de constancia.
+- **Gamificación opcional y ocultable**: toda gamificación MUST estar desactivada hasta que la
+  persona la active, y MUST poder ocultarse en cualquier momento; desactivada, no se calcula ni se
+  muestra.
 
 **Razón**: los datos de sueño son sensibles y la app no mide fases ni diagnostica; confundir una
 estimación con una medición o usar lenguaje clínico genera falsas certezas y ansiedad por dormir
-"bien" (ortosomnia).
+"bien" (ortosomnia). Premiar resultados de sueño o penalizar su ausencia alimenta esa misma ansiedad;
+motivar la constancia en conductas controlables, con feedback informativo y opcional, no lo hace.
 
 ## Alcance del producto
 
@@ -133,8 +159,9 @@ otra. Entran solo por invitación del propietario. El repositorio contiene la ap
 
 | Versión | Fecha | Tipo | Cambio |
 |---------|-------|------|--------|
+| 2.2.0 | 2026-10-05 | MINOR | **Principio VIII**, ampliación: la motivación se basa solo en conductas controlables; se prohíben las puntuaciones de resultado, la comparación social, las recompensas canjeables y los avisos de pérdida; los logros no se retiran y saltarse un registro no mejora la constancia; toda gamificación es opcional (desactivada por defecto) y ocultable. Necesaria antes del plan de 011. |
 | 2.1.0 | 2026-10-03 | MINOR | **Principio VIII** nuevo, "Datos de salud: privacidad y honestidad": origen declarado, lenguaje no clínico, "sin dato" ≠ 0, estadística prudente con n mínima y lenguaje no causal, consentimiento y revocación por fuente con tokens cifrados, y notificaciones sin datos de salud. Necesaria antes del plan de 006. |
 | 2.0.0 | 2026-10-01 | MAJOR + MINOR | **Alcance**: de mono-usuario a multiusuario con aislamiento estricto (filtrado por usuario, 404 para lo ajeno, suite de aislamiento y transparencia sobre el acceso del operador). **Principio II**: el borrado a petición del propio dueño no es DROP de datos. Necesarias antes del plan de 008. |
 | 1.0.1 | 2026-09-30 | PATCH | Principio II: toda migración pasa por el runner con respaldo previo (feature 003); reconstruir una tabla con copia verificada en la misma migración no es DROP de datos. Necesaria antes del plan de 004. |
 
-**Version**: 2.1.0 | **Ratified**: 2026-09-29 | **Last Amended**: 2026-10-03
+**Version**: 2.2.0 | **Ratified**: 2026-09-29 | **Last Amended**: 2026-10-05

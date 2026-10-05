@@ -1,5 +1,6 @@
 import { spawn, type ChildProcess } from 'node:child_process';
 import { mkdtempSync, rmSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { createServer } from 'node:net';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -116,6 +117,20 @@ export class AppServer {
   }
 
   /** Salida del proceso (útil para adjuntar al reporte si un test falla). */
+  /**
+   * Ejecuta una sentencia SQL sobre la base temporal de este servidor (feature 011). Solo para
+   * preparar estados que la API no permite crear a propósito, como una racha activada hace días.
+   */
+  sql(statement: string, ...params: unknown[]): void {
+    const Database = createRequire(SERVER_JS)('better-sqlite3');
+    const db = new Database(this.dbPath);
+    try {
+      db.prepare(statement).run(...params);
+    } finally {
+      db.close();
+    }
+  }
+
   logs(): string {
     return this.output;
   }

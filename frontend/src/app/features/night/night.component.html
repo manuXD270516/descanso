@@ -23,6 +23,11 @@
   <app-night-card [night]="n" (closed)="lastClosed.set(null)" (answered)="reload()" />
 }
 
+<!-- Feature 011: la racha solo tras "Ya desperté", nunca en la pantalla de acostarse (FR-019, SC-003) -->
+@if (wokeUp() && !open()) {
+  <app-streak-morning />
+}
+
 <!-- Estado actual -->
 <section class="panel state" [class.sleeping]="open()">
   @if (open(); as o) {

@@ -7,15 +7,17 @@ import { CYCLE_MIN, cyclesFor, fmtGoal } from '../../core/cycles';
 import { ScheduleDay, localDay } from '../../core/schedule';
 import { ScheduleService } from '../../core/schedule.service';
 import { ScheduleEditorComponent } from '../schedule/schedule-editor.component';
+import { StreakOfferComponent } from '../streak/streak-offer.component';
 
 /**
  * Bienvenida (features 005 y 010): una sola vez por usuario y en una sola pantalla. Objetivo de sueño
  * (atajos de ciclos o a mano) → horario opcional (hora de levantarse, la de acostarse propuesta y el
- * tipo de horario) → "Guardar". "Saltar" deja el objetivo en 7 h y sin horario. 011 añadirá la racha.
+ * tipo de horario) → "Guardar". "Saltar" deja el objetivo en 7 h y sin horario. La racha de
+ * constancia (011) se ofrece aquí una vez; la respuesta se guarda al tocarla.
  */
 @Component({
   selector: 'app-welcome',
-  imports: [FormsModule, ScheduleEditorComponent],
+  imports: [FormsModule, ScheduleEditorComponent, StreakOfferComponent],
   template: `
     <section class="panel welcome" aria-labelledby="welcome-title">
       <h2 id="welcome-title">¿Cuántas horas quieres dormir?</h2>
@@ -34,6 +36,10 @@ import { ScheduleEditorComponent } from '../schedule/schedule-editor.component';
 
       <h3>Tu horario <span class="small muted">(opcional)</span></h3>
       <app-schedule-editor [goalMin]="goal()" (changed)="days.set($event)" />
+
+      @if (!streakAnswered()) {
+        <app-streak-offer (answered)="streakAnswered.set(true)" />
+      }
 
       @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
       <div class="row wrap">
@@ -63,6 +69,8 @@ export class WelcomeComponent {
   readonly days = signal<ScheduleDay[] | null>(null);
   readonly busy = signal(false);
   readonly error = signal<string | null>(null);
+  /** La oferta de la racha ya se respondió en esta pantalla (feature 011, FR-017). */
+  readonly streakAnswered = signal(false);
 
   chooseGoal(minutes: number) {
     this.goal.set(minutes);

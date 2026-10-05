@@ -4,6 +4,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { NightComponent } from './night.component';
 import { Nap, SleepRecord, Stats } from '../../core/api.service';
 import { addDays, localDate, nightDate } from '../../core/time';
+import { flushStreak } from '../streak/streak.testing';
 
 const EMPTY_STATS: Stats = {
   days: [],
@@ -51,7 +52,7 @@ describe('NightComponent', () => {
     http.expectOne('/api/me').flush(PROFILE);
   });
 
-  afterEach(() => http.verify());
+  afterEach(() => { flushStreak(http); http.verify(); });
 
   // --- US1 ---
 
@@ -84,6 +85,30 @@ describe('NightComponent', () => {
     expect(req.request.body.wake_time).toMatch(/[+-]\d{2}:\d{2}$/);
     req.flush(record({ wake_time: req.request.body.wake_time, duration_min: 450 }));
     flushLoad();
+  });
+
+  // --- Feature 011: la racha solo tras "Ya desperté", nunca en la pantalla de acostarse (SC-003) ---
+  it('sin noche abierta (pantalla de acostarse) no pide ni muestra nada de la racha', () => {
+    flushLoad();
+    expect(http.match((r) => r.url === '/api/streak').length).toBe(0);
+    expect(el.querySelector('app-streak-morning')).toBeNull();
+    expect(el.textContent!.toLowerCase()).not.toContain('constancia');
+  });
+
+  it('tras "Ya desperté" muestra "Día N de constancia ★"; al volver a acostarse desaparece', () => {
+    flushLoad({ open: record({}) });
+    button('Ya desperté').click();
+    http.expectOne('/api/sleep/wake').flush(record({ wake_time: '2026-09-08T07:00:00-04:00', duration_min: 440 }));
+    flushLoad();
+    const last = { date: '2026-09-07', state: 'met' as const, reason: null, bed_time: '23:40', wake_time: '07:00', late_logged: false };
+    flushStreak(http, { enabled: true, offered: true, margin_min: 30, offer: false, current: 4, best: 4, total: 4, cut: false, week: [], last_night: last, achievements: [], summary: null });
+    fixture.detectChanges();
+    expect(el.querySelector('app-streak-morning')!.textContent).toContain('Día 4 de constancia ★');
+    button('Me voy a dormir').click();
+    fixture.detectChanges();
+    expect(el.querySelector('app-streak-morning')).toBeNull();
+    http.expectOne((r) => r.url === '/api/sleep' && r.method === 'POST').flush(record({ date: today }));
+    flushLoad({ open: record({ date: today }) });
   });
 
   it('muestra el error del servidor en un role="alert" (FR-028)', () => {

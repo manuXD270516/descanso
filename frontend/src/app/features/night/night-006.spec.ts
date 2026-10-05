@@ -7,6 +7,7 @@ import { NightComponent } from './night.component';
 import { NightCardComponent } from './night-card.component';
 import { CycleSettingsComponent } from './cycle-settings.component';
 import { NightUiService } from './night-ui.service';
+import { flushStreak } from '../streak/streak.testing';
 
 // Feature 006 en Noche: calculadora (US2), recordatorio de noche abierta (US4), tarjeta (US5) e insignias (US1).
 const PROFILE = { id: 1, email: 'yo@x.com', role: 'owner', display_name: 'Yo', timezone: null, sleep_goal_min: 450, cycle_min: 90, latency_min: 15, consent_version: null, consent_at: null, created_at: '' };
@@ -45,7 +46,7 @@ describe('NightComponent · feature 006', () => {
     TestBed.configureTestingModule({ imports: [NightComponent], providers: [provideHttpClient(), provideHttpClientTesting()] });
     http = TestBed.inject(HttpTestingController);
   });
-  afterEach(() => http.verify());
+  afterEach(() => { flushStreak(http); http.verify(); });
 
   describe('calculadora (US2)', () => {
     it('bajo "¿Hora de dormir?" muestra 3 ventanas estimadas con el texto fijo, y se recalcula al cambiar la hora', () => {
@@ -167,7 +168,7 @@ describe('NightCardComponent', () => {
     TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
     http = TestBed.inject(HttpTestingController);
   });
-  afterEach(() => http.verify());
+  afterEach(() => { flushStreak(http); http.verify(); });
 
   it('cada toque guarda su respuesta; tocar la elegida la borra', () => {
     const f = TestBed.createComponent(NightCardComponent);
@@ -202,7 +203,7 @@ describe('CycleSettingsComponent', () => {
     TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
     http = TestBed.inject(HttpTestingController);
   });
-  afterEach(() => http.verify());
+  afterEach(() => { flushStreak(http); http.verify(); });
 
   it('guarda ciclo y tiempo en dormirse; un 400 muestra el rango del servidor', () => {
     const f = TestBed.createComponent(CycleSettingsComponent);
