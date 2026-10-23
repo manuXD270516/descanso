@@ -45,8 +45,8 @@ async function openAvisos(page: import('@playwright/test').Page) {
   return page.getByRole('region', { name: 'Avisos en este móvil' });
 }
 
-test('cargar y recargar la app, y abrir Mi horario, no pide el permiso de notificaciones (SC-007)', async ({ page, context, server, fake, api }) => {
-  await installFakePush(context, fake.origin, server.url);
+test('cargar y recargar la app, y abrir Mi horario, no pide el permiso de notificaciones (SC-007)', async ({ page, context, fake, api }) => {
+  await installFakePush(context, fake.origin);
   await api.saveSchedule(TODAY, week(1395, 420));
   const avisos = await openAvisos(page);
   await expect(avisos.getByRole('button', { name: 'Activar avisos' })).toBeEnabled();
@@ -57,16 +57,16 @@ test('cargar y recargar la app, y abrir Mi horario, no pide el permiso de notifi
   expect(await permissionRequests(page)).toBe(0);
 });
 
-test('sin horario, "Activar avisos" está deshabilitado con "Primero agenda tu horario"', async ({ page, context, server, fake }) => {
-  await installFakePush(context, fake.origin, server.url);
+test('sin horario, "Activar avisos" está deshabilitado con "Primero agenda tu horario"', async ({ page, context, fake }) => {
+  await installFakePush(context, fake.origin);
   const avisos = await openAvisos(page);
   await expect(avisos.getByRole('button', { name: 'Activar avisos' })).toBeDisabled();
   await expect(avisos).toContainText('Primero agenda tu horario');
   await expect(avisos.getByRole('link', { name: 'Mi horario' })).toBeVisible();
 });
 
-test('con horario, la explicación previa y "Activar avisos" dejan el móvil activado con un solo toque propio (SC-008)', async ({ page, context, server, fake, api }) => {
-  await installFakePush(context, fake.origin, server.url);
+test('con horario, la explicación previa y "Activar avisos" dejan el móvil activado con un solo toque propio (SC-008)', async ({ page, context, fake, api }) => {
+  await installFakePush(context, fake.origin);
   await api.saveSchedule(TODAY, week(1395, 420));
   const avisos = await openAvisos(page);
   await expect(avisos).toContainText('Prepárate · 22:45');
@@ -89,8 +89,8 @@ test('con horario, la explicación previa y "Activar avisos" dejan el móvil act
   expect(state.timezone).toBe(TIMEZONE); // el perfil no tenía zona: se guardó la del navegador
 });
 
-test('"Enviarme un aviso de prueba" llega al servicio de push con TTL, Topic, Urgency y VAPID en menos de 10 s (SC-005)', async ({ page, context, server, fake, api }) => {
-  await installFakePush(context, fake.origin, server.url);
+test('"Enviarme un aviso de prueba" llega al servicio de push con TTL, Topic, Urgency y VAPID en menos de 10 s (SC-005)', async ({ page, context, fake, api }) => {
+  await installFakePush(context, fake.origin);
   await api.saveSchedule(TODAY, week(1395, 420));
   const avisos = await openAvisos(page);
   await avisos.getByRole('button', { name: 'Activar avisos' }).click();
@@ -118,8 +118,8 @@ test('"Enviarme un aviso de prueba" llega al servicio de push con TTL, Topic, Ur
   expect(fake.requests).toHaveLength(3);
 });
 
-test('si el servicio de push responde 410, la app explica que el dispositivo ya no es válido y lo quita de la lista', async ({ page, context, server, fake, api }) => {
-  await installFakePush(context, fake.origin, server.url);
+test('si el servicio de push responde 410, la app explica que el dispositivo ya no es válido y lo quita de la lista', async ({ page, context, fake, api }) => {
+  await installFakePush(context, fake.origin);
   await api.saveSchedule(TODAY, week(1395, 420));
   const avisos = await openAvisos(page);
   await avisos.getByRole('button', { name: 'Activar avisos' }).click();
@@ -135,8 +135,8 @@ test('si el servicio de push responde 410, la app explica que el dispositivo ya 
   await expect(avisos).toContainText('Vuelve a activar los avisos');
 });
 
-test('con la pestaña visible, un push llega como aviso dentro de la app y no como notificación del sistema (FR-019)', async ({ page, context, server, fake, api }) => {
-  await installFakePush(context, fake.origin, server.url);
+test('con la pestaña visible, un push llega como aviso dentro de la app y no como notificación del sistema (FR-019)', async ({ page, context, fake, api }) => {
+  await installFakePush(context, fake.origin);
   await api.saveSchedule(TODAY, week(1395, 420));
   const avisos = await openAvisos(page);
   await avisos.getByRole('button', { name: 'Activar avisos' }).click();

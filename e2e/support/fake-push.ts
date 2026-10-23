@@ -52,11 +52,10 @@ export function generateVapid(): { publicKey: string; privateKey: string } {
 
 /**
  * Sustituye `PushManager.prototype.subscribe/getSubscription` por una suscripción falsa hacia el servicio
- * simulado y cuenta las llamadas a `Notification.requestPermission` (SC-007). Concede el permiso de
- * notificaciones. Se instala antes de cargar la página.
+ * simulado, y simula el permiso de notificaciones contando las llamadas a `Notification.requestPermission`
+ * (SC-007). Se instala antes de cargar la página.
  */
-export async function installFakePush(context: BrowserContext, origin: string, serverOrigin: string): Promise<void> {
-  await context.grantPermissions(['notifications'], { origin: serverOrigin });
+export async function installFakePush(context: BrowserContext, origin: string): Promise<void> {
   await context.addInitScript((pushOrigin: string) => {
     const KEY = 'fake-push-subscription';
     const b64u = (bytes: Uint8Array) => btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
@@ -84,11 +83,15 @@ export async function installFakePush(context: BrowserContext, origin: string, s
       return make(stored) as unknown as PushSubscription;
     };
 
-    // SC-007: ningún código debe pedir el permiso salvo "Activar avisos"
-    const original = Notification.requestPermission.bind(Notification);
-    Notification.requestPermission = ((...args: Parameters<typeof original>) => {
+    // Permiso de notificaciones simulado: el Chromium sin interfaz (el de CI) siempre dice "denied" y no deja
+    // concederlo. Empieza sin decidir y se concede al pedirlo; así el test no depende del navegador.
+    // SC-007: además cuenta las peticiones, porque ningún código debe pedirlo salvo "Activar avisos".
+    const PERM = 'fake-notification-permission';
+    Object.defineProperty(Notification, 'permission', { configurable: true, get: () => localStorage.getItem(PERM) ?? 'default' });
+    Notification.requestPermission = (async () => {
       sessionStorage.setItem('permission-requests', String(Number(sessionStorage.getItem('permission-requests') ?? '0') + 1));
-      return original(...args);
+      localStorage.setItem(PERM, 'granted');
+      return 'granted';
     }) as typeof Notification.requestPermission;
   }, origin);
 }
