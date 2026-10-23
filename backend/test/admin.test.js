@@ -56,3 +56,45 @@ test('con el token correcto entrega una copia SQLite consistente con los datos (
   for (let i = 0; i < 20 && leftovers().some((f) => !before.has(f)); i++) await new Promise((r) => setTimeout(r, 50));
   assert.deepEqual(leftovers().filter((f) => !before.has(f)), []);
 });
+
+// Salud de los avisos push (feature 013, FR-026)
+test('GET /api/admin/health: token incorrecto → 401; sin cabecera → 401', async () => {
+  await api.get('/api/admin/health').expect(401);
+  await api.get('/api/admin/health').set('Authorization', 'Bearer otro').expect(401);
+});
+
+test('GET /api/admin/health: estado del disparador y contadores, sin datos personales', async () => {
+  const { runTick, resetState } = require('../src/reminders/tick');
+  const { startWaker } = require('../src/reminders/waker');
+  resetState();
+  db.exec('DELETE FROM reminder_deliveries');
+  const none = (await api.get('/api/admin/health').set('Authorization', 'Bearer t0k3n').expect(200)).body;
+  assert.deepEqual(none, { reminders: { enabled: false, last_tick_at: null, pending_dues: 0, skipped_24h: 0, failed_24h: 0 } });
+
+  const now = Date.now();
+  const insert = db.prepare("INSERT INTO reminder_deliveries (user_id, kind, night_date, due_at, status, reason, updated_at) VALUES (1, ?, ?, 'x', ?, ?, ?)");
+  insert.run('prepare', '2026-10-01', 'skipped', 'late', new Date(now - 3600_000).toISOString());
+  insert.run('bedtime', '2026-10-01', 'skipped', 'dnd', new Date(now - 7200_000).toISOString());
+  insert.run('wake_check', '2026-10-01', 'failed', 'error', new Date(now - 60_000).toISOString());
+  insert.run('prepare', '2026-09-20', 'failed', 'error', new Date(now - 3 * 86_400_000).toISOString()); // fuera de las 24 h
+  insert.run('prepare', '2026-09-21', 'sent', null, new Date(now - 1000).toISOString());
+  await runTick({ now });
+  const waker = startWaker(async () => {}, { intervalMs: 1e9 });
+  process.env.VAPID_PUBLIC_KEY = 'x'; process.env.VAPID_PRIVATE_KEY = 'y'; process.env.VAPID_SUBJECT = 'mailto:a@b.test';
+  try {
+    const res = (await api.get('/api/admin/health').set('Authorization', 'Bearer t0k3n').expect(200)).body;
+    assert.deepEqual(res, { reminders: { enabled: true, last_tick_at: new Date(now).toISOString(), pending_dues: 0, skipped_24h: 2, failed_24h: 1 } });
+    const text = JSON.stringify(res);
+    assert.ok(!/user_id|email|endpoint|@/.test(text));
+  } finally {
+    waker.stop();
+    delete process.env.VAPID_PUBLIC_KEY; delete process.env.VAPID_PRIVATE_KEY; delete process.env.VAPID_SUBJECT;
+    db.exec('DELETE FROM reminder_deliveries');
+    resetState();
+  }
+});
+
+test('/api/health público no cambia con los avisos', async () => {
+  const res = await api.get('/api/health').expect(200);
+  assert.deepEqual(Object.keys(res.body).sort(), ['ok', 'storage', 'time', 'version']);
+});
