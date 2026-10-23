@@ -128,3 +128,20 @@ test('las respuestas de la tarjeta se exportan: códigos en JSON, rangos legible
   assert.ok(lines.some((l) => l.endsWith(',>30,1-2')), 'rangos legibles al final');
   assert.ok(lines.some((l) => l.startsWith(`${open.id},2026-09-06`) && l.endsWith(',,')), 'sin respuesta: vacío');
 });
+
+test('exporta las preferencias de avisos y nunca los dispositivos ni las entregas (feature 013, FR-028)', async () => {
+  const { sha256 } = require('../src/auth/sessions');
+  const { sessionId } = require('./helpers');
+  db.prepare("INSERT INTO push_subscriptions (user_id, session_hash, endpoint, p256dh, auth, label, created_at) VALUES (1, ?, 'https://fcm.googleapis.com/fcm/send/SECRETO', 'CLAVE-P256DH', 'CLAVE-AUTH', 'Chrome en Android', 'x')").run(sha256(sessionId));
+  db.prepare("INSERT INTO reminder_deliveries (user_id, kind, night_date, due_at, status, updated_at) VALUES (1, 'bedtime', '2026-09-05', 'x', 'sent', 'x')").run();
+  db.prepare('UPDATE user_settings SET push_prepare = 0, dnd_start_min = 1380, dnd_end_min = 420, muted_until = ? WHERE user_id = 1').run('2026-09-05');
+  try {
+    const j = (await api.get('/api/export.json').expect(200)).body;
+    assert.deepEqual(j.push_preferences, { kinds: { prepare: false, bedtime: true, wake_check: true }, dnd: { start_min: 1380, end_min: 420 }, muted_until: '2026-09-05' });
+    const text = JSON.stringify(j);
+    for (const secret of ['SECRETO', 'CLAVE-P256DH', 'CLAVE-AUTH', 'endpoint', 'p256dh', 'push_subscriptions', 'reminder_deliveries', 'session_hash']) assert.ok(!text.includes(secret), secret);
+  } finally {
+    db.exec('DELETE FROM push_subscriptions; DELETE FROM reminder_deliveries;');
+    db.exec('UPDATE user_settings SET push_prepare = 1, dnd_start_min = NULL, dnd_end_min = NULL, muted_until = NULL WHERE user_id = 1');
+  }
+});

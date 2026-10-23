@@ -10,7 +10,11 @@ import { SETUP_TOKEN } from './env';
 export const SERVER_JS = resolve(__dirname, '..', '..', 'backend', 'src', 'server.js');
 
 /** Variables del backend que nunca deben filtrarse desde el entorno de quien ejecuta. */
-const BACKEND_VARS = ['PORT', 'DB_PATH', 'APP_VERSION', 'BACKUP_TOKEN', 'FRONTEND_DIST', 'OWNER_SETUP_TOKEN', 'NODE_ENV'];
+const BACKEND_VARS = [
+  'PORT', 'DB_PATH', 'APP_VERSION', 'BACKUP_TOKEN', 'FRONTEND_DIST', 'OWNER_SETUP_TOKEN', 'NODE_ENV',
+  // Feature 013: credenciales y costuras de los avisos tampoco se heredan
+  'VAPID_PUBLIC_KEY', 'VAPID_PRIVATE_KEY', 'VAPID_SUBJECT', 'PUSH_TEST_ORIGIN', 'REMINDER_WAKER',
+];
 
 /**
  * Puertos de cada worker: un rango propio y disjunto (20000 + 20 × índice del worker), por

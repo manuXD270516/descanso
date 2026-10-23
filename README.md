@@ -29,6 +29,22 @@ entras, una bienvenida te lo pregunta. Cada gráfico tiene descripción en frase
   - "Modo pausa" de hasta 14 días, como máximo 2 cada 30 días.
 - **"Anotado después"**: marca un despertar registrado más de 60 min después de ocurrir.
 
+**Avisos push con la app cerrada** (feature 013, máquina siempre encendida, ≈ 3,3 $/mes en total):
+- El propio servicio envía por Web Push tres avisos sin datos de salud, con las horas del horario de
+  010 en la zona horaria del perfil: `prepare` ("Descanso: en X min es tu hora de dormir"), `bedtime`
+  ("Descanso: es tu hora de dormir") y `wake_check` ("Descanso: ¿ya despertaste?", 60 min después de
+  tu hora de levantarte, solo con la noche abierta). Ningún aviso menciona la racha.
+- Se activan en Cuenta → "Mi horario" → "Avisos en este móvil" (el permiso del navegador solo se pide al
+  pulsar "Activar avisos"). Hasta 5 dispositivos por persona, cada uno ligado a la sesión que lo activó
+  (cerrar sesión deja de avisar). Un interruptor por tipo, "Silenciar hoy", "No molestar" y aviso de prueba.
+- Cada aviso se envía una sola vez y nunca tarde: pasada su ventana (10 min; 60 min el de la mañana) se
+  descarta. El disparador (un tick cada 30 s) recupera lo que siga en ventana tras un despliegue.
+- Sin las credenciales VAPID el bloque dice "Los avisos no están disponibles" y el resto de la app
+  funciona igual. Rotarlas: [rotar-vapid](docs/runbooks/rotar-vapid.md). Salud (sin datos personales):
+  `GET /api/admin/health` con `BACKUP_TOKEN`.
+- Límites del móvil: "No molestar" de Android puede silenciar el aviso y el ahorro de batería o el
+  reposo del móvil pueden retrasarlo (spike en `specs/013-avisos-push/spike/`).
+
 **Racha de constancia** (feature 011, opcional y desactivada por defecto):
 - Cuenta un día si te acuestas y te levantas a tu hora (la agendada + un margen de 30 min, ajustable
   de 15 a 60; adelantarte no resta), o si registras la noche cuando no tienes horario o estás en pausa.
@@ -74,7 +90,7 @@ sleep-tracker/
 ├── frontend/         proyecto Angular
 ├── e2e/              pruebas end-to-end con Playwright (docs/testing/e2e-playwright.md)
 ├── Dockerfile
-├── fly.toml          despliegue en Fly.io (volumen persistente, apagado sin tráfico)
+├── fly.toml          despliegue en Fly.io (volumen persistente, máquina siempre encendida)
 └── compose.yaml      entorno local en un comando
 ```
 
@@ -114,6 +130,8 @@ cd ../backend && npm start        # sirve frontend/dist/frontend/browser
 | `APP_VERSION`   | `dev`                               | Versión desplegada (la inyecta el pipeline en la imagen) |
 | `BACKUP_TOKEN`  | —                                   | Habilita `GET /api/admin/backup` (Bearer); sin definir, el endpoint no existe |
 | `OWNER_SETUP_TOKEN` | —                               | Código de alta del propietario. Si cambia al arrancar, reabre el alta y cierra las sesiones ([recuperar acceso](docs/runbooks/recuperar-acceso.md)) |
+| `VAPID_PUBLIC_KEY` · `VAPID_PRIVATE_KEY` · `VAPID_SUBJECT` | —            | Credenciales de los avisos push (feature 013; `mailto:` en el asunto). Sin las tres, los avisos quedan desactivados. Genéralas con `cd backend && npx web-push generate-vapid-keys`; en Fly, con `flyctl secrets set`; nunca en el repositorio |
+| `REMINDER_WAKER` | (activo)                           | `off` desactiva el disparador de avisos aunque haya credenciales (pruebas) |
 
 ## API
 
@@ -142,6 +160,10 @@ modifican datos deben venir del propio sitio (`Sec-Fetch-Site`/`Origin`); si no,
 | GET    | `/api/streak?today`                   | Feature 011: racha, semana de estrellas, constelaciones y resumen (sin efectos; desactivada → solo ajustes) |
 | PUT    | `/api/streak/settings`                | `{today, enabled?, margin_min?, offered?, dismiss_summary?}` |
 | POST   | `/api/streak/achievements/:key/seen`  | Marca una constelación como vista (204; 404 si no es tuya) |
+| GET    | `/api/push`                           | Feature 013: estado de "Avisos en este móvil" (`available`, `public_key`, `timezone`, preferencias y dispositivos, sin endpoint ni claves) |
+| PUT    | `/api/push/preferences`               | `{kinds?, dnd?, mute_today?}` tipos activos, "No molestar" (inicio y fin distintos, 0–1439) y "Silenciar hoy" |
+| POST · DELETE | `/api/push/subscriptions` · `/:id` | Activar este dispositivo (idempotente por endpoint, máximo 5, ligado a la sesión; host de push conocido) / quitar uno propio (404 si no es tuyo) |
+| POST   | `/api/push/subscriptions/:id/test`    | Aviso de prueba (3 por minuto → 429; ignora No molestar y Silenciar hoy) → `{result: sent|expired|failed}` |
 | GET    | `/api/sleep?from&to`                  | Noches (con `duration_min`)                        |
 | GET    | `/api/sleep/open`                     | Noche abierta (me acosté, aún no despierto)        |
 | POST   | `/api/sleep`                          | `{date, bedtime, wake_time?, notes?}` · `date` = día local de `bedtime` · 409 si ya hay una noche abierta y no se envía `wake_time` |
@@ -216,9 +238,11 @@ ejecuta el workflow **Deploy**:
 
 Los PR no se pueden fusionar si `quality` falla.
 
-Coste: la máquina (`shared-cpu-1x`, 256 MB) **se apaga cuando no hay tráfico** y arranca con la
-primera petición, que tarda unos segundos. Se paga por uso, a mes vencido, más el volumen de
-1 GB. La configuración está en `fly.toml`.
+Coste: desde la feature 013 la máquina (`shared-cpu-1x`, 256 MB) **está siempre encendida**
+(`min_machines_running = 1`): el disparador de avisos push vive dentro del servicio y no se puede
+apagar sin tráfico. Son ≈ 3,3 $/mes en total (≈ 3,1 $ de cómputo + 0,15 $ del volumen de 1 GB), a mes
+vencido; ≈ 1–1,5 $/mes más que con el auto-stop anterior, y ya no hay arranques en frío. La
+configuración está en `fly.toml`.
 
 Configuración única (con [`flyctl`](https://fly.io/docs/flyctl/install/)):
 
@@ -227,6 +251,8 @@ flyctl apps create descanso-sleep
 flyctl volumes create descanso_data --size 1 --region gru --app descanso-sleep
 flyctl secrets set BACKUP_TOKEN=<token> --stage --app descanso-sleep   # token: openssl rand -hex 32
 flyctl secrets set OWNER_SETUP_TOKEN=<código> --stage --app descanso-sleep   # código de alta del propietario
+# Avisos push (feature 013): claves de `cd backend && npx web-push generate-vapid-keys`; sin ellas, avisos desactivados
+flyctl secrets set VAPID_PUBLIC_KEY=<pública> VAPID_PRIVATE_KEY=<privada> VAPID_SUBJECT=mailto:<tu email> --stage --app descanso-sleep
 flyctl tokens create deploy --app descanso-sleep                         # → secreto FLY_API_TOKEN en GitHub
 ```
 

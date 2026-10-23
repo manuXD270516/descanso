@@ -8,6 +8,7 @@ import { addDays, fmtDateShort } from '../../core/time';
 import { CalendarGuideComponent } from './calendar-guide.component';
 import { ScheduleEditorComponent } from './schedule-editor.component';
 import { StreakSettingsComponent } from '../streak/streak-settings.component';
+import { PushSettingsComponent } from '../push/push-settings.component';
 
 /**
  * Cuenta → "Mi horario" (feature 010): horario (US1), calendario con aviso y guía (US2) y modo pausa
@@ -15,7 +16,7 @@ import { StreakSettingsComponent } from '../streak/streak-settings.component';
  */
 @Component({
   selector: 'app-my-schedule',
-  imports: [FormsModule, ScheduleEditorComponent, CalendarGuideComponent, StreakSettingsComponent],
+  imports: [FormsModule, ScheduleEditorComponent, CalendarGuideComponent, StreakSettingsComponent, PushSettingsComponent],
   template: `
     <section class="panel account-card" aria-labelledby="schedule-title">
       <h2 id="schedule-title">Mi horario</h2>
@@ -49,6 +50,9 @@ import { StreakSettingsComponent } from '../streak/streak-settings.component';
       </div>
       @if (leadSaved()) { <p class="small" role="status">Aviso guardado. Descarga el archivo otra vez para actualizar tu calendario.</p> }
       @if (version(); as v) { <app-calendar-guide [days]="v.days" [leadMin]="leadMin()" /> }
+
+      <!-- Feature 013: avisos con la app cerrada, bajo el calendario de 010 -->
+      <app-push-settings [version]="version()" [leadMin]="leadMin()" [scheduleLoaded]="loaded()" />
 
       <h3>Modo pausa (viaje, malestar, turnos)</h3>
       <p class="small muted">Durante la pausa, Descanso no te avisa dentro de la app. Hasta 14 días, 2 pausas cada 30 días.</p>

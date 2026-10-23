@@ -9,6 +9,11 @@ services:
       DB_PATH: /data/sleep.db
       # Opcional, para probar /api/admin/backup en local; vacío = endpoint deshabilitado
       BACKUP_TOKEN: ${BACKUP_TOKEN:-}
+      # Opcionales, para los avisos push (feature 013); vacías = avisos desactivados. Genera las claves con
+      # `cd backend && npx web-push generate-vapid-keys` y no las guardes en el repositorio.
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
+      VAPID_SUBJECT: ${VAPID_SUBJECT:-}
     volumes:
       - descanso-data:/data
     restart: unless-stopped

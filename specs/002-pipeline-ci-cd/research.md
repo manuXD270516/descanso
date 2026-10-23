@@ -279,6 +279,11 @@ producto vienen de las Clarifications de la spec.
   - El workflow de respaldo despierta la máquina.
   - La restauración en producción usa `fly ssh console` (runbook).
 
+> **Nota (feature 013, 2026-10-23)**: el auto-stop de esta decisión deja de aplicarse. Los avisos push
+> los dispara el propio servicio, que debe estar siempre encendido: `fly.toml` pasa a
+> `min_machines_running = 1` (≈ 3,3 $/mes en total). Ver `specs/013-avisos-push/plan.md` (Complexity
+> Tracking). El arranque en frío y R-05 ya no aplican; el pipeline sigue despertando la máquina sin daño.
+
 ## Deuda técnica o riesgos nuevos
 
 | # | Hallazgo | Impacto | Mitigación |
@@ -287,5 +292,5 @@ producto vienen de las Clarifications de la spec.
 | R-02 | Los workflows programados se desactivan tras 60 días sin actividad. | Dejaría de haber respaldos sin avisar. | Documentado en el runbook; revisar si el repositorio pasa meses inactivo. |
 | R-03 | Coste por uso de Fly.io y del bucket. | Aceptado en la clarificación. | Máquina que se apaga sin tráfico; volumen de 1 GB, el mínimo. |
 | R-04 | ~~Cambio de runtime en Render~~ | Ya no aplica (Fly.io). | — |
-| R-05 | Arranque en frío: la primera petición tras un periodo sin uso tarda unos segundos. | Aceptado en la spec. | `min_machines_running = 0`; si molesta, subirlo a 1 (coste fijo). |
+| R-05 | Arranque en frío: la primera petición tras un periodo sin uso tarda unos segundos. | Aceptado en la spec. | ~~`min_machines_running = 0`~~ Desde la feature 013 la máquina está siempre encendida (`min_machines_running = 1`). |
 | R-06 | Si el despliegue que falla también rompe la base, el rollback no la repara. | Riesgo bajo: esta feature no cambia el esquema. | Respaldo manual antes de cualquier despliegue que incluya migraciones (runbook). |

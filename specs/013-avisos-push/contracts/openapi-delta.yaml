@@ -1,0 +1,196 @@
+openapi: 3.1.0
+info:
+  title: Descanso API — cambios de la feature 013
+  version: 1.9.0
+  description: |
+    Avisos push con la app cerrada. Todo /api/push exige sesión y CSRF (004) y está aislado por usuario
+    (008): lo ajeno → 404. Ninguna respuesta ni aviso lleva datos de sueño ni de salud (FR-022).
+    Sin credenciales VAPID en el servidor, GET /api/push responde available: false y las escrituras 503
+    (FR-024). La API nunca devuelve el endpoint ni las claves de un dispositivo (FR-006).
+servers:
+  - url: /api
+
+paths:
+  /push:
+    get:
+      summary: Estado del bloque "Avisos en este móvil" (US1, US3, US5)
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PushState' }
+        '401': { description: Sin sesión }
+
+  /push/preferences:
+    put:
+      summary: Tipos activos, "No molestar" y "Silenciar hoy" (FR-017, FR-018)
+      description: |
+        Campos opcionales; solo cambia lo enviado. mute_today true fija muted_until = hoy en la zona del
+        perfil (lo calcula el servidor); false lo vacía. Rige desde el siguiente aviso no enviado.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                kinds: { $ref: '#/components/schemas/Kinds' }
+                dnd:
+                  oneOf:
+                    - type: 'null'
+                    - { $ref: '#/components/schemas/Dnd' }
+                mute_today: { type: boolean }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Preferences' }
+        '400': { description: 'Tipos no booleanos, franja incompleta, fuera de 0–1439 o con inicio = fin ("La franja de No molestar necesita inicio y fin distintos"); mute_today sin zona horaria en el perfil' }
+        '401': { description: Sin sesión }
+        '403': { description: CSRF }
+
+  /push/subscriptions:
+    post:
+      summary: Activa los avisos en este dispositivo (US1, FR-006)
+      description: |
+        Idempotente por endpoint: el mismo navegador no se duplica; si lo tenía otra persona, pasa a ser de
+        quien lo activa. Queda ligado a la sesión actual (al cerrarla se borra, FR-007). label se calcula
+        del User-Agent. timezone solo se guarda si el perfil no tenía zona (research R14).
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [endpoint, keys]
+              additionalProperties: false
+              properties:
+                endpoint: { type: string, maxLength: 1024, description: 'https y host permitido: fcm.googleapis.com, web.push.apple.com, *.push.services.mozilla.com, *.notify.windows.com (FR-023)' }
+                keys:
+                  type: object
+                  required: [p256dh, auth]
+                  properties:
+                    p256dh: { type: string, pattern: '^[A-Za-z0-9_-]{87}$' }
+                    auth: { type: string, pattern: '^[A-Za-z0-9_-]{22}$' }
+                timezone: { type: string, description: IANA o UTC; se ignora si el perfil ya tiene zona }
+      responses:
+        '201':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Device' }
+        '400': { description: '"Este navegador no usa un servicio de avisos compatible" (host no permitido) o "Datos del dispositivo no válidos"; zona horaria desconocida; sin zona en el perfil ni en la petición' }
+        '401': { description: Sin sesión }
+        '403': { description: CSRF }
+        '409': { description: '"Ya tienes 5 dispositivos con avisos; quita uno para añadir este" (FR-006)' }
+        '503': { description: '"Los avisos no están disponibles" (sin VAPID, FR-024)' }
+
+  /push/subscriptions/{id}:
+    delete:
+      summary: Quita un dispositivo propio; deja de recibir avisos de inmediato (US1-8)
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        '204': { description: Borrado }
+        '401': { description: Sin sesión }
+        '403': { description: CSRF }
+        '404': { description: No existe o es de otra persona }
+
+  /push/subscriptions/{id}/test:
+    post:
+      summary: Aviso de prueba a ese dispositivo propio (US4, FR-020, FR-021)
+      description: |
+        Ignora "No molestar" y "Silenciar hoy". Texto "Descanso: aviso de prueba", TTL 60 s. Máximo 3 por
+        minuto y persona; cada intento cuenta. Con result expired el dispositivo ya se ha borrado.
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [result]
+                properties:
+                  result: { type: string, enum: [sent, expired, failed], description: 'sent = aceptado por el servicio de push; expired = 404/410 (permiso retirado o dispositivo caducado); failed = timeout u otro error' }
+        '401': { description: Sin sesión }
+        '403': { description: CSRF }
+        '404': { description: No existe o es de otra persona }
+        '429': { description: '"Espera un momento antes de probar otra vez"' }
+        '503': { description: '"Los avisos no están disponibles"' }
+
+  /admin/health:
+    get:
+      summary: Salud de administración de los avisos (FR-026), con Authorization Bearer BACKUP_TOKEN
+      description: Sin datos personales. Montado solo si BACKUP_TOKEN está definido (como /admin/backup); /api/health público no cambia.
+      security: [{ backupToken: [] }]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reminders:
+                    type: object
+                    properties:
+                      enabled: { type: boolean, description: VAPID configurado y disparador en marcha }
+                      last_tick_at: { type: [string, 'null'], format: date-time }
+                      pending_dues: { type: integer, description: Vencimientos en ventana sin entrega en el último tick }
+                      skipped_24h: { type: integer }
+                      failed_24h: { type: integer }
+        '401': { description: Token incorrecto }
+        '404': { description: Sin BACKUP_TOKEN (contrato de 002) }
+
+  /auth/logout:
+    post:
+      summary: 'Sin cambios de contrato; al borrar la sesión, ON DELETE CASCADE borra el dispositivo ligado a ella (FR-007)'
+  /me:
+    delete:
+      summary: 'Sin cambios de contrato; borrar la cuenta borra dispositivos, entregas y preferencias (CASCADE)'
+  /export.json:
+    get:
+      summary: 'Añade push_preferences: Preferences. No incluye dispositivos ni entregas (FR-028)'
+
+components:
+  securitySchemes:
+    backupToken: { type: http, scheme: bearer }
+  schemas:
+    Kinds:
+      type: object
+      additionalProperties: false
+      properties:
+        prepare: { type: boolean }
+        bedtime: { type: boolean }
+        wake_check: { type: boolean }
+    Dnd:
+      type: object
+      required: [start_min, end_min]
+      properties:
+        start_min: { type: integer, minimum: 0, maximum: 1439 }
+        end_min: { type: integer, minimum: 0, maximum: 1439, description: 'Puede ser < start_min (cruza medianoche); distinto de start_min' }
+    Preferences:
+      type: object
+      required: [kinds, dnd, muted_until]
+      properties:
+        kinds: { $ref: '#/components/schemas/Kinds' }
+        dnd:
+          oneOf:
+            - type: 'null'
+            - { $ref: '#/components/schemas/Dnd' }
+        muted_until: { type: [string, 'null'], format: date, description: 'Fecha de la noche hasta la que rige "Silenciar hoy"' }
+    Device:
+      type: object
+      required: [id, label, created_at, fingerprint]
+      properties:
+        id: { type: integer }
+        label: { type: string, example: Chrome en Android }
+        created_at: { type: string, format: date-time }
+        fingerprint: { type: string, pattern: '^[0-9a-f]{16}$', description: 'Primeros 16 hex del SHA-256 del endpoint: el navegador marca "Este móvil" comparando con el suyo (no es el endpoint)' }
+    PushState:
+      type: object
+      required: [available, public_key, timezone, preferences, devices]
+      properties:
+        available: { type: boolean, description: 'false sin credenciales VAPID: "Los avisos no están disponibles"' }
+        public_key: { type: [string, 'null'], description: Clave VAPID pública (base64url) para pushManager.subscribe; null si no disponible }
+        timezone: { type: [string, 'null'], description: Zona del perfil; null = sin fijar (el bloque propone la del navegador) }
+        preferences: { $ref: '#/components/schemas/Preferences' }
+        devices: { type: array, maxItems: 5, items: { $ref: '#/components/schemas/Device' } }
