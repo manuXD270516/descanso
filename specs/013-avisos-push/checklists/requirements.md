@@ -44,3 +44,10 @@
 - Antes del plan: spike de ½ día en un Android real (aviso con Chrome cerrado, apertura de Noche,
   memoria del servicio). Complexity Tracking del plan debe registrar que se abandona el auto-stop (R13
   de 002).
+- **Retoques tras el spike (2026-10-23)**, sin cambiar decisiones del owner: el margen de ± 2 min de
+  FR-009 se mide hasta la entrega al servicio de avisos del navegador; Edge Cases y Assumptions
+  reconocen Doze, "No molestar"/ahorro de batería del fabricante y el arranque en frío de ~15 s tras
+  reiniciar (también en SC-005). Se añaden dos casos derivados de 004/008 (perfil sin zona horaria y
+  sesión cerrada por otra vía), se corrige la redacción de US3-4 y el ejemplo de recuperación del
+  Independent Test de US2 (caído de 22:40 a 23:00 dejaba el aviso de las 22:45 fuera de su ventana de
+  10 min, en contra de FR-011).

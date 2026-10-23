@@ -95,8 +95,9 @@ calendario.
 antes" 30 min y los tres tipos activos: el lunes a las 22:45 ± 2 min llega "Descanso: en 30 min es tu
 hora de dormir"; a las 23:15 ± 2 min, "Descanso: es tu hora de dormir"; con la noche abierta, el martes
 a las 8:00 ± 2 min llega "Descanso: ¿ya despertaste?", y si la cerré a las 7:30 no llega. Reiniciar el
-servicio dos veces entre medias no duplica ninguno. Si el servicio estuvo caído de 22:40 a 23:00, al
-volver envía el de las 22:45 (dentro de su ventana) y el de las 23:15 a su hora.
+servicio dos veces entre medias no duplica ninguno. Si el servicio estuvo caído de 22:40 a 22:50, al
+volver envía el de las 22:45 (dentro de su ventana de 10 min) y el de las 23:15 a su hora; si estuvo
+caído hasta las 23:00, el de las 22:45 queda descartado (FR-011).
 
 **Acceptance Scenarios**:
 
@@ -149,8 +150,8 @@ esto la persona tendría que desactivarlo todo.
 2. **Given** un tipo desactivado, **Then** ningún dispositivo recibe ese aviso hasta reactivarlo.
 3. **Given** que cambio un tipo, mi horario o "Avisarme antes", **Then** el cambio rige desde el
    siguiente aviso que aún no se haya enviado, incluida la noche de hoy.
-4. **Given** que activo los avisos por primera vez, **Then** los tipos activos por defecto son los que
-   los tres tipos están activos y la explicación me avisa del doble "prepárate" si importé el
+4. **Given** que activo los avisos por primera vez, **Then** los tres tipos están activos y la
+   explicación me avisa del doble "prepárate" si importé el
    calendario de 010, con la opción de desactivar el de Descanso (FR-012).
 
 ---
@@ -234,8 +235,24 @@ nunca quiero avisos.
 - **Descanso abierto y visible en el dispositivo cuando vence un aviso**: el dispositivo lo muestra
   dentro de la app, nunca duplicado (FR-019).
 - **Alarma del calendario de 010 importada**: puede haber dos avisos de "prepárate" (FR-012): la explicación previa lo advierte y ofrece cómo evitarlo.
-- **"No molestar" o modo descanso del propio Android**: puede silenciar el aviso; la explicación lo
-  advierte (como la guía de 010).
+- **"No molestar" o modo descanso del propio Android**: el aviso llega pero queda en silencio en la
+  bandeja (spike de 013, 2026-10-23); el ahorro de batería del fabricante también puede silenciarlo o
+  retrasarlo. La explicación lo advierte (como la guía de 010).
+- **Móvil quieto y con la pantalla apagada mucho rato (reposo profundo de Android, "Doze")**: el
+  sistema puede retener el aviso hasta que el móvil sale del reposo, más allá de ± 2 min (spike de
+  013). Es un límite del sistema, no de Descanso: el margen de ± 2 min se mide hasta la entrega al
+  servicio de avisos del navegador, y la explicación previa lo dice.
+- **Móvil recién reiniciado** (el navegador sin ningún proceso abierto): el aviso arranca el navegador
+  y puede tardar hasta unos 15 s en mostrarse (spike de 013); sigue dentro de ± 2 min, pero el aviso
+  de prueba puede pasar de 10 s en ese caso.
+- **Sin zona horaria en el perfil** (008 la deja sin fijar hasta que la persona la acepta): como en el
+  perfil de 008, el bloque propone la del navegador y la muestra en la explicación previa; al pulsar
+  "Activar avisos" se guarda en el perfil junto con la activación. Sin zona horaria no se calcula
+  ningún aviso.
+- **Sesión cerrada por otra vía**: un dispositivo recibe avisos mientras siga abierta la sesión con la
+  que se activó; si esa sesión se cierra (cerrar sesión, caducidad de 30 días sin uso de 004 o cambio
+  de contraseña desde otro dispositivo, que cierra las demás sesiones), el dispositivo deja de recibir
+  avisos y, al volver a entrar, el bloque ofrece activarlos de nuevo (FR-007).
 - **Rotación de las credenciales del servicio de avisos** (operación): los dispositivos activados
   dejan de recibir avisos; al abrir la app, el bloque pide "Vuelve a activar los avisos".
 - **Dos usuarios**: los dispositivos, preferencias y avisos de uno nunca son visibles ni gestionables
@@ -279,7 +296,9 @@ nunca quiero avisos.
   que un cambio guardado hoy rige ya los avisos de esta noche; día de la semana de la noche; hora de
   acostarse antes de mediodía = después de medianoche) y convertirse al instante real
   con la zona horaria del perfil (008). Una hora inexistente por DST MUST pasar a la primera válida
-  posterior y una ambigua, a su primera ocurrencia. Cada aviso MUST llegar con un margen de ± 2 min.
+  posterior y una ambigua, a su primera ocurrencia. Cada aviso MUST llegar con un margen de ± 2 min,
+  medido hasta su entrega al servicio de avisos del navegador (lo que tarde el sistema del móvil en
+  mostrarlo queda fuera de Descanso: ver Edge Cases y Assumptions).
 - **FR-010**: Cada aviso MUST enviarse como máximo una vez por persona, tipo y fecha de la noche,
   aunque el servicio evalúe varias veces, se reinicie o se despliegue. Un envío interrumpido MUST NOT
   reintentarse.
@@ -380,7 +399,8 @@ nunca quiero avisos.
   todo lo que sigue en ventana y se descarta el resto.
 - **SC-004**: Con 20 personas, una con su dispositivo caducado y otra con uno que no responde, las 18
   restantes reciben su aviso dentro del margen y el dispositivo caducado desaparece de su lista.
-- **SC-005**: El aviso de prueba llega en menos de 10 s en un Android real con Chrome cerrado (spike y
+- **SC-005**: El aviso de prueba llega en menos de 10 s en un Android real con Chrome cerrado desde
+  recientes (spike: ~1,2–1,6 s; tras reiniciar el móvil puede tardar ~15 s, ver Edge Cases) (spike y
   prueba manual) y en la prueba de extremo a extremo con un servicio de avisos simulado.
 - **SC-006**: 0 datos de salud y 0 menciones de la racha en los textos de aviso (prueba automática).
 - **SC-007**: 0 peticiones de permiso de notificaciones sin pulsar "Activar avisos" (prueba de
@@ -397,8 +417,16 @@ nunca quiero avisos.
 
 - **Plataforma**: Android con Chrome (u otro navegador compatible) recibe avisos con la app cerrada y
   sin instalarla; iPhone queda fuera (requiere app instalada, 012 descartada) y ve el estado "no
-  compatible" con la alternativa del calendario de 010. Antes del plan hay un spike de ½ día en un
-  Android real: aviso con Chrome cerrado, apertura de Noche al tocarlo y memoria del servicio.
+  compatible" con la alternativa del calendario de 010. El spike previo al plan (2026-10-23, HONOR 400
+  con Android 16 y Chrome 155; [`spike/README.md`](spike/README.md)) confirmó la entrega con Chrome
+  cerrado (~1,2–1,6 s), la apertura de Noche al tocarlo, la caducidad y el colapso de avisos, el 410
+  de un permiso retirado y un pico de 54 MB de memoria del servicio.
+- **Límites del sistema del móvil** (spike de 013, sin cambiar el diseño): el margen de ± 2 min
+  (FR-009, SC-001) se mide hasta la entrega al servicio de avisos del navegador. Después, el reposo
+  profundo de Android (Doze) puede retener el aviso más allá del margen con el móvil quieto y apagado;
+  "No molestar" y el ahorro de batería del fabricante pueden silenciarlo o retrasarlo; y tras reiniciar
+  el móvil el primer aviso tarda hasta ~15 s. La explicación previa lo advierte. Confirmar el
+  comportamiento de Doze en una noche real queda como prueba manual opcional tras implementar.
 - **Disparador**: el propio servicio, siempre encendido (decisión del owner, P5b, 2026-09-29); deja de
   apagarse sin tráfico, lo que se registra en el plan (principio VI). No requiere enmienda del
   principio V.
