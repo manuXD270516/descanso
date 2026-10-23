@@ -27,6 +27,16 @@ datos de sueño ni de salud, y ningún aviso menciona la racha (011, FR-023).
   política de privacidad (ve cuándo llega cada aviso, no su contenido); pulsar "Activar avisos" tras
   leerlo es el consentimiento.
 
+### Session 2026-10-23
+
+- Q: Si el perfil no tiene zona horaria, ¿qué hace "Activar avisos"? → A: **Propone la zona del
+  navegador y la guarda al pulsar "Activar avisos"** (Edge Cases; research R14).
+- Q: Borrar el registro de envíos a los 90 días y los dispositivos al cerrarse su sesión, ¿choca con el
+  principio II? → A: **Se aclara con una enmienda PATCH de la constitución, aparte de esta feature**:
+  las credenciales del navegador y los registros operativos no son historia personal (research R13).
+- Q: ¿Se acepta que cada dispositivo dependa de la sesión que lo activó (cambiar la contraseña en otro
+  dispositivo o 30 días sin uso detienen sus avisos)? → A: **Sí**; hay que reactivar en ese caso.
+
 ## Glosario
 
 - **Aviso push**: notificación del sistema que el móvil muestra aunque Descanso esté cerrado.
