@@ -54,9 +54,15 @@ function loadSession(db, req, now = Date.now()) {
   return { id, user: { id: row.user_id, email: row.email, role: row.role, display_name: row.display_name }, refreshed };
 }
 
+/** Huella de la sesión de la petición (la que liga un dispositivo con avisos, feature 013); null sin cookie. */
+function sessionHash(req) {
+  const id = readCookie(req, cookieName(req));
+  return id ? sha256(id) : null;
+}
+
 function destroySession(db, req) {
   const id = readCookie(req, cookieName(req));
   if (id) db.prepare('DELETE FROM sessions WHERE id_hash = ?').run(sha256(id));
 }
 
-module.exports = { createSession, loadSession, destroySession, setCookie, clearCookie, cookieName, sha256, TTL, REFRESH_EVERY };
+module.exports = { createSession, loadSession, destroySession, sessionHash, setCookie, clearCookie, cookieName, sha256, TTL, REFRESH_EVERY };

@@ -17,6 +17,8 @@ import { TrendsComponent } from './features/trends/trends.component';
 import { WelcomeComponent } from './features/onboarding/welcome.component';
 import { MyScheduleComponent } from './features/schedule/my-schedule.component';
 import { BedtimeNoticeComponent } from './shared/bedtime-notice.component';
+import { NightUiService } from './features/night/night-ui.service';
+import { PushService } from './core/push.service';
 
 type Tab = 'night' | 'trends' | 'naps' | 'metrics';
 /** Vistas del menú Cuenta (feature 008). */
@@ -37,6 +39,8 @@ type PublicView = 'register' | 'reset' | 'forgot' | 'privacy';
 export class App implements OnInit {
   private api = inject(ApiService);
   readonly auth = inject(AuthService);
+  private nightUi = inject(NightUiService);
+  private push = inject(PushService);
 
   // La pestaña vive en App: si la sesión caduca y vuelves a entrar, sigues donde estabas
   readonly tab = signal<Tab>('night');
@@ -80,11 +84,13 @@ export class App implements OnInit {
   }
 
   /**
-   * Enlace del evento del calendario (feature 010, FR-010): #noche abre la pestaña Noche, con
-   * "Me voy a dormir" a la vista, y limpia el fragmento.
+   * Enlaces de los avisos (features 010 y 013): #noche abre la pestaña Noche, con "Me voy a dormir" a la
+   * vista; #noche-despertar la abre con "Ya desperté" a la vista y con el foco. Limpian el fragmento. Sin
+   * sesión, la pestaña y la intención se conservan y, tras entrar, se muestra Noche (FR-013).
    */
   private openNightLink() {
-    if (location.hash !== '#noche') return;
+    if (location.hash !== '#noche' && location.hash !== '#noche-despertar') return;
+    if (location.hash === '#noche-despertar') this.nightUi.wakeIntent.set(true);
     this.accountView.set(null);
     this.tab.set('night');
     history.replaceState(null, '', location.pathname + location.search);
@@ -123,6 +129,7 @@ export class App implements OnInit {
   logout(menu?: HTMLDetailsElement) {
     if (menu) menu.open = false;
     this.accountView.set(null);
+    void this.push.unsubscribeOnLogout(); // este navegador deja de recibir avisos (FR-007); no bloquea el cierre
     this.auth.logout();
   }
 

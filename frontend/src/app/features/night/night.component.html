@@ -35,7 +35,7 @@
     <p class="muted small">Registra la hora en que despertaste para cerrar la noche.</p>
     <div class="row wrap">
       <input type="datetime-local" [ngModel]="wakeInput()" (ngModelChange)="wakeInput.set($event)" aria-label="Hora de despertar">
-      <button class="btn btn-dawn" type="button" (click)="wakeUp()" [disabled]="busy()">Ya desperté</button>
+      <button #wakeBtn class="btn btn-dawn" type="button" (click)="wakeUp()" [disabled]="busy()">Ya desperté</button>
     </div>
     <app-cycle-calculator [bedtime]="o.bedtime" [cycleMin]="cycleMin()" [latencyMin]="latencyMin()" (settingsChanged)="updateSettings($event)" />
   } @else {

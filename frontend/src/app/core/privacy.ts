@@ -3,7 +3,7 @@
  * backend/src/policy.js (lo comprueba un test). Si cambia el contenido de forma material, se
  * cambian ambas versiones.
  */
-export const POLICY_VERSION = '2026-10-01';
+export const POLICY_VERSION = '2026-10-23';
 
 /** Texto honesto sobre el acceso técnico de quien opera el servidor (FR-006). */
 export const OPERATOR_NOTICE =
@@ -26,6 +26,14 @@ export const POLICY_SECTIONS: { title: string; text: string }[] = [
     text:
       'Puedes exportar todos tus datos (JSON o CSV) desde el menú Cuenta, y borrar tu cuenta cuando quieras desde tu perfil. ' +
       'Al borrarla, tus datos desaparecen de la app al momento.',
+  },
+  {
+    title: 'Avisos en el móvil',
+    text:
+      'Si activas los avisos, Descanso te los envía aunque la app esté cerrada. Los entrega el servicio de avisos de tu navegador ' +
+      '(Google, en Chrome de Android): sabe cuándo llega un aviso, pero no su contenido, que va cifrado y nunca incluye datos de ' +
+      'sueño ni de salud. No usamos ningún otro tercero para programarlos. Guardamos las credenciales de tu navegador para enviarte ' +
+      'los avisos y las borramos al quitar el dispositivo, cerrar sesión o borrar tu cuenta; no se incluyen en tu exportación.',
   },
   {
     title: 'Respaldos',

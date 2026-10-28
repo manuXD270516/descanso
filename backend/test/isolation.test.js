@@ -2,6 +2,13 @@ const { test, before } = require('node:test');
 const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
 const { api, otherApi, db, iso, OTHER_ID } = require('./helpers');
+const webpush = require('web-push');
+
+// Feature 013: las rutas de /api/push exigen avisos disponibles para llegar al 404 de lo ajeno
+const vapid = webpush.generateVAPIDKeys();
+process.env.VAPID_PUBLIC_KEY = vapid.publicKey;
+process.env.VAPID_PRIVATE_KEY = vapid.privateKey;
+process.env.VAPID_SUBJECT = 'mailto:avisos@descanso.test';
 
 // Suite de aislamiento de dos usuarios (feature 008, SC-001, constitución v2.0.0):
 // A = propietario (api), B = invitada (otherApi). B nunca ve, cambia ni borra nada de A.
@@ -14,6 +21,7 @@ const ROUTERS = {
   '/api': require('../src/routes/export'),
   '/api/': require('../src/routes/schedule'), // feature 010 (montado en /api; clave distinta para el mapa)
   '/api/streak': require('../src/routes/streak'), // feature 011
+  '/api/push': require('../src/routes/push'), // feature 013
 };
 
 /** Huella de todas las filas de A (por sus tablas y hijas). */
@@ -28,6 +36,8 @@ function fingerprintOf(userId) {
     pauses: q('SELECT * FROM pauses WHERE user_id = ? ORDER BY id'),
     settings: q('SELECT * FROM user_settings WHERE user_id = ?'),
     achievements: q('SELECT * FROM streak_achievements WHERE user_id = ? ORDER BY id'),
+    devices: q('SELECT * FROM push_subscriptions WHERE user_id = ? ORDER BY id'), // feature 013
+    deliveries: q('SELECT * FROM reminder_deliveries WHERE user_id = ? ORDER BY kind, night_date'),
   };
   return crypto.createHash('sha256').update(JSON.stringify(rows)).digest('hex');
 }
@@ -46,6 +56,10 @@ before(async () => {
   await api.put('/api/schedule').send({ today, days: [0, 1, 2, 3, 4, 5, 6].map((weekday) => ({ weekday, bed_min: 1395, wake_min: 420, active: true })) }).expect(200);
   db.exec('DELETE FROM pauses');
   A.pause = (await api.post('/api/pauses').send({ start_date: today, end_date: today, today }).expect(201)).body;
+  // Feature 013: A tiene un dispositivo con avisos y una entrega registrada
+  db.prepare("UPDATE users SET timezone = 'Europe/Madrid' WHERE id IN (1, ?)").run(OTHER_ID);
+  A.device = (await api.post('/api/push/subscriptions').send({ endpoint: 'https://fcm.googleapis.com/fcm/send/aaaa', keys: { p256dh: 'B'.repeat(87), auth: 'a'.repeat(22) } }).expect(201)).body;
+  db.prepare("INSERT INTO reminder_deliveries (user_id, kind, night_date, due_at, status, updated_at) VALUES (1, 'bedtime', '2026-09-05', 'x', 'sent', 'x')").run();
   // B también tiene lo suyo, incluida una noche abierta a la vez que A (FR-008)
   await otherApi.post('/api/sleep').send({ date: '2026-09-07', bedtime: iso('2026-09-07T22:00') }).expect(201);
 });
@@ -57,9 +71,10 @@ const routesOf = (router, prefix) =>
 test('B no puede leer, editar ni borrar ningún recurso de A por id: siempre 404 y A intacto (FR-007)', async () => {
   const before = fingerprintOf(A_ID);
   const routes = Object.entries(ROUTERS).flatMap(([p, r]) => routesOf(r, p.replace(/\/$/, ''))).filter(([, path]) => path.includes(':id'));
-  assert.ok(routes.length >= 8, `rutas con id: ${routes.length}`);
+  assert.ok(routes.length >= 10, `rutas con id: ${routes.length}`);
+  assert.ok(routes.some(([m, p]) => m === 'delete' && p === '/api/push/subscriptions/:id') && routes.some(([m, p]) => m === 'post' && p === '/api/push/subscriptions/:id/test'));
   for (const [method, path] of routes) {
-    const id = path.startsWith('/api/sleep') ? A.closed.id : path.startsWith('/api/naps') ? A.nap.id : path.startsWith('/api/pauses') ? A.pause.id : A.metric.id;
+    const id = path.startsWith('/api/sleep') ? A.closed.id : path.startsWith('/api/naps') ? A.nap.id : path.startsWith('/api/pauses') ? A.pause.id : path.startsWith('/api/push') ? A.device.id : A.metric.id;
     const url = path.replace(':id', id).replace(':date', A.date);
     const body = { today: new Date().toISOString().slice(0, 10), value: 1, name: 'x', type: 'number', date: '2026-09-05', bedtime: iso('2026-09-05T23:00'), start_time: iso('2026-09-06T14:00'), end_time: iso('2026-09-06T15:00') };
     const res = await otherApi[method](url).send(body);
@@ -117,6 +132,26 @@ test('la racha de A no aparece ni se toca desde B (feature 011, FR-027, SC-008)'
   assert.deepEqual(exp.streak.achievements, []);
   assert.equal(exp.streak.settings.enabled, false);
   db.exec('DELETE FROM streak_achievements; UPDATE user_settings SET streak_enabled = 0, streak_since = NULL, streak_offered_at = NULL, streak_margin_min = 30, streak_summary_dismissed = NULL;');
+});
+
+test('los avisos de A no aparecen ni se tocan desde B (feature 013, SC-010)', async () => {
+  const before = fingerprintOf(A_ID);
+  const routes = routesOf(ROUTERS['/api/push'], '/api/push');
+  assert.equal(routes.length, 5, JSON.stringify(routes));
+  await api.put('/api/push/preferences').send({ kinds: { prepare: false }, dnd: { start_min: 1380, end_min: 420 } }).expect(200);
+  const aPrefs = fingerprintOf(A_ID);
+  const view = (await otherApi.get('/api/push').expect(200)).body;
+  assert.deepEqual(view.devices, [], 'B no ve el dispositivo de A');
+  assert.deepEqual(view.preferences, { kinds: { prepare: true, bedtime: true, wake_check: true }, dnd: null, muted_until: null });
+  await otherApi.put('/api/push/preferences').send({ kinds: { bedtime: false }, dnd: null, mute_today: true }).expect(200);
+  await otherApi.delete(`/api/push/subscriptions/${A.device.id}`).expect(404);
+  await otherApi.post(`/api/push/subscriptions/${A.device.id}/test`).expect(404);
+  assert.equal(fingerprintOf(A_ID), aPrefs, 'B no cambió nada de A');
+  assert.notEqual(before, aPrefs);
+  const exp = (await otherApi.get('/api/export.json').expect(200)).body;
+  assert.ok(!JSON.stringify(exp).includes('fcm.googleapis.com'));
+  assert.equal(exp.push_preferences.kinds.prepare, true);
+  await api.put('/api/push/preferences').send({ kinds: { prepare: true }, dnd: null }).expect(200);
 });
 
 test('el dashboard de B no refleja nada de A (feature 005)', async () => {
