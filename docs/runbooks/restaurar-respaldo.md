@@ -32,7 +32,9 @@ copia en claro.
 ## Requisitos
 
 - `aws` CLI con credenciales del bucket (las mismas que los secretos `AWS_ACCESS_KEY_ID` /
-  `AWS_SECRET_ACCESS_KEY` de GitHub).
+  `AWS_SECRET_ACCESS_KEY` de GitHub). Si creaste el perfil `descanso-r2` de
+  [configurar-bucket-respaldos.md](configurar-bucket-respaldos.md) §6, añade
+  `--profile descanso-r2` a cada comando `aws`.
 - `age` y tu clave privada `descanso-backup.key` (paso 0).
 - Para la variante local: Docker con Compose.
 
@@ -102,9 +104,9 @@ GitHub → Actions → **Backup** → *Run workflow*. Hace lo mismo que la ejecu
   lo está, pulsa *Enable workflow*.
 - Si el workflow **Backup** falla, GitHub envía un correo. Un fallo nunca borra respaldos
   anteriores, porque la poda solo se ejecuta tras subir con éxito la copia del día.
-- El endpoint `/api/admin/backup` exige `Authorization: Bearer <BACKUP_TOKEN>`. Si rotas el
-  token, actualízalo **a la vez** en Fly (`flyctl secrets set BACKUP_TOKEN=… --app descanso-sleep`)
-  y en GitHub (secreto `BACKUP_TOKEN`).
+- El endpoint `/api/admin/backup` exige `Authorization: Bearer <BACKUP_TOKEN>`. Para rotar el
+  token usa `scripts/ops/rotar-backup-token.ps1` (o `.sh`): lo cambia a la vez en Fly y en
+  GitHub y comprueba que la app lo acepta.
 
 ## Registro de ensayos
 
