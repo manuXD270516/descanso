@@ -193,6 +193,7 @@ suite de aislamiento de dos usuarios (Alcance) y términos prohibidos (VIII).
   - quickstart §3 (navegador del PC), §4 (Android real) y §5 (`docker run --memory=256m` 10 min sin OOM);
   - anotar los resultados en el PR.
   - **Estado (2026-10-23)**: hechos las puertas automáticas (backend 385 tests, frontend 204, e2e 90 + 2 omitidas previas, humo local), el quickstart §3 por `curl` contra el servicio local con push simulado, y en Docker la imagen se construye sin compilar nada nativo y arranca con el disparador (17,6 MiB con `--memory=256m` tras ~40 s). **Pendientes (no se pueden hacer desde este entorno)**: la compatibilidad con la imagen publicada de master (011) sobre una base migrada por 013 (la cubre `compat-previous-013.test.js`), el §4 en un Android real y el §5 de 10 minutos.
+  - **Estado (2026-10-30)**: hecho el §5 con la imagen de master `75caae1`: 10 minutos con `--memory=256m` y el disparador activo, pico de 18,55 MiB, sin OOM ni reinicios (base vacía, sin un tick con envíos reales). Hecha la compatibilidad: la imagen de `e1309e6` (011), construida localmente, arranca sobre una base con el esquema 11, responde `/api/health` e ignora `011_avisos_push` con un aviso; alta, login, horario y logout funcionan. **Pendiente**: el §4 en un Android real.
 
 ---
 
