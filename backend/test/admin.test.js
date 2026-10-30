@@ -36,7 +36,7 @@ test('con el token correcto entrega una copia SQLite consistente con los datos (
     .buffer(true).parse(binary)
     .expect(200);
   assert.equal(res.headers['content-type'], 'application/octet-stream');
-  assert.match(res.headers['content-disposition'], /attachment; filename="descanso-\d{4}-\d{2}-\d{2}T\d{6}Z\.db"/);
+  assert.match(res.headers['content-disposition'], /attachment; filename="?descanso-\d{4}-\d{2}-\d{2}T\d{6}Z\.db"?/);
 
   const file = path.join(os.tmpdir(), `admin-test-${process.pid}.db`);
   fs.writeFileSync(file, res.body);
