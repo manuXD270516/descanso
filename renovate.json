@@ -2,5 +2,12 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
+  ],
+  "packageRules": [
+    {
+      "description": "Angular 20 exige zone.js ~0.15 (peer de @angular/core); subirlo junto con Angular 21",
+      "matchPackageNames": ["zone.js"],
+      "allowedVersions": "<0.16.0"
+    }
   ]
 }
