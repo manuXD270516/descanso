@@ -80,7 +80,7 @@ jobs:
         run: npm run typecheck
 
       - name: Caché de navegadores de Playwright
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('e2e/package-lock.json') }}
