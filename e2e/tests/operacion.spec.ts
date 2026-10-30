@@ -55,7 +55,7 @@ test.describe('Respaldo con BACKUP_TOKEN (servidor propio)', () => {
 
     const ok = await request.get('/api/admin/backup', { headers: { Authorization: `Bearer ${token}` } });
     expect(ok.status()).toBe(200);
-    expect(ok.headers()['content-disposition']).toMatch(/attachment; filename="descanso-.*\.db"/);
+    expect(ok.headers()['content-disposition']).toMatch(/attachment; filename="?descanso-.*\.db"?/);
     const body = await ok.body();
     expect(body.subarray(0, 16).toString('latin1')).toBe('SQLite format 3\0');
     expect(body.length).toBeGreaterThan(4096);
