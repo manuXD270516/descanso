@@ -55,7 +55,7 @@ import { PushSettingsComponent } from '../push/push-settings.component';
       <app-push-settings [version]="version()" [leadMin]="leadMin()" [scheduleLoaded]="loaded()" />
 
       <h3>Modo pausa (viaje, malestar, turnos)</h3>
-      <p class="small muted">Durante la pausa, Descanso no te avisa dentro de la app. Hasta 14 días, 2 pausas cada 30 días.</p>
+      <p class="small muted">Durante la pausa, Descanso no te avisa: ni dentro de la app ni en el móvil. Hasta 14 días, 2 pausas cada 30 días.</p>
       <div class="row wrap">
         <label class="field"><span>Desde</span><input type="date" name="pauseFrom" [(ngModel)]="pauseFrom" [min]="today"></label>
         <label class="field"><span>Hasta</span><input type="date" name="pauseTo" [(ngModel)]="pauseTo" [min]="pauseFrom"></label>
