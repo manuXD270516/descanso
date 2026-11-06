@@ -1,5 +1,5 @@
 # Etapa 1: compilar el frontend Angular
-FROM node:22-alpine AS frontend
+FROM node:26-alpine AS frontend
 WORKDIR /app/frontend
 COPY frontend/package*.json ./
 RUN npm ci
@@ -8,13 +8,13 @@ RUN npx ng build
 
 # Etapa 2: dependencias de producción del backend (capa cacheable)
 # better-sqlite3 trae binario precompilado para linuxmusl-x64: no hace falta toolchain
-FROM node:22-alpine AS backend-deps
+FROM node:26-alpine AS backend-deps
 WORKDIR /app/backend
 COPY backend/package*.json ./
 RUN npm ci --omit=dev --ignore-scripts
 
 # Etapa 3: imagen final (backend + estáticos)
-FROM node:22-alpine
+FROM node:26-alpine
 WORKDIR /app/backend
 COPY --from=backend-deps /app/backend/node_modules ./node_modules
 COPY backend/package.json ./
