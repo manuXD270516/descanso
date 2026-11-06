@@ -3,20 +3,34 @@
   "extends": [
     "config:recommended"
   ],
+  "constraints": {
+    "node": "^22",
+    "npm": "^10"
+  },
   "packageRules": [
     {
       "description": "Angular 21 admite zone.js ~0.15 || ~0.16 (peer de @angular/core); revisar junto con Angular 22",
-      "matchPackageNames": ["zone.js"],
+      "matchPackageNames": [
+        "zone.js"
+      ],
       "allowedVersions": "<0.17.0"
     },
     {
       "description": "Angular, su CLI y angular-eslint se quedan en 21 hasta migrar con ng update (una versión mayor por vez)",
-      "matchPackageNames": ["@angular/**", "@angular-devkit/**", "@schematics/angular", "angular-eslint", "@angular-eslint/**"],
+      "matchPackageNames": [
+        "@angular/**",
+        "@angular-devkit/**",
+        "@schematics/angular",
+        "angular-eslint",
+        "@angular-eslint/**"
+      ],
       "allowedVersions": "<22.0.0"
     },
     {
       "description": "Angular 21 admite TypeScript >=5.9 <6.1",
-      "matchPackageNames": ["typescript"],
+      "matchPackageNames": [
+        "typescript"
+      ],
       "allowedVersions": "<6.1.0"
     }
   ]
