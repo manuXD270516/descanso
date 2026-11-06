@@ -5,9 +5,19 @@
   ],
   "packageRules": [
     {
-      "description": "Angular 20 exige zone.js ~0.15 (peer de @angular/core); subirlo junto con Angular 21",
+      "description": "Angular 21 admite zone.js ~0.15 || ~0.16 (peer de @angular/core); revisar junto con Angular 22",
       "matchPackageNames": ["zone.js"],
-      "allowedVersions": "<0.16.0"
+      "allowedVersions": "<0.17.0"
+    },
+    {
+      "description": "Angular, su CLI y angular-eslint se quedan en 21 hasta migrar con ng update (una versión mayor por vez)",
+      "matchPackageNames": ["@angular/**", "@angular-devkit/**", "@schematics/angular", "angular-eslint", "@angular-eslint/**"],
+      "allowedVersions": "<22.0.0"
+    },
+    {
+      "description": "Angular 21 admite TypeScript >=5.9 <6.1",
+      "matchPackageNames": ["typescript"],
+      "allowedVersions": "<6.1.0"
     }
   ]
 }
