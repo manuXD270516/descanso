@@ -155,7 +155,7 @@ export class PushService {
     const subscription = await this.currentSubscription();
     if (!subscription) return { subscribed: false, keyMatches: false, fingerprint: null };
     const keyMatches = !!publicKey && sameBytes(subscription.options?.applicationServerKey, base64UrlToBytes(publicKey));
-    let fingerprint: string | null = null;
+    let fingerprint: string | null;
     try {
       fingerprint = await this.fingerprintOf(subscription.endpoint);
     } catch {

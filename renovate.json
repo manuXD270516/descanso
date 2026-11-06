@@ -32,6 +32,13 @@
         "typescript"
       ],
       "allowedVersions": "<6.1.0"
+    },
+    {
+      "description": "karma-jasmine 5.1 (la última) depende de jasmine-core ^4; jasmine-core 7 rompe Karma. Subirlo al cambiar de runner de tests",
+      "matchPackageNames": [
+        "jasmine-core"
+      ],
+      "allowedVersions": "<6.0.0"
     }
   ]
 }
