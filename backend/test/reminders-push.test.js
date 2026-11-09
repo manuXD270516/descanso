@@ -5,7 +5,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const http = require('node:http');
 const path = require('node:path');
-const webpush = require('web-push');
+const webpush = require('../src/reminders/webpush');
 const push = require('../src/reminders/push');
 
 // Feature 013 (research R5, R6, R8, R17): hosts permitidos, costura de pruebas, etiquetas, textos

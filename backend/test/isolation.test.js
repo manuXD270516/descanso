@@ -2,7 +2,7 @@ const { test, before } = require('node:test');
 const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
 const { api, otherApi, db, iso, OTHER_ID } = require('./helpers');
-const webpush = require('web-push');
+const webpush = require('../src/reminders/webpush');
 
 // Feature 013: las rutas de /api/push exigen avisos disponibles para llegar al 404 de lo ajeno
 const vapid = webpush.generateVAPIDKeys();

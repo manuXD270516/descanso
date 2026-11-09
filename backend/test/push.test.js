@@ -1,7 +1,7 @@
 const { test, before, beforeEach, after, mock } = require('node:test');
 const assert = require('node:assert/strict');
 const supertest = require('supertest');
-const webpush = require('web-push');
+const webpush = require('../src/reminders/webpush');
 const { api, otherApi, anon, app, db, OTHER_ID } = require('./helpers');
 const { createSession } = require('../src/auth/sessions');
 
