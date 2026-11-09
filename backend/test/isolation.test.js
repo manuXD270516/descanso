@@ -2,7 +2,7 @@ const { test, before } = require('node:test');
 const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
 const { api, otherApi, db, iso, OTHER_ID } = require('./helpers');
-const webpush = require('web-push');
+const webpush = require('../src/reminders/webpush');
 
 // Feature 013: las rutas de /api/push exigen avisos disponibles para llegar al 404 de lo ajeno
 const vapid = webpush.generateVAPIDKeys();
@@ -58,7 +58,7 @@ before(async () => {
   A.pause = (await api.post('/api/pauses').send({ start_date: today, end_date: today, today }).expect(201)).body;
   // Feature 013: A tiene un dispositivo con avisos y una entrega registrada
   db.prepare("UPDATE users SET timezone = 'Europe/Madrid' WHERE id IN (1, ?)").run(OTHER_ID);
-  A.device = (await api.post('/api/push/subscriptions').send({ endpoint: 'https://fcm.googleapis.com/fcm/send/aaaa', keys: { p256dh: 'B'.repeat(87), auth: 'a'.repeat(22) } }).expect(201)).body;
+  A.device = (await api.post('/api/push/subscriptions').send({ endpoint: 'https://fcm.googleapis.com/fcm/send/aaaa', keys: { p256dh: 'BHfHKUBDCnNQlviY1YB3D6ruZBuMlXmtXln-Uh8T2Fsd_b3fsU4F8SJ9kevM0EgO3EpwTg6RVL8mtuwFhdpRIIc', auth: 'a'.repeat(22) } }).expect(201)).body;
   db.prepare("INSERT INTO reminder_deliveries (user_id, kind, night_date, due_at, status, updated_at) VALUES (1, 'bedtime', '2026-09-05', 'x', 'sent', 'x')").run();
   // B también tiene lo suyo, incluida una noche abierta a la vez que A (FR-008)
   await otherApi.post('/api/sleep').send({ date: '2026-09-07', bedtime: iso('2026-09-07T22:00') }).expect(201);

@@ -5,12 +5,13 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const http = require('node:http');
 const path = require('node:path');
-const webpush = require('web-push');
+const webpush = require('../src/reminders/webpush');
 const push = require('../src/reminders/push');
 
 // Feature 013 (research R5, R6, R8, R17): hosts permitidos, costura de pruebas, etiquetas, textos
 // exactos de los avisos y opciones del envío.
-const KEYS = { p256dh: 'B'.repeat(87), auth: 'a'.repeat(22) };
+// Punto P-256 real: web-push 4 valida la clave pública del dispositivo al cifrar.
+const KEYS = { p256dh: 'BHfHKUBDCnNQlviY1YB3D6ruZBuMlXmtXln-Uh8T2Fsd_b3fsU4F8SJ9kevM0EgO3EpwTg6RVL8mtuwFhdpRIIc', auth: 'a'.repeat(22) };
 const sub = (endpoint, keys = KEYS) => ({ endpoint, keys });
 const rejects = (fn) => assert.throws(fn, (e) => e.status === 400);
 

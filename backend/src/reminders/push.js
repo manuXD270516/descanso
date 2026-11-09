@@ -2,7 +2,7 @@
 // textos fijos de los avisos y envío con `web-push`. Nunca lanza al enviar: devuelve un resultado.
 const crypto = require('node:crypto');
 const http = require('node:http');
-const webpush = require('web-push');
+const webpush = require('./webpush');
 const { HttpError } = require('../util');
 const { ttlSeconds } = require('./windows');
 
