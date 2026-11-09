@@ -39,6 +39,20 @@
         "jasmine-core"
       ],
       "allowedVersions": "<6.0.0"
+    },
+    {
+      "description": "El proyecto corre en Node 22 (CI, Dockerfile, producción y engines); no subir Node hasta decidir la migración",
+      "matchPackageNames": [
+        "node"
+      ],
+      "allowedVersions": "<23.0.0"
+    },
+    {
+      "description": "Los lockfiles se generan con npm 10 (el de Node 22); npm 11 o superior rompe npm ci del CI",
+      "matchPackageNames": [
+        "npm"
+      ],
+      "allowedVersions": "<11.0.0"
     }
   ]
 }
