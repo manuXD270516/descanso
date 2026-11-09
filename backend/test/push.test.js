@@ -6,7 +6,8 @@ const { api, otherApi, anon, app, db, OTHER_ID } = require('./helpers');
 const { createSession } = require('../src/auth/sessions');
 
 // Feature 013: rutas de /api/push (dispositivos, preferencias, aviso de prueba).
-const KEYS = { p256dh: 'B'.repeat(87), auth: 'a'.repeat(22) };
+// Punto P-256 real: web-push 4 valida la clave pública del dispositivo al cifrar.
+const KEYS = { p256dh: 'BHfHKUBDCnNQlviY1YB3D6ruZBuMlXmtXln-Uh8T2Fsd_b3fsU4F8SJ9kevM0EgO3EpwTg6RVL8mtuwFhdpRIIc', auth: 'a'.repeat(22) };
 const CHROME_ANDROID = 'Mozilla/5.0 (Linux; Android 16; HONOR 400) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Mobile Safari/537.36';
 const vapid = webpush.generateVAPIDKeys();
 const saved = {};
