@@ -27,11 +27,11 @@
       "allowedVersions": "<22.0.0"
     },
     {
-      "description": "Angular 21 admite TypeScript >=5.9 <6.1",
+      "description": "@angular/build 21 declara peer typescript >=5.9 <6.0 (npm ci falla con 6.x); subir junto con Angular 22",
       "matchPackageNames": [
         "typescript"
       ],
-      "allowedVersions": "<6.1.0"
+      "allowedVersions": "<6.0.0"
     },
     {
       "description": "karma-jasmine 5.1 (la última) depende de jasmine-core ^4; jasmine-core 7 rompe Karma. Subirlo al cambiar de runner de tests",
