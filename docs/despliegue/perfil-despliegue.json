@@ -1,0 +1,273 @@
+{
+  "proyecto": {
+    "nombre": "sleep-tracker",
+    "ruta": "D:\\projects\\sleep-tracker",
+    "version": null,
+    "tipo": "servicio único en contenedor (API Express + SPA Angular estática) con SQLite en volumen"
+  },
+  "stack": {
+    "lenguajes": [
+      "javascript (backend)",
+      "typescript (frontend y e2e)"
+    ],
+    "gestor": "npm",
+    "frameworks": [
+      "angular",
+      "express"
+    ],
+    "runtime": "node 22 (Dockerfile node:22-alpine)",
+    "monorepo": false,
+    "paquetes": [
+      "backend/package.json",
+      "e2e/package.json",
+      "frontend/package.json"
+    ]
+  },
+  "datos": {
+    "motores": [
+      "sqlite (archivo)"
+    ],
+    "migraciones": [
+      "backend/src/migrations/"
+    ]
+  },
+  "autenticacion": [
+    "propia: sesiones con cookie y contraseña (backend/src/auth/), alta del propietario con OWNER_SETUP_TOKEN, multiusuario (feature 008)"
+  ],
+  "señales": {
+    "procesoPersistente": {
+      "activa": true,
+      "evidencia": [
+        "backend/src/server.js:12"
+      ]
+    },
+    "websockets": {
+      "activa": false,
+      "evidencia": []
+    },
+    "tareasProgramadas": {
+      "activa": true,
+      "evidencia": [
+        "backend/src/reminders/waker.js:32 (setInterval cada 30 s, avisos push)",
+        ".github/workflows/backup.yml:5 (cron diario 03:17 UTC)"
+      ]
+    },
+    "escribeEnDisco": {
+      "activa": true,
+      "evidencia": [
+        "backend/src/db.js:6-17 (SQLite en DB_PATH=/data/sleep.db y copias pre-migración en /data/backups)",
+        "fly.toml [[mounts]] descanso_data → /data"
+      ]
+    },
+    "navegadorSinCabeza": {
+      "activa": false,
+      "evidencia": []
+    },
+    "dependenciasNativas": {
+      "activa": true,
+      "evidencia": [
+        "better-sqlite3"
+      ]
+    },
+    "contenedores": {
+      "activa": true,
+      "evidencia": [
+        "Dockerfile",
+        "compose.yaml"
+      ]
+    },
+    "renderEnServidor": {
+      "activa": false,
+      "evidencia": []
+    },
+    "pwa": {
+      "activa": false,
+      "evidencia": [
+        "frontend/public/push-sw.js: service worker solo para push, sin manifiesto ni modo sin conexión (012 PWA descartada)"
+      ]
+    },
+    "compatibleConBorde": {
+      "activa": false,
+      "evidencia": []
+    }
+  },
+  "contenedores": {
+    "compose": [
+      "compose.yaml"
+    ],
+    "servicios": [
+      "app"
+    ],
+    "imagenes": []
+  },
+  "plataformasConfiguradas": [
+    "fly (fly.toml; en producción como descanso-sleep, región gru)"
+  ],
+  "configuracion": {
+    "variables": [
+      "DB_PATH",
+      "PORT",
+      "APP_VERSION",
+      "NODE_ENV",
+      "FRONTEND_DIST",
+      "BACKUP_TOKEN",
+      "OWNER_SETUP_TOKEN",
+      "VAPID_PUBLIC_KEY",
+      "VAPID_PRIVATE_KEY",
+      "VAPID_SUBJECT",
+      "REMINDER_WAKER",
+      "PUSH_TEST_ORIGIN"
+    ],
+    "archivosDeEjemplo": [],
+    "archivosDeSecretos": []
+  },
+  "calidad": {
+    "scripts": [],
+    "build": [],
+    "pruebas": [],
+    "ci": [
+      ".github/workflows/backup.yml",
+      ".github/workflows/ci.yml",
+      ".github/workflows/deploy.yml"
+    ]
+  },
+  "git": {
+    "esRepo": true,
+    "rama": "docs/estrategia-despliegue",
+    "remoto": "https://github.com/manuXD270516/descanso.git",
+    "etiquetas": 0,
+    "ultimaEtiqueta": null,
+    "limpio": true,
+    "flujo": "trunk"
+  },
+  "documentos": [
+    "README.md"
+  ],
+  "avisos": [],
+  "parametros": {
+    "presupuesto": 5,
+    "tarjeta": "si",
+    "audiencia": "personal",
+    "datos": "sensibles",
+    "ramas": "trunk",
+    "salida": "docs/despliegue/"
+  },
+  "hechos": [
+    {
+      "pregunta": 1,
+      "hecho": "Un solo proceso Node sirve la API /api/* y los estáticos de la SPA Angular compilada",
+      "evidencia": "Dockerfile (etapas 1-3), backend/src/app.js (FRONTEND_DIST)"
+    },
+    {
+      "pregunta": 2,
+      "hecho": "Proceso persistente: app.listen y un disparador en memoria cada 30 s que envía avisos push con la app cerrada",
+      "evidencia": "backend/src/server.js:12, backend/src/reminders/waker.js:4 y :32"
+    },
+    {
+      "pregunta": 3,
+      "hecho": "Tareas programadas: el tick de 30 s dentro del proceso y el respaldo diario por GitHub Actions (03:17 UTC) que descarga /api/admin/backup con BACKUP_TOKEN",
+      "evidencia": "backend/src/reminders/waker.js:32, .github/workflows/backup.yml:5"
+    },
+    {
+      "pregunta": 4,
+      "hecho": "Escribe en disco local que debe sobrevivir reinicios: la base SQLite y sus copias pre-migración",
+      "evidencia": "backend/src/db.js:6-17, fly.toml [[mounts]]"
+    },
+    {
+      "pregunta": 5,
+      "hecho": "Dependencia nativa better-sqlite3 (binario precompilado linuxmusl-x64 en Alpine, sin toolchain)",
+      "evidencia": "Dockerfile etapa 2 (comentario), backend/package.json"
+    },
+    {
+      "pregunta": 6,
+      "hecho": "SQLite con migraciones propias versionadas (11 aplicadas); cambiar a Postgres implicaría reescribir la capa repo/ y las migraciones",
+      "evidencia": "backend/src/migrations/, specs/013-avisos-push (migración 011)"
+    },
+    {
+      "pregunta": 8,
+      "hecho": "Datos reales hoy en producción en Fly.io, volumen de 1 GB descanso_data en gru",
+      "evidencia": "fly.toml; /api/health storage.used_pct 7"
+    },
+    {
+      "pregunta": 9,
+      "hecho": "Datos de salud (sueño, siestas); multiusuario con aislamiento por usuario; constitución principio VIII exige privacidad y honestidad",
+      "evidencia": ".specify/memory/constitution.md, specs/008-multiusuario-perfiles"
+    },
+    {
+      "pregunta": 11,
+      "hecho": "Memoria en reposo con el disparador activo: pico de 18,55 MiB en 10 min con --memory=256m, sin OOM",
+      "evidencia": "specs/013-avisos-push/tasks.md T042 (estado 2026-10-30)"
+    },
+    {
+      "pregunta": 13,
+      "hecho": "CI en GitHub Actions: job quality (lint y tests de backend y frontend, build Docker) y e2e Playwright; pasan en master",
+      "evidencia": ".github/workflows/ci.yml"
+    },
+    {
+      "pregunta": 14,
+      "hecho": "Trunk: master protegido con check quality y up-to-date estricto; cada push a master despliega en Fly por SHA de imagen GHCR, con rollback automático si falla el health check",
+      "evidencia": ".github/workflows/deploy.yml, fly.toml [deploy]"
+    },
+    {
+      "pregunta": 15,
+      "hecho": "Secretos de servidor: OWNER_SETUP_TOKEN, BACKUP_TOKEN, VAPID_PRIVATE_KEY (Fly secrets); VAPID_PUBLIC_KEY llega al navegador y no es secreta. GitHub: FLY_API_TOKEN, BACKUP_TOKEN y (pendientes) los del bucket de respaldo",
+      "evidencia": "backend/src/*.js (process.env), compose.yaml, gh secret list"
+    },
+    {
+      "pregunta": 16,
+      "hecho": "Servicios externos: Web Push (servicios push de los navegadores) con VAPID; GHCR para imágenes; bucket S3 compatible (Cloudflare R2) para respaldos, aún sin configurar",
+      "evidencia": "backend/src/reminders/push.js, .github/workflows/deploy.yml y backup.yml"
+    },
+    {
+      "pregunta": 17,
+      "hecho": "Ya está desplegado y aceptado en Fly.io: máquina shared-cpu-1x 256 MB siempre encendida (min_machines_running=1) por decisión del owner, ≈3,3 USD/mes con tarjeta cargada",
+      "evidencia": "fly.toml (comentario de costo, decisión P5b)"
+    },
+    {
+      "pregunta": 9,
+      "hecho": "El repositorio de GitHub es público (no contiene datos ni secretos)",
+      "evidencia": "gh repo view --json visibility"
+    }
+  ],
+  "supuestos": [
+    {
+      "pregunta": 7,
+      "supuesto": "Datos de pocos MB y crecimiento lento (unos KB por noche por usuario)",
+      "motivo": "used_pct 7 % de 1 GB incluye el sistema de archivos; no se leyó la base de producción"
+    },
+    {
+      "pregunta": 10,
+      "supuesto": "Uno a tres usuarios en Bolivia/Sudamérica, menos de 1.000 peticiones por día; no necesita funcionar sin conexión",
+      "motivo": "audiencia personal; región gru elegida por cercanía"
+    },
+    {
+      "pregunta": 12,
+      "supuesto": "Basta con no perder datos y que los avisos lleguen a su hora; una caída de minutos se tolera",
+      "motivo": "uso personal"
+    },
+    {
+      "pregunta": 7,
+      "supuesto": "Sin archivos binarios subidos por el usuario",
+      "motivo": "no hay rutas de subida en backend/src/routes"
+    }
+  ],
+  "mediciones": [
+    {
+      "que": "Memoria del contenedor con el disparador de avisos activo, base vacía",
+      "valor": "pico 18,55 MiB en 10 min",
+      "como": "docker stats cada 10 s (T042, 2026-10-30)"
+    }
+  ],
+  "restricciones": [
+    "Costo total ≤ 5 USD por mes; el owner acepta tarjeta (ya la tiene cargada en Fly)",
+    "Proceso persistente o un disparador equivalente con resolución de ≤ 1 minuto para los avisos push con la app cerrada",
+    "Datos de salud sensibles: acceso solo con sesión, secretos fuera del repo (que es público), respaldo fuera de la plataforma",
+    "No perder datos: migración desde el volumen actual de Fly verificada antes de cortar",
+    "Latencia razonable desde Sudamérica"
+  ],
+  "pendientesDelOwner": [
+    "¿Dominio propio o seguir en *.fly.dev / subdominio gratuito?",
+    "Cargar los secretos del bucket de respaldo (T014)"
+  ],
+  "contexto": "El proyecto ya está en producción en Fly.io; esta corrida evalúa si conviene quedarse o migrar, no un primer despliegue."
+}
