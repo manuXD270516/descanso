@@ -3,6 +3,10 @@ name: Deploy
 on:
   push:
     branches: [master]
+    # Un cambio solo de documentación no reconstruye ni redespliega la app.
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
   workflow_dispatch:
     inputs:
       simular_fallo:
