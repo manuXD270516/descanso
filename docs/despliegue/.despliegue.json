@@ -1,0 +1,23 @@
+{
+  "parametros": {
+    "profundidad": "normal",
+    "presupuesto": 5,
+    "tarjeta": "si",
+    "audiencia": "personal",
+    "datos": "sensibles",
+    "ramas": "trunk",
+    "idioma": "es",
+    "salida": "docs/despliegue/",
+    "modo": "proponer",
+    "candidatos": ["fly", "vps-docker", "cloudflare"],
+    "pesos": { "costo": 15, "ajuste": 20, "seguridad": 25, "operacion": 20, "reversibilidad": 15, "esfuerzo": 5 }
+  },
+  "decision": {
+    "fecha": "2026-11-13",
+    "plataforma": "fly",
+    "planB": "vps-docker",
+    "consenso": "3 de 3",
+    "arbitro": "Sí: el script marcó a Fly como vetado por la autodeclaración de su proponente (respaldo externo pendiente, T014), común a los tres candidatos; se decidió por Fly con el respaldo como condición obligatoria",
+    "estado": "propuesta, pendiente de aprobación del owner"
+  }
+}
