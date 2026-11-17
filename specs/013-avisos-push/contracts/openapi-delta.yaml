@@ -139,6 +139,7 @@ paths:
                       failed_24h: { type: integer }
         '401': { description: Token incorrecto }
         '404': { description: Sin BACKUP_TOKEN (contrato de 002) }
+        '429': { description: 'Demasiados intentos fallidos desde la IP (mismo límite que /admin/backup, contrato de 002)' }
 
   /auth/logout:
     post:

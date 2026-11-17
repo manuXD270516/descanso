@@ -59,6 +59,22 @@ paths:
                   error: { type: string, const: 'No autorizado' }
         '404':
           description: BACKUP_TOKEN no configurado en el servicio (endpoint deshabilitado).
+        '429':
+          description: |
+            La IP acumuló 5 intentos fallidos en 15 minutos (límite propio de /admin, compartido con
+            /admin/health). Se responde antes de comparar el token, aunque sea correcto. Cada acceso
+            queda registrado con ruta, resultado e IP, nunca con el token.
+          headers:
+            Retry-After:
+              schema: { type: integer }
+              description: Segundos hasta poder reintentar.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [error]
+                properties:
+                  error: { type: string }
 
 components:
   securitySchemes:
