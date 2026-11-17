@@ -183,7 +183,7 @@ fly logs --app descanso-sleep
 
 - [x] Despliegue en Fly verificado (feature 002).
 - [x] Verificación sin login, puntos 1 a 5 (2026-11-13).
-- [x] Repo público: `docs/despliegue/` y `.despliegue.json` revisados antes del commit, sin secretos ni datos personales.
+- [x] Repo público: `docs/despliegue/` (incluido `.despliegue.json`) revisado antes del commit, sin secretos ni datos personales.
 - [ ] Fase 1: respaldo externo guardado y restaurado.
 - [ ] Fase 2: pipeline endurecido.
 - [ ] Fase 4: alta del propietario, aviso de prueba y aislamiento entre cuentas.
