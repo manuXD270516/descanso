@@ -59,8 +59,9 @@ test('con el token correcto entrega una copia SQLite consistente con los datos (
 
 // Salud de los avisos push (feature 013, FR-026)
 test('GET /api/admin/health: token incorrecto → 401; sin cabecera → 401', async () => {
-  await api.get('/api/admin/health').expect(401);
-  await api.get('/api/admin/health').set('Authorization', 'Bearer otro').expect(401);
+  // IP propia: el límite de fallos es por IP y estos tests comparten proceso
+  await api.get('/api/admin/health').set('Fly-Client-IP', '10.9.0.1').expect(401);
+  await api.get('/api/admin/health').set('Fly-Client-IP', '10.9.0.1').set('Authorization', 'Bearer otro').expect(401);
 });
 
 test('GET /api/admin/health: estado del disparador y contadores, sin datos personales', async () => {
@@ -97,4 +98,41 @@ test('GET /api/admin/health: estado del disparador y contadores, sin datos perso
 test('/api/health público no cambia con los avisos', async () => {
   const res = await api.get('/api/health').expect(200);
   assert.deepEqual(Object.keys(res.body).sort(), ['ok', 'storage', 'time', 'version']);
+});
+
+// Límite de intentos y registro de accesos (runbook de despliegue, fase 2, punto 4)
+test('límite: 5 fallos por IP y el 6.º → 429 con Retry-After; el token correcto también queda bloqueado', async () => {
+  const ip = '10.0.0.1';
+  for (let i = 0; i < 5; i++) {
+    await api.get('/api/admin/health').set('Fly-Client-IP', ip).set('Authorization', 'Bearer malo').expect(401);
+  }
+  const res = await api.get('/api/admin/health').set('Fly-Client-IP', ip).set('Authorization', 'Bearer malo').expect(429);
+  assert.ok(Number(res.headers['retry-after']) > 0);
+  assert.equal(typeof res.body.error, 'string');
+  // Sin oráculo: con el token correcto sigue bloqueada, en ambas rutas
+  await api.get('/api/admin/health').set('Fly-Client-IP', ip).set('Authorization', 'Bearer t0k3n').expect(429);
+  await api.get('/api/admin/backup').set('Fly-Client-IP', ip).set('Authorization', 'Bearer t0k3n').expect(429);
+});
+
+test('límite: otra IP no resulta afectada y un acceso válido no limpia los fallos ajenos', async () => {
+  const bad = '10.0.0.2';
+  for (let i = 0; i < 5; i++) await api.get('/api/admin/health').set('Fly-Client-IP', bad).expect(401);
+  await api.get('/api/admin/health').set('Fly-Client-IP', '10.0.0.3').set('Authorization', 'Bearer t0k3n').expect(200);
+  await api.get('/api/admin/health').set('Fly-Client-IP', bad).expect(429);
+});
+
+test('registro: una línea por acceso con ruta, resultado e IP, sin el token', async (t) => {
+  const lines = [];
+  t.mock.method(console, 'log', (...a) => lines.push(a.join(' ')));
+  t.mock.method(console, 'warn', (...a) => lines.push(a.join(' ')));
+  const ip = '10.0.0.4';
+  await api.get('/api/admin/health').set('Fly-Client-IP', ip).set('Authorization', 'Bearer secreto-mal').expect(401);
+  await api.get('/api/admin/health').set('Fly-Client-IP', ip).set('Authorization', 'Bearer t0k3n').expect(200);
+  for (let i = 0; i < 4; i++) await api.get('/api/admin/backup').set('Fly-Client-IP', ip).set('Authorization', 'Bearer secreto-mal').expect(401);
+  await api.get('/api/admin/backup').set('Fly-Client-IP', ip).set('Authorization', 'Bearer t0k3n').expect(429);
+  const text = lines.join('\n');
+  assert.match(text, /admin health 401 ip=10\.0\.0\.4/);
+  assert.match(text, /admin health ok ip=10\.0\.0\.4/);
+  assert.match(text, /admin backup 429 ip=10\.0\.0\.4/);
+  assert.ok(!text.includes('t0k3n') && !text.includes('secreto-mal') && !/bearer/i.test(text));
 });

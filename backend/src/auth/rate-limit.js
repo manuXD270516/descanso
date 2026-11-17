@@ -42,4 +42,4 @@ function createRateLimiter({ max = 5, windowMs = 15 * 60 * 1000, maxKeys = 10_00
 const clientIp = (req) => req.get('Fly-Client-IP') || req.socket.remoteAddress || 'desconocida';
 const keysFor = (req, email) => [`ip:${clientIp(req)}`, ...(email ? [`email:${email}`] : [])];
 
-module.exports = { createRateLimiter, limiter: createRateLimiter(), keysFor };
+module.exports = { createRateLimiter, limiter: createRateLimiter(), keysFor, clientIp };
