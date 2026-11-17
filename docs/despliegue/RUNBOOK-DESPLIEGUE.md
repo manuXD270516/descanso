@@ -152,7 +152,7 @@ Fly **cobra** al pasar un límite: no bloquea ni tiene tope de gasto.
 | Revisar los PRs de Renovate (los fusiona el agente revisor con auto-merge) | Semanal |
 | Revisar la factura de Fly | Mensual |
 | Comprobar que los snapshots siguen activos: `fly volumes snapshots list <id-del-volumen> --app descanso-sleep` | Mensual |
-| Revisar que `Backup` sigue en verde (`gh run list --workflow backup.yml -L 7`) hasta que exista el aviso automático | Semanal |
+| Revisar que no haya un issue abierto «Falló el respaldo diario» (el job `avisar-fallo` lo abre solo) | Semanal |
 | Rotar `BACKUP_TOKEN` y, si hace falta, VAPID ([rotar-vapid.md](../runbooks/rotar-vapid.md)) | Anual, o ante una sospecha |
 | Revisar los límites de Node, npm, TypeScript y Angular en `renovate.json` | Al migrar a Angular 22 o subir Node |
 
@@ -163,7 +163,7 @@ Fly **cobra** al pasar un límite: no bloquea ni tiene tope de gasto.
 | `Deploy` falla con «volume not found» | Fly movió la máquina y su volumen a otro host | El workflow reintenta solo. Si sigue fallando, relanzar `Deploy` |
 | Un aviso llega tarde | Coincidió con un deploy o con el Doze de Android | Fusionar fuera de las horas de aviso |
 | `Backup` falla | Faltan secretos, o se venció el token de R2 | Ver el log del job y revisar `gh secret list` |
-| `Backup` falló y nadie se enteró | Todavía no hay aviso automático | Revisar `gh run list --workflow backup.yml` cada semana hasta tener el issue automático |
+| Hay un issue «Falló el respaldo diario» | El job `Backup` falló (secretos faltantes, token de R2 vencido, app caída) | Abrir el run enlazado en el issue, corregir y cerrar el issue cuando `Backup` vuelva a salir en verde |
 | «Los avisos no están disponibles» | Faltan las claves VAPID en Fly | Revisar `fly secrets list` |
 
 Para ver los errores de producción:
