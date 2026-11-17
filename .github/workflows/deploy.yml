@@ -77,7 +77,9 @@ jobs:
     steps:
       - uses: actions/checkout@v7 # fly.toml
 
-      - uses: superfly/flyctl-actions/setup-flyctl@master
+      # Fijada a un commit: una acción en @master puede cambiar sin aviso y este job tiene FLY_API_TOKEN.
+      # Es el mismo código que corría con @master; Renovate propone las actualizaciones del SHA como PR.
+      - uses: superfly/flyctl-actions/setup-flyctl@98172f70657cb3e15db199af139be99bd3e61200 # master al 2026-11-17
 
       # Versión en producción antes de desplegar; sirve para el rollback (también despierta la máquina)
       - name: Versión actual
