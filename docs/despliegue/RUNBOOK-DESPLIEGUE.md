@@ -2,7 +2,7 @@
 
 **Destino:** la app Fly `descanso-sleep`, en la región `gru`, con una máquina shared-cpu-1x de 256 MB siempre encendida y el volumen `descanso_data` de 1 GB con SQLite. La URL es `https://descanso-sleep.fly.dev` y el costo, unos 3,3 USD por mes.
 
-**Estado al 2026-11-13:** la app ya está desplegada y verificada. El despliegue inicial (fases 1 a 4 de un runbook nuevo) se hizo en la feature 002 y se cuenta como hecho. El 2026-11-13, producción servía la versión `afa3af6`, con Angular 21, y `/api/health` respondía ok; la versión vigente se lee en `curl -s $BASE/api/health`. **Riesgo abierto:** no hay ninguna copia fuera de Fly desde el inicio; la fecha límite de la fase 1 es el 2026-11-30. Ramas: trunk. Cada merge a `master` despliega solo, y el proyecto no usa tags ni changelog. Este runbook cubre lo que falta para cerrar las condiciones de la [decisión](DECISION-DESPLIEGUE.md) y cómo operar de acá en adelante.
+**Estado al 2026-11-17:** puntos 1, 3 y 4 de la fase 2 fusionados y desplegados (versión `c0c61f6`); faltan los puntos 2 y 5 (owner) y toda la fase 1. **Estado al 2026-11-13:** la app ya está desplegada y verificada. El despliegue inicial (fases 1 a 4 de un runbook nuevo) se hizo en la feature 002 y se cuenta como hecho. El 2026-11-13, producción servía la versión `afa3af6`, con Angular 21, y `/api/health` respondía ok; la versión vigente se lee en `curl -s $BASE/api/health`. **Riesgo abierto:** no hay ninguna copia fuera de Fly desde el inicio; la fecha límite de la fase 1 es el 2026-11-30. Ramas: trunk. Cada merge a `master` despliega solo, y el proyecto no usa tags ni changelog. Este runbook cubre lo que falta para cerrar las condiciones de la [decisión](DECISION-DESPLIEGUE.md) y cómo operar de acá en adelante.
 
 | Símbolo | Quién lo hace |
 |---|---|
@@ -67,10 +67,10 @@ Es la condición principal de la decisión: hasta terminarla, todos los datos vi
 
 Un PR por punto. Cada uno pasa por el CI y se fusiona con la protección de `master`.
 
-1. Fijar `superfly/flyctl-actions/setup-flyctl` a un SHA en `deploy.yml`.
+1. ✅ Fijar `superfly/flyctl-actions/setup-flyctl` a un SHA en `deploy.yml` (#75, 2026-11-17).
 2. El job ya declara `environment: production` (`deploy.yml:68`). **Vos** movés `FLY_API_TOKEN` del secreto del repositorio al del environment y agregás reglas de protección a ese environment.
-3. Agregar al job `Backup` un paso que, si falla, abra un issue (`if: failure()`).
-4. Limitar los intentos y registrar los accesos a `/api/admin/backup`, con test.
+3. ✅ Agregar al job `Backup` un paso que, si falla, abra un issue (`if: failure()`): job `avisar-fallo` (#76, 2026-11-17).
+4. ✅ Limitar los intentos y registrar los accesos a `/api/admin/backup`, con test: 5 fallos en 15 min por IP → 429 (#77, 2026-11-17).
 5. **Vos:** activar *secret scanning* y *push protection* en GitHub (Settings → Code security), porque el repositorio es público.
 
 **Terminada cuando:** los PRs de los puntos 1, 3 y 4 están fusionados, los puntos 2 y 5 están hechos, y el siguiente `Deploy` termina en verde.
