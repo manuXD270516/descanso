@@ -80,3 +80,32 @@ jobs:
             echo "Borrando $key"
             aws s3api delete-object --bucket "$S3_BUCKET" --key "$key" --endpoint-url "$S3_ENDPOINT"
           done
+
+  # Aviso ante fallo (runbook de despliegue, fase 2, punto 3): un respaldo que falla en silencio no protege nada.
+  # Un issue abierto por racha de fallos: si ya hay uno abierto, se comenta en él en lugar de abrir otro.
+  avisar-fallo:
+    needs: backup
+    if: failure()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      TITULO: 'Falló el respaldo diario'
+    steps:
+      - name: Abrir o comentar el issue
+        run: |
+          set -euo pipefail
+          cuerpo="El job \`Backup\` falló el $(date -u +%Y-%m-%d) a las $(date -u +%H:%M) UTC: $RUN_URL
+
+          Revisá el log del job. Causas frecuentes en docs/despliegue/RUNBOOK-DESPLIEGUE.md, sección «Problemas frecuentes». Cerrá este issue cuando vuelva a salir en verde."
+          abierto=$(gh issue list --state open --search "in:title \"$TITULO\"" --json number,title \
+            --jq "map(select(.title == \"$TITULO\")) | .[0].number // empty")
+          if [[ -n "$abierto" ]]; then
+            gh issue comment "$abierto" --body "$cuerpo"
+          else
+            gh issue create --title "$TITULO" --body "$cuerpo"
+          fi
