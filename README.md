@@ -227,14 +227,16 @@ La app corre en https://descanso-sleep.fly.dev (región `gru`, São Paulo). Cada
 ejecuta el workflow **Deploy**:
 
 1. lint, tests y build (`quality`) y pruebas E2E (`e2e`), en paralelo;
-2. publica la imagen en GHCR (`ghcr.io/manuxd270516/descanso:<sha>` y `:latest`);
+2. publica la imagen en GHCR (`ghcr.io/manuxd270516/descanso:<sha>`);
 3. la despliega en Fly.io por su SHA (`flyctl deploy --image`). Si falla con
    `volume not found`, reintenta hasta 3 veces cada 30 s: pasa cuando Fly acaba de migrar la
    máquina y su volumen a otro host (el volumen recibe un ID nuevo y el viejo queda en
    `pending_destroy` en `flyctl volumes list --all`), y los datos siguen intactos. Si los
    3 intentos fallan, relanza el job. Cualquier otro error no se reintenta;
 4. verifica que `/api/health` devuelve esa versión en ≤ 60 s. Si no, **vuelve a desplegar la
-   versión anterior** y el job falla. La versión aparece también en el pie de la app.
+   versión anterior** y el job falla. La versión aparece también en el pie de la app;
+5. si pasó el health check, marca esa imagen como `:latest` (sin reconstruir). Así `latest`
+   es siempre la última versión sana y un `fly deploy` manual nunca vuelve a publicar una rota.
 
 Los PR no se pueden fusionar si `quality` falla.
 
