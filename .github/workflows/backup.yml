@@ -14,6 +14,9 @@ permissions:
 
 jobs:
   backup:
+    # BACKUP_TOKEN baja la base completa: vive en el environment `backup`, restringido a master.
+    # Mientras el owner no cargue el secreto ahí, GitHub usa el del repositorio y nada se rompe.
+    environment: backup
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
