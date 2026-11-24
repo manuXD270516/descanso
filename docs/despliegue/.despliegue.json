@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "actualizado": "2026-11-18",
+  "actualizado": "2026-11-24",
   "estado": "configurado",
   "modo": "proponer",
   "parametros": {
@@ -93,7 +93,9 @@
       "fase": 2,
       "cerrada": false,
       "responsable": "Claude",
-      "comunATodos": false
+      "comunATodos": false,
+      "pr": "#83",
+      "avance": "Fusionado el 2026-11-24; falta verificar «Marcar latest» en el primer Deploy"
     },
     {
       "id": "C7",
@@ -102,7 +104,9 @@
       "fase": 2,
       "cerrada": false,
       "responsable": "Claude",
-      "comunATodos": false
+      "comunATodos": false,
+      "pr": "#82",
+      "avance": "Fusionado el 2026-11-23; corrida manual verde el 2026-11-24; falta la prueba con URL inválida y la primera corrida programada"
     },
     {
       "id": "C8",
@@ -138,7 +142,9 @@
       "fase": 2,
       "responsable": "Vos y Claude",
       "comunATodos": false,
-      "cerrada": false
+      "cerrada": false,
+      "pr": "#81",
+      "avance": "Código fusionado el 2026-11-23; falta que el owner cree el environment backup y mueva el secreto"
     }
   ],
   "runbook": {
