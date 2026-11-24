@@ -4,6 +4,7 @@ app = "descanso-sleep"
 primary_region = "gru"
 
 [build]
+  # `latest` es siempre la última versión que pasó el health check (se marca en el job deploy, O-fly-3)
   image = "ghcr.io/manuxd270516/descanso:latest"
 
 [env]
