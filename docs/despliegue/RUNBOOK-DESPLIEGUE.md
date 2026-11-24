@@ -2,6 +2,8 @@
 
 **Destino:** la app Fly `descanso-sleep`, en la región `gru`, con una máquina shared-cpu-1x de 256 MB siempre encendida y el volumen `descanso_data` de 1 GB con SQLite. La URL es `https://descanso-sleep.fly.dev` y el costo, unos 3,3 USD por mes.
 
+**Estado al 2026-11-24:** fusionados los PRs de los puntos 6 (#83), 7 (#82) y 10 (#81) de la fase 2; cada uno queda 🟡 hasta su verificación (ver la fase 2). Sigue pendiente todo lo demás que lista el estado del 18.
+
 **Estado al 2026-11-18:** la [decisión](DECISION-DESPLIEGUE.md) del 2026-11-17 (quedarse en Fly, ratificada por un segundo panel, 3 de 3, sin árbitro) está aprobada por el owner. Hechos: puntos 1, 3 y 4 de la fase 2 (versión `c0c61f6`) y las filas 1 a 5 de la fase 3. Pendientes: la fase 1 (fecha límite 2026-11-30), la fase 1b, los puntos 2 y 5 a 10 de la fase 2, las filas 6 y 7 de la fase 3 y la fase 4. Todavía no hay cuenta del propietario ni datos reales. Los ids `O-…` y `A-…` remiten a la decisión.
 
 **Estado al 2026-11-13:** la app ya estaba desplegada y verificada desde la feature 002, con la versión `afa3af6`. La versión vigente se lee en `curl -s $BASE/api/health`.
@@ -117,8 +119,8 @@ Un PR por punto. Cada uno pasa por el CI y se fusiona con la protección de `mas
 3. ✅ Agregar al job `Backup` un paso que, si falla, abra un issue (`if: failure()`): job `avisar-fallo` (#76, 2026-11-17).
 4. ✅ Limitar los intentos y registrar los accesos a `/api/admin/backup`, con test: 5 fallos en 15 min por IP → 429 (#77, 2026-11-17).
 5. **Vos:** activar *secret scanning* y *push protection* en GitHub (Settings → Code security), porque el repositorio es público. **Terminado cuando:** las dos opciones figuran como «Enabled».
-6. Sacar `:latest` del `[build] image` de `fly.toml`, o publicar `latest` en `deploy.yml` recién después del health check, para que un `fly deploy` manual no vuelva a publicar una imagen rota (O-fly-3). **Terminado cuando:** `grep -n latest fly.toml` no devuelve nada, o el paso que etiqueta `latest` corre después del health check.
-7. Workflow programado que consulte `$BASE/api/health` cada 30 minutos y abra un issue tras 2 fallos seguidos (disenso del juez de operación). **Terminado cuando:** una corrida manual contra una URL inválida abre el issue.
+6. 🟡 Publicar `latest` en `deploy.yml` recién después del health check, para que un `fly deploy` manual no vuelva a publicar una imagen rota (O-fly-3). Fusionado en #83 (2026-11-24): `publish` ya no etiqueta `latest`, y el paso «Marcar latest (versión sana)» lo mueve después del health check; si ese paso falla, avisa y no dispara el rollback. **Terminado cuando:** en el primer `Deploy` posterior a #83, «Marcar latest» sale en verde y `docker buildx imagetools inspect ghcr.io/manuxd270516/descanso:latest` da el mismo digest que la imagen del SHA desplegado.
+7. 🟡 Workflow `Salud de producción` (`.github/workflows/health.yml`): consulta `$BASE/api/health` cada 30 minutos, con 2 intentos separados por 2 minutos; si fallan los dos, abre el issue «Producción no responde» (o comenta en el abierto), y lo cierra cuando vuelve a responder (disenso del juez de operación). Fusionado en #82 (2026-11-23). El 2026-11-24, una corrida manual contra producción salió verde. **Terminado cuando:** una corrida contra una URL inválida abre el issue (`gh workflow run health.yml -f url=https://descanso-sleep.fly.dev/no-existe`), la corrida programada siguiente lo cierra, y en `gh run list --workflow health.yml` aparecen corridas con evento `schedule` (GitHub tardó más de 5 horas en programar la primera).
 8. **Solo si la fase 1 se atrasa más allá del 2026-11-30:** que `backup.yml`, mientras falten los secretos del bucket, abra el issue con otra etiqueta («respaldo sin configurar»), sin dejar de avisar (O-fly-2). Si la fase 1 cierra a tiempo, este punto se descarta.
 9. **Vos:** restringí el environment `production` a la rama `master` (Settings → Environments → production → Deployment branches → Selected branches → `master`) y rotá `FLY_API_TOKEN`, que es el token que da acceso a la base (O-fly-7). El valor nuevo nunca se muestra:
 
@@ -135,7 +137,17 @@ Un PR por punto. Cada uno pasa por el CI y se fusiona con la protección de `mas
    ```
 
    **Terminado cuando:** el siguiente `Deploy` sale verde y `fly tokens list` ya no muestra el token viejo.
-10. Pasar `BACKUP_TOKEN` a un environment `backup`, restringido a `master`, y declararlo en el job de `backup.yml`. Hoy es un secreto de repositorio que cualquier workflow puede leer, y baja la base completa en claro. **Terminado cuando:** `gh secret list --env backup` lo muestra, `gh secret list` no, y `Backup` sale verde.
+10. 🟡 Pasar `BACKUP_TOKEN` a un environment `backup`, restringido a `master`. Baja la base completa en claro y era un secreto de repositorio que cualquier workflow podía leer. La parte de código está fusionada en #81 (2026-11-23): el job `backup` declara `environment: backup`, y mientras el secreto no esté en el environment, GitHub usa el del repositorio. **Falta (Vos):** crear el environment `backup` restringido a `master` (solo ramas, sin revisores, que dejarían el cron esperando aprobación), cargar el token sin eco y borrar el del repositorio:
+
+    ```bash
+    read -rs BT && printf '%s' "$BT" | gh secret set BACKUP_TOKEN --env backup; unset BT
+    ```
+
+    ```bash
+    gh secret delete BACKUP_TOKEN
+    ```
+
+    **Terminado cuando:** `gh secret list --env backup` lo muestra, `gh secret list` no, y `Backup` sale verde.
 
 **Terminada cuando:** los PRs de los puntos 1, 3, 4, 6, 7 y 10 están fusionados (y el 8, si aplicó), los puntos 2, 5 y 9 están hechos y el siguiente `Deploy` termina en verde.
 
