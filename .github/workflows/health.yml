@@ -1,0 +1,110 @@
+name: Salud de producción
+
+on:
+  schedule:
+    - cron: '*/30 * * * *' # cada 30 minutos
+  workflow_dispatch:
+    inputs:
+      url:
+        description: 'URL base a chequear (vacío: producción). Sirve para probar el aviso.'
+        type: string
+        required: false
+        default: ''
+
+concurrency:
+  group: health
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  # Chequeo externo (runbook de despliegue, fase 2, punto 7): con una sola máquina, si el host cae
+  # el disparador de avisos se detiene y nada avisa. Este job mira desde fuera.
+  chequear:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      URL_ENTRADA: ${{ inputs.url }}
+    steps:
+      - name: Consultar /api/health
+        run: |
+          set -euo pipefail
+          URL="${URL_ENTRADA:-https://descanso-sleep.fly.dev}"
+          ultimo=""
+          for intento in 1 2; do
+            if respuesta=$(curl -fsS --max-time 15 "$URL/api/health" 2>&1); then
+              if jq -e '.ok == true' <<<"$respuesta" >/dev/null 2>&1; then
+                echo "Producción responde en $URL (versión: $(jq -r '.version // "desconocida"' <<<"$respuesta"))"
+                exit 0
+              fi
+              ultimo="respuesta sin ok=true: $respuesta"
+            else
+              ultimo="$respuesta"
+            fi
+            echo "Intento $intento falló: $ultimo"
+            if [[ "$intento" -lt 2 ]]; then
+              sleep 120
+            fi
+          done
+          echo "::error::$URL no responde bien tras 2 intentos. Último resultado: $ultimo"
+          exit 1
+
+  # Un issue abierto por racha de fallos: si ya hay uno abierto, se comenta en él en lugar de abrir otro.
+  avisar-fallo:
+    needs: chequear
+    if: failure()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      URL_ENTRADA: ${{ inputs.url }}
+      TITULO: 'Producción no responde'
+    steps:
+      - name: Abrir o comentar el issue
+        run: |
+          set -euo pipefail
+          URL="${URL_ENTRADA:-https://descanso-sleep.fly.dev}"
+          cuerpo="El chequeo de \`/api/health\` falló el $(date -u +%Y-%m-%d) a las $(date -u +%H:%M) UTC.
+
+          - URL chequeada: $URL
+          - Run: $RUN_URL
+
+          Las causas frecuentes y los pasos a seguir están en docs/despliegue/RUNBOOK-DESPLIEGUE.md, secciones «Problemas frecuentes» y «Volver atrás». Se cierra solo cuando el chequeo vuelva a salir en verde."
+          abierto=$(gh issue list --state open --search "in:title \"$TITULO\"" --json number,title \
+            --jq "map(select(.title == \"$TITULO\")) | .[0].number // empty")
+          if [[ -n "$abierto" ]]; then
+            gh issue comment "$abierto" --body "$cuerpo"
+          else
+            gh issue create --title "$TITULO" --body "$cuerpo"
+          fi
+
+  # Si había un issue abierto y producción volvió a responder, se avisa y se cierra.
+  cerrar-aviso:
+    needs: chequear
+    if: success()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      TITULO: 'Producción no responde'
+    steps:
+      - name: Cerrar el issue abierto
+        run: |
+          set -euo pipefail
+          abierto=$(gh issue list --state open --search "in:title \"$TITULO\"" --json number,title \
+            --jq "map(select(.title == \"$TITULO\")) | .[0].number // empty")
+          if [[ -z "$abierto" ]]; then
+            echo "No hay aviso abierto."
+            exit 0
+          fi
+          gh issue comment "$abierto" --body "Producción volvió a responder ($(date -u +%Y-%m-%d) a las $(date -u +%H:%M) UTC): $RUN_URL"
+          gh issue close "$abierto"
