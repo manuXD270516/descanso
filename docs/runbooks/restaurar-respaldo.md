@@ -101,7 +101,7 @@ GitHub → Actions → **Backup** → *Run workflow*. Hace lo mismo que la ejecu
 
 - **Los workflows programados se desactivan tras 60 días sin actividad en el repositorio.**
   Si el repositorio pasa meses sin commits, revisa en Actions → Backup que siga activo. Si no
-  lo está, pulsa *Enable workflow*.
+  lo está, pulsa *Enable workflow*. Hay una revisión mensual documentada en `docs/despliegue/RUNBOOK-DESPLIEGUE.md` («Revisión mensual de workflows programados»).
 - Si el workflow **Backup** falla, GitHub envía un correo. Un fallo nunca borra respaldos
   anteriores, porque la poda solo se ejecuta tras subir con éxito la copia del día.
 - El endpoint `/api/admin/backup` exige `Authorization: Bearer <BACKUP_TOKEN>`. Para rotar el
