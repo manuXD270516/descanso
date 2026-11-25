@@ -18,7 +18,7 @@ test('fecha u hora de dormir inválidas → 400', async () => {
   let res = await api.post('/api/sleep').send({ date: '01/09/2026', bedtime: iso('2026-09-01T23:00') }).expect(400);
   assert.equal(res.body.error, 'date debe tener formato YYYY-MM-DD');
   res = await api.post('/api/sleep').send({ date: '2026-09-01', bedtime: 'anoche' }).expect(400);
-  assert.equal(res.body.error, 'bedtime debe ser una fecha/hora ISO válida');
+  assert.equal(res.body.error, 'bedtime debe ser ISO 8601 con desfase (p. ej. 2026-09-05T23:30:00-04:00)');
 });
 
 test('crear con despertar no posterior a dormir → 400', async () => {

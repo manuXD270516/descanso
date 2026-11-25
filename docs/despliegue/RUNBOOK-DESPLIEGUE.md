@@ -263,7 +263,7 @@ Fly **cobra** al pasar un límite: no bloquea ni tiene tope de gasto.
 | Un aviso llega tarde | Coincidió con un deploy (incluidos los de Renovate) o con el Doze de Android | Fusionar fuera de las horas de aviso |
 | `Backup` falla | Faltan secretos, o se venció el token de R2 | Ver el log del job y revisar `gh secret list` |
 | Hay un issue «Falló el respaldo diario» | El job `Backup` falló (secretos faltantes, token de R2 vencido, app caída) | Abrir el run enlazado en el issue, corregir y cerrar el issue cuando `Backup` vuelva a salir en verde |
-| `Backup` o el chequeo de salud dejaron de correr | GitHub los desactivó tras 60 días sin actividad | Reactivarlos en Actions |
+| `Backup` o el chequeo de salud dejaron de correr | GitHub los desactivó tras 60 días sin actividad | Reactivarlos en Actions (*Enable workflow*) o con `gh workflow enable backup.yml` y `gh workflow enable health.yml`. Para prevenirlo, ver «Revisión mensual de workflows programados» |
 | «Los avisos no están disponibles» | Faltan las claves VAPID en Fly | Revisar `fly secrets list` |
 
 Para ver los errores de producción:
@@ -292,3 +292,31 @@ fly logs --app descanso-sleep
 - [ ] Fase 4: alta del propietario, aviso de prueba y aislamiento entre cuentas.
 - [ ] Memoria medida en producción con la base real (O-fly-11).
 - [ ] Factura de Fly revisada (≤ 5 USD).
+
+## Revisión mensual de workflows programados
+
+GitHub desactiva los workflows programados (`Backup` y `Salud de producción`) de un repositorio público
+cuando pasan 60 días sin actividad en el repositorio. Un fallo así es silencioso: ni el respaldo ni el
+aviso de fallo corren.
+
+**Decisión (DEU-05):** se evaluó que un paso en los workflows los volviera a habilitar por la API
+(`PUT /repos/{owner}/{repo}/actions/workflows/{id}/enable`) y se descartó. La documentación de GitHub
+(«Events that trigger workflows», evento `schedule`, y «Disabling and enabling a workflow») solo dice que
+se desactivan tras 60 días sin «repository activity» y que se reactivan a mano, o con un commit que cambie
+el `cron`. No define qué cuenta como actividad ni dice que habilitar un workflow ya activo reinicie el
+contador, así que ese paso no tendría una garantía documentada, y además exigiría `actions: write` en
+los workflows. Se adopta el recordatorio documentado.
+
+**Cada mes (el primer día hábil):**
+
+```bash
+gh workflow list --repo manuXD270516/descanso --all
+gh run list --workflow backup.yml --repo manuXD270516/descanso --limit 3
+gh run list --workflow health.yml --repo manuXD270516/descanso --limit 3
+```
+
+- Los dos workflows deben figurar como `active` y con una corrida programada reciente.
+- Si alguno aparece como `disabled_inactivity`: `gh workflow enable <archivo> --repo manuXD270516/descanso`
+  y lanzarlo a mano (`gh workflow run <archivo>`) para comprobar que corre.
+- Mientras el repositorio tenga commits o merges con regularidad (p. ej. los de Renovate), el riesgo es bajo;
+  la revisión cubre los períodos sin actividad (vacaciones, pausas del proyecto).

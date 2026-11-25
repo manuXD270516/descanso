@@ -284,7 +284,7 @@ gestor es la buena. Forma parte de la validación final **T022**.
 | `NoSuchBucket` | Nombre distinto, o bucket creado con jurisdicción EU | Revisa `S3_BUCKET`; con jurisdicción EU usa el endpoint `.eu.r2.cloudflarestorage.com`. |
 | `NotImplemented` o un error que menciona `x-amz-checksum` | Cambios de checksums en versiones nuevas de `aws` CLI que R2 no admite | Pide a Claude añadir `AWS_REQUEST_CHECKSUM_CALCULATION: when_required` y `AWS_RESPONSE_CHECKSUM_VALIDATION: when_required` al `env` de `backup.yml`. |
 | Al restaurar, `age: error: no identity matched any of the recipients` | La clave privada no corresponde a la pública de `BACKUP_AGE_RECIPIENT` | Usa la clave del gestor; si se perdió, ver "Rotar la clave age". |
-| El workflow no corre de noche | GitHub desactiva los workflows programados tras 60 días sin actividad en el repo | Actions → Backup → *Enable workflow*. |
+| El workflow no corre de noche | GitHub desactiva los workflows programados tras 60 días sin actividad en el repo | Actions → Backup → *Enable workflow*. Para prevenirlo, revisión mensual: ver «Revisión mensual de workflows programados» en `docs/despliegue/RUNBOOK-DESPLIEGUE.md`. |
 
 Para ver el log de la última ejecución fallida:
 
