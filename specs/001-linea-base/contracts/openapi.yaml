@@ -99,7 +99,7 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/SleepRecord' }
         '400':
-          description: "'wake_time debe ser ISO' o 'La hora de despertar debe ser posterior a la de dormir'"
+          description: "'wake_time debe ser ISO 8601 con desfase …' o 'La hora de despertar debe ser posterior a la de dormir'"
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Error' }

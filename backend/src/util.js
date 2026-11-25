@@ -5,7 +5,9 @@ class HttpError extends Error {
   }
 }
 
-const isIso = (v) => typeof v === 'string' && !Number.isNaN(Date.parse(v));
+// ISO 8601 con desfase explícito (±HH:MM o Z): sin desfase no se sabe qué día de pared fue (principio III)
+const ISO_WITH_OFFSET = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:\d{2})$/;
+const isIso = (v) => typeof v === 'string' && ISO_WITH_OFFSET.test(v) && !Number.isNaN(Date.parse(v));
 // Fecha real de calendario: Date.parse aceptaría 2026-02-30 (lo desborda a marzo)
 const isDate = (v) =>
   typeof v === 'string' &&

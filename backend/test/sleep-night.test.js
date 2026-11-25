@@ -55,7 +55,7 @@ test('cerrar sin noche abierta → 404 (US1-5)', async () => {
 test('wake_time no ISO → 400', async () => {
   await goToSleep().expect(201);
   const res = await api.post('/api/sleep/wake').send({ wake_time: 'mañana' }).expect(400);
-  assert.equal(res.body.error, 'wake_time debe ser ISO');
+  assert.equal(res.body.error, 'wake_time debe ser ISO 8601 con desfase (p. ej. 2026-09-05T23:30:00-04:00)');
 });
 
 // --- FR-003: una sola noche abierta, garantizada por el servicio ---

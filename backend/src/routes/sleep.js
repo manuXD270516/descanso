@@ -19,11 +19,11 @@ function validate(body, partial = false) {
     out.date = body.date;
   }
   if (!partial || body.bedtime !== undefined) {
-    if (!isIso(body.bedtime)) throw new HttpError(400, 'bedtime debe ser una fecha/hora ISO válida');
+    if (!isIso(body.bedtime)) throw new HttpError(400, 'bedtime debe ser ISO 8601 con desfase (p. ej. 2026-09-05T23:30:00-04:00)');
     out.bedtime = body.bedtime;
   }
   if (body.wake_time !== undefined) {
-    if (body.wake_time !== null && !isIso(body.wake_time)) throw new HttpError(400, 'wake_time debe ser ISO o null');
+    if (body.wake_time !== null && !isIso(body.wake_time)) throw new HttpError(400, 'wake_time debe ser ISO 8601 con desfase (p. ej. 2026-09-05T23:30:00-04:00) o null');
     out.wake_time = body.wake_time;
   }
   if (body.notes !== undefined) out.notes = body.notes ? String(body.notes).slice(0, 500) : null;
@@ -78,7 +78,7 @@ r.post('/', (req, res) => {
 // Cierra la noche abierta con la hora de despertar
 r.post('/wake', (req, res) => {
   const wake_time = req.body.wake_time;
-  if (!isIso(wake_time)) throw new HttpError(400, 'wake_time debe ser ISO');
+  if (!isIso(wake_time)) throw new HttpError(400, 'wake_time debe ser ISO 8601 con desfase (p. ej. 2026-09-05T23:30:00-04:00)');
   // Feature 010: confirmar la hora propuesta sin cambiarla queda registrado (lo usará 011)
   const fromProposal = req.body.from_proposal ?? false;
   if (typeof fromProposal !== 'boolean') throw new HttpError(400, 'from_proposal debe ser true o false');
