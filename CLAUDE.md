@@ -1,7 +1,7 @@
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan
-at specs/013-avisos-push/plan.md
+at specs/014-relook-moderno/plan.md
 <!-- SPECKIT END -->
 
 ## Modelos por tipo de trabajo
