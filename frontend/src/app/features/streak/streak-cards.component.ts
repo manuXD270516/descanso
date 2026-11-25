@@ -24,7 +24,7 @@ import { StreakCardComponent } from './streak-card.component';
       </app-streak-card>
     }
   `,
-  styles: `:host { display: grid; gap: 0.6rem; } p { margin: 0; }`,
+  styles: `@layer components {:host { display: grid; gap: 0.6rem; } p { margin: 0; }}`,
 })
 export class StreakCardsComponent {
   private service = inject(StreakService);

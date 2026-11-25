@@ -61,8 +61,8 @@ describe('Racha de constancia (feature 011)', () => {
     button(fixture.nativeElement, 'Cerrar').click();
     expect(closed).toBeTrue();
     const css = Array.from(document.styleSheets).flatMap((s) => Array.from(s.cssRules).map((r) => r.cssText)).join('\n');
-    expect(css).toMatch(/prefers-reduced-motion: reduce\)\s*\{\s*\.glow[^{]*\{\s*animation: (none|auto)/);
-    expect(css).toContain('400ms');
+    // Feature 014: el brillo solo se declara con "sin preferencia" (con "reducir" no hay animación)
+    expect(css).toMatch(/prefers-reduced-motion: no-preference\)\s*\{\s*\.glow[^{]*\{\s*animation: glow/);
   });
 
   it('mañana: "Día N de constancia ★" con la noche cumplida; nada desactivada y sin oferta', () => {

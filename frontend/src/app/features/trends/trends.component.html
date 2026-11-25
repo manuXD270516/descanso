@@ -3,7 +3,7 @@
 @if (data(); as d) {
   <section class="summary" aria-label="Resumen">
     <div>
-      <span class="num tabular">{{ d.summary.avg_min === null ? '—' : fmtDuration(d.summary.avg_min) }}</span>
+      <span class="num tabular">@if (d.summary.avg_min === null) {<span role="img" aria-label="Sin dato">—</span>} @else {{{ fmtDuration(d.summary.avg_min) }}}</span>
       <span class="lbl">media diaria</span>
     </div>
     <div>
@@ -11,7 +11,7 @@
       <span class="lbl">días con tus horas objetivo</span>
     </div>
     <div>
-      <span class="num tabular pending">{{ d.pending14.net_min === null ? '—' : fmtDuration(d.pending14.net_min > 0 ? d.pending14.net_min : 0) }}</span>
+      <span class="num tabular pending">@if (d.pending14.net_min === null) {<span role="img" aria-label="Sin dato">—</span>} @else {{{ fmtDuration(d.pending14.net_min > 0 ? d.pending14.net_min : 0) }}}</span>
       <span class="lbl">sueño pendiente (14 días)</span>
     </div>
   </section>

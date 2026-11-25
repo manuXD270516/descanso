@@ -46,7 +46,14 @@ export class MetricsComponent implements OnInit {
     { id: 'boolean', label: 'Sí / No', hint: 'Un hábito que se cumplió o no' },
     { id: 'text', label: 'Texto', hint: 'Una nota corta' },
   ];
+  /** Colores guardados (datos del usuario); cada uno se pinta con su token de categoría del tema vigente. */
   readonly palette = ['#a9b5f5', '#f3b76b', '#7fd3a8', '#ea7a70', '#d69ae8', '#6fc8de', '#c9c07a', '#a08f7a'];
+
+  /** Token de categoría para un color guardado; los colores fuera de la paleta usan el primero. */
+  cat(color: string): string {
+    const i = this.palette.indexOf((color ?? '').toLowerCase());
+    return `var(--cat-${i < 0 ? 1 : i + 1})`;
+  }
 
   readonly active = computed(() => this.metrics().filter((m) => !m.archived));
   readonly archived = computed(() => this.metrics().filter((m) => m.archived));

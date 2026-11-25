@@ -48,6 +48,11 @@ interface Fixtures {
    * su propio navegador (contexto aislado, con su sesión). Solo se crea si el test la pide.
    */
   guest: { api: Api; page: Page; id: number };
+  /**
+   * Feature 014 (SC-007): URLs pedidas por el navegador a un host distinto del servidor del test
+   * (la app ya no usa fuentes ni recursos de terceros, así que no se bloquea nada). Se llena sola.
+   */
+  externalRequests: string[];
 }
 
 export const test = base.extend<Options & Fixtures>({
@@ -75,10 +80,8 @@ export const test = base.extend<Options & Fixtures>({
   // page.goto('/') y el fixture `request` apuntan al servidor del test
   baseURL: async ({ server }, use) => use(server.url),
 
-  // La app pide una fuente a Google Fonts: se bloquea para no depender de la red externa.
   // Con sesión, el navegador recibe la misma cookie que `api`.
   context: async ({ context, api, authenticated }, use) => {
-    await context.route(/^https:\/\/fonts\.(googleapis|gstatic)\.com\//, (route) => route.abort());
     if (authenticated) await context.addCookies((await api.request.storageState()).cookies);
     await use(context);
   },
@@ -95,6 +98,17 @@ export const test = base.extend<Options & Fixtures>({
     await request.dispose();
   },
 
+  externalRequests: async ({ context, server }, use) => {
+    const own = new URL(server.url).host;
+    const seen: string[] = [];
+    context.on('request', (request) => {
+      const url = new URL(request.url());
+      if (!['http:', 'https:', 'ws:', 'wss:'].includes(url.protocol)) return; // data:, blob:, about:
+      if (url.host !== own) seen.push(request.url());
+    });
+    await use(seen);
+  },
+
   guest: async ({ server, api, browser, onboarded }, use) => {
     await api.signIn(); // el propietario (aunque el test empiece sin sesión) es quien invita
     const invite = await api.createInvite();
@@ -105,7 +119,6 @@ export const test = base.extend<Options & Fixtures>({
     const id = (await api.people()).find((p) => p.email === GUEST_EMAIL)!.id;
 
     const context = await browser.newContext({ baseURL: server.url, timezoneId: TIMEZONE, locale: 'es-ES' });
-    await context.route(/^https:\/\/fonts\.(googleapis|gstatic)\.com\//, (route) => route.abort());
     await context.addCookies((await request.storageState()).cookies);
     const page = await context.newPage();
     await use({ api: guestApi, page, id });

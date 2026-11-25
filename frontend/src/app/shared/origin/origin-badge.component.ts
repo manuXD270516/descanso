@@ -27,19 +27,19 @@ export function blockOrigin(items: readonly { origin: Origin }[]): Origin | null
 @Component({
   selector: 'app-origin-badge',
   template: `<span class="origin-badge" [class.estimated]="origin() === 'estimated'">{{ label() }}</span>`,
-  styles: `
+  styles: `@layer components {
     .origin-badge {
       display: inline-block;
       font-size: 0.72rem;
       font-weight: 600;
-      color: var(--ink-dim);
+      color: var(--ink-muted);
       border: 1px solid var(--line);
       border-radius: 999px;
       padding: 0.1rem 0.5rem;
       white-space: nowrap;
     }
     .origin-badge.estimated { border-style: dashed; }
-  `,
+  }`,
 })
 export class OriginBadgeComponent {
   readonly origin = input.required<Origin>();

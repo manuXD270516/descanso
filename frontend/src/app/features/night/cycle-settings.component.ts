@@ -27,11 +27,11 @@ import { CYCLE_MIN, LATENCY_MIN } from '../../core/cycles';
       @if (saved()) { <p class="small" role="status">Ajustes guardados.</p> }
     </div>
   `,
-  styles: `
+  styles: `@layer components {
     .cycle-settings { display: grid; gap: 0.5rem; }
     .wrap { flex-wrap: wrap; align-items: end; }
     .field input { width: 6rem; }
-  `,
+  }`,
 })
 export class CycleSettingsComponent {
   private account = inject(AccountService);

@@ -32,11 +32,11 @@ import { CYCLE_MIN, GOAL_MAX, GOAL_MIN, cyclesFor, fmtGoal } from '../../core/cy
       @if (saved()) { <p class="small" role="status">Objetivo guardado.</p> }
     </div>
   `,
-  styles: `
+  styles: `@layer components {
     .goal-editor { display: grid; gap: 0.6rem; }
     .wrap { flex-wrap: wrap; }
     .field input { width: 5.5rem; }
-  `,
+  }`,
 })
 export class GoalEditorComponent {
   private account = inject(AccountService);

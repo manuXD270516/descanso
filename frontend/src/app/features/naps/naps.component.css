@@ -1,14 +1,16 @@
-:host { display: grid; gap: 1rem; }
-.form { display: grid; gap: 0.75rem; border-color: var(--dawn-deep); }
-.between { justify-content: space-between; flex-wrap: wrap; }
-.end { justify-content: flex-end; }
-.list { display: grid; gap: 1rem; }
-.day { display: grid; gap: 0.5rem; }
-.day-head { display: flex; justify-content: space-between; align-items: baseline; padding: 0 0.25rem; }
-.day-date { font-weight: 600; text-transform: capitalize; }
-.nap { display: grid; gap: 0.4rem; padding: 0.75rem 1rem; }
-.nap-main { display: flex; justify-content: space-between; gap: 1rem; }
-.nap-dur { color: var(--dawn); font-weight: 600; }
+@layer components {
+  :host { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+  .form { display: grid; gap: 0.75rem; border-color: var(--accent-2); }
+  .between { justify-content: space-between; flex-wrap: wrap; }
+  .end { justify-content: flex-end; }
+  .list { display: grid; gap: 1rem; }
+  .day { display: grid; gap: 0.5rem; }
+  .day-head { display: flex; justify-content: space-between; align-items: baseline; padding: 0 0.25rem; }
+  .day-date { font-weight: 600; text-transform: capitalize; }
+  .nap { display: grid; gap: 0.4rem; padding: 0.75rem 1rem; }
+  .nap-main { display: flex; justify-content: space-between; gap: 1rem; }
+  .nap-dur { color: var(--accent-2); font-weight: 600; }
 
-/* Feature 006: insignia de origen junto al título del bloque */
-.block-head { gap: 0.6rem; align-items: center; }
+  /* Feature 006: insignia de origen junto al título del bloque */
+  .block-head { gap: 0.6rem; align-items: center; }
+}

@@ -40,7 +40,6 @@ test.describe('Multiusuario (008)', () => {
 
     // La persona invitada abre el enlace en su navegador (sin sesión)
     const ctx = await browser.newContext({ baseURL: server.url, locale: 'es-ES' });
-    await ctx.route(/^https:\/\/fonts\.(googleapis|gstatic)\.com\//, (route) => route.abort());
     const p2 = await ctx.newPage();
     const t0 = Date.now();
     await p2.goto(link);

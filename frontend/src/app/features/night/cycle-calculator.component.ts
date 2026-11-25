@@ -30,14 +30,14 @@ import { CycleSettingsComponent } from './cycle-settings.component';
       </details>
     </div>
   `,
-  styles: `
-    .calculator { display: grid; gap: 0.4rem; margin-top: 0.8rem; padding-top: 0.8rem; border-top: 1px solid var(--line); }
+  styles: `@layer components {
+    .calculator { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.4rem; margin-top: 0.8rem; padding-top: 0.8rem; border-top: 1px solid var(--line); }
     .calc-title { font-weight: 600; margin: 0; }
     .windows { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.2rem; }
-    .cycles { display: inline-block; min-width: 5.2rem; color: var(--ink-dim); }
-    .adjust summary { cursor: pointer; color: var(--ink-dim); }
+    .cycles { display: inline-block; min-width: 5.2rem; color: var(--ink-muted); }
+    .adjust summary { cursor: pointer; color: var(--ink-muted); }
     .adjust app-cycle-settings { display: block; margin-top: 0.5rem; }
-  `,
+  }`,
 })
 export class CycleCalculatorComponent {
   /** Hora de dormir (ISO con offset); null o inválida = sin ventanas. */

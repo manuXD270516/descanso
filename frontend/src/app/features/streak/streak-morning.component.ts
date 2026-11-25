@@ -25,10 +25,10 @@ import { StreakOfferComponent } from './streak-offer.component';
       }
     }
   `,
-  styles: `
+  styles: `@layer components {
     .streak-morning { display: grid; gap: 0.6rem; margin-bottom: 1rem; }
     .line { margin: 0; font-weight: 600; }
-  `,
+  }`,
 })
 export class StreakMorningComponent implements OnInit {
   private service = inject(StreakService);

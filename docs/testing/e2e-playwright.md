@@ -344,8 +344,17 @@ la interfaz no tiene semántica (resumen, cinta, grupos de siestas) se usa la cl
 se comenta. No hay page objects: los helpers pequeños por spec (`card`, `record`, `stat`)
 bastan y no hay duplicación entre áreas que justifique una capa más.
 
-**Fuentes externas bloqueadas.** `index.html` carga una fuente de Google Fonts. Los tests abortan
-esas peticiones para no depender de la red.
+**Fuente local, sin terceros.** La fuente de la marca se sirve desde el propio servicio
+(`frontend/public/fonts/`), así que los tests ya no bloquean ningún dominio. El fixture
+`externalRequests` registra las peticiones a hosts distintos del servidor del test y
+`accesibilidad-axe.spec.ts` exige que la lista quede vacía (SC-007 de la feature 014).
+
+**Accesibilidad automática.** `accesibilidad-axe.spec.ts` corre `@axe-core/playwright` (reglas
+WCAG 2.0, 2.1 y 2.2 A y AA) en tema claro y oscuro (`page.emulateMedia({ colorScheme })`) sobre las
+cuatro pestañas con sus plegables abiertos, Mi perfil, Mi horario y la pantalla de entrar, y mide en
+el navegador el contraste de los pares de `specs/014-relook-moderno/contracts/design-tokens.md`.
+Los resultados "incomplete" de axe se adjuntan al reporte. Los helpers `expandTab` y `waitForTab`
+viven en `e2e/support/tabs.ts`.
 
 **CI.** Job separado para no alargar ni arriesgar `quality`. Un reintento en CI para absorber
 ruido de infraestructura; los reintentos aparecen como *flaky* en el reporte y no deben

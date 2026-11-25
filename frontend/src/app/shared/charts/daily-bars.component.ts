@@ -43,20 +43,20 @@ const GAP = 4;
       <app-chart-table [caption]="title()" [columns]="columns" [rows]="tableRows()" />
     </figure>
   `,
-  styles: `
+  styles: `@layer components {
     .daily-bars { margin: 0; display: grid; gap: 0.4rem; }
     svg { width: 100%; height: 160px; display: block; }
-    .bar { fill: var(--moon); }
-    .hatch { fill: var(--dawn); }
-    .bar-progress { stroke: var(--dawn); stroke-width: 0.5; }
+    .bar { fill: var(--accent); }
+    .hatch { fill: var(--accent-2-fill); }
+    .bar-progress { stroke: var(--accent-2); stroke-width: 0.5; }
     .bar-none { stroke: var(--ink-faint); stroke-width: 1.5; stroke-dasharray: 2 2; }
-    .goal-band { fill: var(--moon); opacity: 0.15; }
-    .goal-line { stroke: var(--moon); stroke-width: 0.8; stroke-dasharray: 3 3; }
+    .goal-band { fill: var(--accent); opacity: 0.15; }
+    .goal-line { stroke: var(--accent); stroke-width: 0.8; stroke-dasharray: 3 3; }
     .key { display: inline-block; width: 0.8rem; height: 0.5rem; margin-right: 0.15rem; border-radius: 2px; vertical-align: middle; }
-    .key-goal { background: color-mix(in srgb, var(--moon) 30%, transparent); }
-    .key-progress { background: repeating-linear-gradient(45deg, var(--dawn) 0 2px, transparent 2px 4px); }
+    .key-goal { background: color-mix(in srgb, var(--accent) 30%, transparent); }
+    .key-progress { background: repeating-linear-gradient(45deg, var(--accent-2-fill) 0 2px, transparent 2px 4px); }
     .key-none { border-bottom: 2px dashed var(--ink-faint); height: 0; }
-  `,
+  }`,
 })
 export class DailyBarsComponent {
   readonly days = input.required<DashboardDay[]>();

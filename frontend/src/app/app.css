@@ -1,127 +1,137 @@
-.top {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 1.4rem 1rem 0.5rem;
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
-}
+@layer components {
+  .top {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 1.4rem 1rem 0.5rem;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+  }
 
-.wordmark {
-  font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  font-variation-settings: 'opsz' 96;
-}
+  .wordmark {
+    font-size: var(--fs-xl);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
 
-.tabs {
-  display: flex;
-  gap: 0.25rem;
-  background: var(--night-2);
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 0.25rem;
-}
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    background: var(--surface-raised);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-pill);
+    padding: 0.25rem;
+  }
 
-.tab {
-  background: transparent;
-  border: 0;
-  color: var(--ink-dim);
-  border-radius: 999px;
-  padding: 0.4rem 0.9rem;
-  font-weight: 600;
-  font-size: 0.9rem;
-  transition: background 0.15s, color 0.15s;
-}
-.tab:hover { color: var(--ink); }
-.tab.active { background: var(--night-3); color: var(--ink); }
+  .tab {
+    background: transparent;
+    border: 0;
+    color: var(--ink-muted);
+    border-radius: var(--radius-pill);
+    min-block-size: var(--target);
+    padding: 0.4rem 0.9rem;
+    font-weight: 600;
+    font-size: var(--fs-sm);
+  }
+  @media (hover: hover) { .tab:hover { color: var(--ink); } }
+  @media (prefers-reduced-motion: no-preference) { .tab, .account > summary { transition: background var(--dur-fast), color var(--dur-fast); } }
+  .tab.active { background: var(--surface-hover); color: var(--ink); }
 
-.content {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 0.5rem 1rem 3rem;
-  display: grid;
-  gap: 1rem;
-}
+  .content {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0.5rem 1rem 3rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+  }
 
-@media (max-width: 480px) {
-  .top { flex-direction: column; align-items: stretch; }
-  .tabs { justify-content: stretch; }
-  /* Feature 005: cuatro pestañas caben en 375 px aunque la fuente de reserva sea más ancha */
-  .tab { flex: 1 1 0; min-width: 0; text-align: center; padding: 0.4rem 0.25rem; font-size: 0.85rem; }
-}
+  @media (width < 30rem) {
+    .top { flex-direction: column; align-items: stretch; }
+    .tabs { justify-content: stretch; }
+    /* Feature 005: cuatro pestañas caben en 375 px; con texto grande pasan a otra fila sin recortarse (014) */
+    .tab { flex: 1 1 auto; text-align: center; padding: 0.4rem 0.25rem; font-size: var(--fs-xs); }
+  }
 
-.version {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 0 1rem 1.5rem;
-  color: var(--ink-dim);
-  font-size: 0.75rem;
-  text-align: center;
-}
+  .version {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 1rem 1.5rem;
+    color: var(--ink-muted);
+    font-size: var(--fs-xs);
+    text-align: center;
+  }
 
-/* Menú de cuenta (feature 004): <details> nativo, accesible por teclado */
-.account { position: relative; }
-.account > summary {
-  cursor: pointer;
-  list-style: none;
-  color: var(--ink-dim);
-  font-weight: 600;
-  font-size: 0.9rem;
-  padding: 0.4rem 0.6rem;
-  border-radius: 999px;
-}
-.account > summary::-webkit-details-marker { display: none; }
-.account > summary:hover, .account[open] > summary { color: var(--ink); background: var(--night-2); }
-.account > summary:focus-visible { outline: 2px solid var(--moon); outline-offset: 2px; }
-.account-menu {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 0.4rem);
-  z-index: 10;
-  min-width: 220px;
-  display: grid;
-  gap: 0.5rem;
-  padding: 0.8rem;
-  background: var(--night-2);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-}
-.account-email { overflow-wrap: anywhere; }
-.account-title { font-weight: 600; }
-.account-exports { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.3rem; }
-.account-exports a { color: var(--moon); }
-.account-menu .btn { justify-self: start; }
+  /* Menú de cuenta (feature 004): <details> nativo, accesible por teclado */
+  .account { position: relative; }
+  .account > summary {
+    cursor: pointer;
+    list-style: none;
+    color: var(--ink-muted);
+    font-weight: 600;
+    font-size: var(--fs-sm);
+    display: flex;
+    align-items: center;
+    min-block-size: var(--target);
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--radius-pill);
+  }
+  .account > summary::-webkit-details-marker { display: none; }
+  @media (hover: hover) { .account > summary:hover { color: var(--ink); background: var(--surface-raised); } }
+  .account[open] > summary { color: var(--ink); background: var(--surface-raised); }
+  .account-menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 0.4rem);
+    z-index: 10;
+    min-width: 13.75rem;
+    max-width: calc(100vw - 2rem);
+    display: grid;
+    gap: 0.5rem;
+    padding: 0.8rem;
+    background: var(--surface-raised);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+  }
+  .account-email { overflow-wrap: anywhere; }
+  .account-title { font-weight: 600; }
+  .account-exports { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.3rem; }
+  .account-exports a { color: var(--accent); display: inline-block; padding-block: 0.6rem; }
+  .account-menu .btn { justify-self: start; }
 
-.unavailable, .loading { max-width: 460px; margin: 2rem auto 0; }
-.unavailable { display: grid; gap: 0.6rem; }
+  .unavailable, .loading { max-width: 460px; margin: 2rem auto 0; }
+  .unavailable { display: grid; gap: 0.6rem; }
 
-@media (max-width: 480px) {
-  .account { align-self: flex-end; }
-}
-/* Feature 008: enlaces del menú Cuenta, aviso de restablecimiento y enlaces bajo "Entrar" */
-.account-links { display: grid; gap: 0.15rem; }
-.account-links .btn { justify-self: stretch; text-align: left; }
-.reset-notice {
-  max-width: 720px;
-  margin: 0.5rem auto 0;
-  padding: 0.6rem 1rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--night-2);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-}
-.login-links { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
-.back { justify-self: center; }
+  @media (width < 30rem) {
+    .account { align-self: flex-end; }
+  }
+  /* Feature 008: enlaces del menú Cuenta, aviso de restablecimiento y enlaces bajo "Entrar" */
+  .account-links { display: grid; gap: 0.15rem; }
+  .account-links .btn { justify-self: stretch; text-align: left; }
+  .reset-notice {
+    max-width: 720px;
+    margin: 0.5rem auto 0;
+    padding: 0.6rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface-raised);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+  .login-links { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
+  .back { justify-self: center; }
 
-/* Feature 006: aviso de no dispositivo médico en Noche, Tendencias y Siestas */
-.medical-notice {
-  color: var(--ink-dim);
-  border-left: 3px solid var(--line);
-  padding: 0.2rem 0 0.2rem 0.6rem;
+  /* Feature 006: aviso de no dispositivo médico en Noche, Tendencias y Siestas */
+  .medical-notice {
+    color: var(--ink-muted);
+    background: var(--surface-sunken);
+    border-left: 3px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+    padding: 0.5rem 0.75rem;
+  }
 }

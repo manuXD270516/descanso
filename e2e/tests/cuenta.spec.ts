@@ -28,7 +28,6 @@ test.describe('Cuenta (008)', () => {
     const t0 = Date.now();
     const { token } = await api.resetLink(guest.id);
     const ctx = await browser.newContext({ baseURL: server.url, locale: 'es-ES' });
-    await ctx.route(/^https:\/\/fonts\.(googleapis|gstatic)\.com\//, (route) => route.abort());
     const p = await ctx.newPage();
     await p.goto(`/#restablecer=${token}`);
     await p.locator('input[name="password"]').fill('una contraseña recuperada');
