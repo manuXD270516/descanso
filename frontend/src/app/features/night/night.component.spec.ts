@@ -8,7 +8,7 @@ import { flushStreak } from '../streak/streak.testing';
 
 const EMPTY_STATS: Stats = {
   days: [],
-  summary: { nights: 0, avg_sleep_min: 0, avg_nap_min: 0, total_naps: 0, avg_bedtime_min: null, avg_wake_min: null },
+  summary: { nights: 0, avg_sleep_min: null, avg_nap_min: null, total_naps: 0, avg_bedtime_min: null, avg_wake_min: null },
 };
 
 function record(p: Partial<SleepRecord>): SleepRecord {
@@ -232,10 +232,10 @@ describe('NightComponent', () => {
     ]);
   });
 
-  it('sin datos muestra "—" en las horas medias y "0 min" de promedio (US4-5)', () => {
+  it('sin datos muestra "—" en el promedio y en las horas medias, nunca "0 min" (US4-5)', () => {
     flushLoad();
     const nums = Array.from(el.querySelectorAll('.summary .num')).map((n) => n.textContent!.trim());
-    expect(nums).toEqual(['0 min', '—', '—', '0']);
+    expect(nums).toEqual(['—', '—', '—', '0']);
   });
 
   it('la cinta tiene 14 filas, la más reciente arriba, y posiciona sueño y siestas en el eje 12:00–12:00 (US4-6)', () => {

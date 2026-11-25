@@ -109,8 +109,8 @@ No se almacena. Para el rango `[from, to]` por `date`:
 - `days[]`: por fecha → `sleep_min` (suma de noches **cerradas**), `nap_min`, `naps`, `bedtime`
   y `wake_time` (los de la última noche procesada).
 - `summary.nights`: días con `sleep_min > 0`.
-- `summary.avg_sleep_min`: media redondeada de `sleep_min` de esos días.
-- `summary.avg_nap_min`: media de `nap_min` de los días con siestas.
+- `summary.avg_sleep_min`: media redondeada de `sleep_min` de esos días; `null` si no hay noches (sin dato no es 0, principio VIII).
+- `summary.avg_nap_min`: media de `nap_min` de los días con siestas; `null` si no hay ninguno.
 - `summary.total_naps`: número de siestas.
 - `summary.avg_bedtime_min` / `avg_wake_min`: **media circular** (en minutos 0–1439) de la hora
   `HH:MM` escrita en el ISO (hora local de quien registró), o `null` si no hay noches.

@@ -8,6 +8,7 @@ import { CalendarGuideComponent, detectPlatform } from './calendar-guide.compone
 import { MyScheduleComponent } from './my-schedule.component';
 import { BedtimeNoticeComponent } from '../../shared/bedtime-notice.component';
 import { flushStreak } from '../streak/streak.testing';
+import { flushPush } from '../../core/push-testing.spec';
 
 // Feature 010 en el frontend: bienvenida con horario (US1), Mi horario + calendario + pausa (US2/US4),
 // guía por plataforma (FR-011) y aviso con la app abierta (US5).
@@ -21,7 +22,7 @@ describe('Feature 010 · horario', () => {
     TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
     http = TestBed.inject(HttpTestingController);
   });
-  afterEach(() => { flushStreak(http); http.verify(); });
+  afterEach(() => { flushStreak(http); flushPush(http); http.verify(); });
 
   describe('bienvenida (US1, SC-001)', () => {
     it('elegir un atajo solo marca el objetivo; "Guardar" con horario guarda objetivo y horario vigente desde hoy', () => {

@@ -1,4 +1,6 @@
 import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import { PushService } from '../core/push.service';
+import { PushMessage, pushMessageText } from '../core/push';
 import { ApiService } from '../core/api.service';
 import { ScheduleState, ScheduleService } from '../core/schedule.service';
 import { isAround, localDay, prepareInstant } from '../core/schedule';
@@ -10,6 +12,9 @@ const CHECK_MS = 30_000;
  * "En X min es tu hora de dormir". Silencioso (role="status", sin sonido), sin animación si se pide
  * movimiento reducido. No sale en pausa, en una noche sin horario ni con la noche ya abierta; se cierra
  * y no vuelve ese día. El servidor no programa nada (SC-008).
+ *
+ * Feature 013 (FR-019): con la app visible, el aviso que llega por push se muestra aquí, igual de silencioso,
+ * en vez de como notificación del sistema. Un "prepárate" no se repite si el aviso de 010 ya salió ese día.
  */
 @Component({
   selector: 'app-bedtime-notice',
@@ -18,6 +23,12 @@ const CHECK_MS = 30_000;
       <div class="bedtime-notice" role="status">
         <span>En {{ lead() }} min es tu hora de dormir.</span>
         <button type="button" class="btn btn-ghost btn-sm" (click)="dismiss()">Cerrar</button>
+      </div>
+    }
+    @if (pushText(); as text) {
+      <div class="bedtime-notice push-notice" role="status">
+        <span>{{ text }}</span>
+        <button type="button" class="btn btn-ghost btn-sm" (click)="pushText.set(null)">Cerrar</button>
       </div>
     }
   `,
@@ -43,7 +54,13 @@ export class BedtimeNoticeComponent implements OnInit {
   private schedule = inject(ScheduleService);
   private api = inject(ApiService);
 
+  private push = inject(PushService);
+
   readonly visible = signal(false);
+  /** Aviso recibido por push con la app visible (feature 013). */
+  readonly pushText = signal<string | null>(null);
+  /** Último día en que el aviso de 010 se mostró (para no repetir el "prepárate"). */
+  private noticeShownDay = '';
   readonly lead = signal(30);
   private state: ScheduleState | null = null;
   private stateDay = '';
@@ -51,7 +68,14 @@ export class BedtimeNoticeComponent implements OnInit {
 
   constructor() {
     const timer = setInterval(() => this.check(), CHECK_MS);
-    inject(DestroyRef).onDestroy(() => clearInterval(timer));
+    const sub = this.push.messages.subscribe((m) => this.onPush(m));
+    inject(DestroyRef).onDestroy(() => { clearInterval(timer); sub.unsubscribe(); });
+  }
+
+  /** Muestra el aviso de push dentro de la app, salvo un "prepárate" que el aviso de 010 ya mostró hoy. */
+  onPush(m: PushMessage, now = new Date()) {
+    if (m.kind === 'prepare' && this.noticeShownDay === localDay(now)) return;
+    this.pushText.set(pushMessageText(m));
   }
 
   ngOnInit() {
@@ -76,7 +100,12 @@ export class BedtimeNoticeComponent implements OnInit {
     const prep = prepareInstant(today, s.version, s.lead_min);
     if (!isAround(now, prep)) return;
     // Solo si no hay una noche ya abierta
-    this.api.openNight().subscribe({ next: (open) => this.visible.set(!open) });
+    this.api.openNight().subscribe({
+      next: (open) => {
+        this.visible.set(!open);
+        if (!open) this.noticeShownDay = today;
+      },
+    });
   }
 
   dismiss() {

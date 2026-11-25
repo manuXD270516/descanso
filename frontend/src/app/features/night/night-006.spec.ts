@@ -11,7 +11,7 @@ import { flushStreak } from '../streak/streak.testing';
 
 // Feature 006 en Noche: calculadora (US2), recordatorio de noche abierta (US4), tarjeta (US5) e insignias (US1).
 const PROFILE = { id: 1, email: 'yo@x.com', role: 'owner', display_name: 'Yo', timezone: null, sleep_goal_min: 450, cycle_min: 90, latency_min: 15, consent_version: null, consent_at: null, created_at: '' };
-const EMPTY_STATS: Stats = { from: '', to: '', days: [], summary: { avg_sleep_min: 0, total_naps: 0, avg_bedtime_min: null, avg_wake_min: null } } as unknown as Stats;
+const EMPTY_STATS: Stats = { from: '', to: '', days: [], summary: { avg_sleep_min: null, total_naps: 0, avg_bedtime_min: null, avg_wake_min: null } } as unknown as Stats;
 const HOUR = 3600_000;
 
 function night(p: Partial<SleepRecord>): SleepRecord {

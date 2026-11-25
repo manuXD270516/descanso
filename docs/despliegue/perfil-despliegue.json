@@ -1,0 +1,490 @@
+{
+  "proyecto": {
+    "nombre": "sleep-tracker",
+    "ruta": ".",
+    "version": null,
+    "tipo": "frontend + API con proceso propio (un contenedor)"
+  },
+  "estadoDespliegue": {
+    "estado": "configurado",
+    "modoSugerido": "revisar (o panel con «quedarse» como candidato obligado)",
+    "plataformas": [
+      {
+        "id": "fly",
+        "archivo": "fly.toml",
+        "app": "descanso-sleep"
+      }
+    ],
+    "cd": [
+      {
+        "archivo": ".github/workflows/backup.yml",
+        "despliega": false,
+        "destinos": [],
+        "ramas": [],
+        "paths": [],
+        "pathsIgnore": [],
+        "cron": [
+          "17 3 * * *"
+        ]
+      },
+      {
+        "archivo": ".github/workflows/deploy.yml",
+        "despliega": true,
+        "destinos": [
+          "fly"
+        ],
+        "ramas": [
+          "master"
+        ],
+        "paths": [],
+        "pathsIgnore": [
+          "docs/**",
+          "**/*.md"
+        ],
+        "cron": []
+      }
+    ],
+    "adrs": [
+      "docs/despliegue/DECISION-DESPLIEGUE.md"
+    ],
+    "runbooks": [
+      "docs/despliegue/DECISION-DESPLIEGUE.md",
+      "docs/despliegue/RUNBOOK-DESPLIEGUE.md",
+      "docs/runbooks/configurar-bucket-respaldos.md",
+      "docs/runbooks/recuperar-acceso.md",
+      "docs/runbooks/restaurar-respaldo.md",
+      "docs/runbooks/rollback-migracion.md",
+      "docs/runbooks/rotar-vapid.md",
+      "docs/runbooks/verificacion-local.md"
+    ],
+    "infra": []
+  },
+  "stack": {
+    "lenguajes": [
+      "javascript (52)",
+      "typescript (51)"
+    ],
+    "gestor": "npm",
+    "frameworks": [
+      "angular",
+      "express"
+    ],
+    "runtime": {
+      "engines": [
+        "node >=22 (backend/package.json)",
+        "node >=22 (e2e/package.json)"
+      ],
+      "versionFiles": [],
+      "imagenesBase": [
+        "node:22-alpine (Dockerfile)"
+      ]
+    },
+    "monorepo": false,
+    "paquetes": [
+      "backend/package.json",
+      "e2e/package.json",
+      "frontend/package.json"
+    ]
+  },
+  "datos": {
+    "motores": [
+      "sqlite (archivo)"
+    ],
+    "migraciones": [
+      "backend/src/migrations/"
+    ]
+  },
+  "autenticacion": [
+    "módulo propio: backend/src/auth/, frontend/src/app/features/auth/"
+  ],
+  "señales": {
+    "procesoPersistente": {
+      "activa": true,
+      "evidencia": [
+        "backend/src/server.js:12"
+      ]
+    },
+    "websockets": {
+      "activa": false,
+      "evidencia": []
+    },
+    "tareasProgramadas": {
+      "activa": true,
+      "evidencia": [
+        "backend/src/reminders/waker.js:32 (setInterval)",
+        ".github/workflows/backup.yml: cron 17 3 * * *"
+      ],
+      "nota": "Un setInterval dentro del proceso necesita que la máquina no se apague ni se escale a cero"
+    },
+    "escribeEnDisco": {
+      "activa": true,
+      "evidencia": [
+        "backend/src/db.js:1 (sqlite en archivo)",
+        "compose.yaml: volúmenes descanso-data",
+        "fly.toml: [[mounts]]"
+      ]
+    },
+    "navegadorSinCabeza": {
+      "activa": false,
+      "evidencia": []
+    },
+    "dependenciasNativas": {
+      "activa": true,
+      "evidencia": [
+        "better-sqlite3"
+      ]
+    },
+    "contenedores": {
+      "activa": true,
+      "evidencia": [
+        "Dockerfile",
+        "compose.yaml"
+      ]
+    },
+    "renderEnServidor": {
+      "activa": false,
+      "evidencia": []
+    },
+    "pwa": {
+      "activa": false,
+      "evidencia": []
+    },
+    "compatibleConBorde": {
+      "activa": false,
+      "evidencia": []
+    }
+  },
+  "contenedores": [
+    {
+      "archivo": "compose.yaml",
+      "servicios": [
+        "app"
+      ],
+      "volumenes": [
+        "descanso-data"
+      ]
+    }
+  ],
+  "fly": {
+    "archivo": "fly.toml",
+    "app": "descanso-sleep",
+    "region": "gru",
+    "memoria": "256mb",
+    "volumenes": true,
+    "minMaquinas": "1",
+    "autoStop": "stop"
+  },
+  "configuracion": {
+    "variables": [
+      {
+        "nombre": "APP_VERSION",
+        "en": [
+          "código"
+        ]
+      },
+      {
+        "nombre": "BACKUP_TOKEN",
+        "en": [
+          "compose",
+          "código"
+        ]
+      },
+      {
+        "nombre": "DB_PATH",
+        "en": [
+          "compose",
+          "código",
+          "fly.toml"
+        ]
+      },
+      {
+        "nombre": "FRONTEND_DIST",
+        "en": [
+          "código"
+        ]
+      },
+      {
+        "nombre": "OWNER_SETUP_TOKEN",
+        "en": [
+          "código"
+        ]
+      },
+      {
+        "nombre": "PORT",
+        "en": [
+          "código",
+          "fly.toml"
+        ]
+      },
+      {
+        "nombre": "PUSH_TEST_ORIGIN",
+        "en": [
+          "código"
+        ]
+      },
+      {
+        "nombre": "REMINDER_WAKER",
+        "en": [
+          "código"
+        ]
+      },
+      {
+        "nombre": "VAPID_PRIVATE_KEY",
+        "en": [
+          "compose",
+          "código"
+        ]
+      },
+      {
+        "nombre": "VAPID_PUBLIC_KEY",
+        "en": [
+          "compose",
+          "código"
+        ]
+      },
+      {
+        "nombre": "VAPID_SUBJECT",
+        "en": [
+          "compose",
+          "código"
+        ]
+      }
+    ],
+    "archivosDeEjemplo": [],
+    "archivosDeSecretos": []
+  },
+  "calidad": {
+    "build": [
+      "frontend:build"
+    ],
+    "pruebas": [
+      "backend:test",
+      "backend:lint",
+      "e2e:test",
+      "e2e:test:headed",
+      "e2e:test:ui",
+      "e2e:report",
+      "e2e:typecheck",
+      "e2e:install:browsers",
+      "frontend:test",
+      "frontend:lint"
+    ],
+    "ci": [
+      ".github/workflows/backup.yml",
+      ".github/workflows/ci.yml",
+      ".github/workflows/deploy.yml"
+    ]
+  },
+  "git": {
+    "esRepo": true,
+    "rama": "docs/panel-despliegue-2026-11-17",
+    "ramaPorDefecto": "master",
+    "ramasLocales": 32,
+    "ramasRemotasSinFusionar": [
+      "origin/002-migrar-fly-io",
+      "origin/ops/rotar-backup-token"
+    ],
+    "totalSinFusionar": 2,
+    "remoto": "https://github.com/manuXD270516/descanso.git",
+    "ultimaEtiqueta": null,
+    "limpio": true,
+    "flujo": "trunk"
+  },
+  "cambiosEnCurso": [
+    {
+      "ruta": "specs/002-pipeline-ci-cd",
+      "tipo": "tareas",
+      "pendientes": 2,
+      "hechas": 24
+    },
+    {
+      "ruta": "specs/013-avisos-push",
+      "tipo": "tareas",
+      "pendientes": 1,
+      "hechas": 41
+    }
+  ],
+  "reglasDeFusion": [],
+  "documentos": [
+    "CLAUDE.md",
+    "README.md"
+  ],
+  "avisos": [
+    "Estado «configurado»: no apliques los valores por omisión de presupuesto y tarjeta sin preguntar; modo sugerido: revisar (o panel con «quedarse» como candidato obligado)",
+    "Un .despliegue.json en la raíz dispararía el despliegue (.github/workflows/deploy.yml): escribilo en <salida>/ y comprobá que esa ruta tampoco dispare",
+    "Hay 2 change(s) en curso: lo que traen no es una ausencia; informalo en el perfil"
+  ],
+  "parametros": {
+    "presupuesto": 5,
+    "tarjeta": "si",
+    "audiencia": "personal",
+    "datos": "sensibles",
+    "ramas": "trunk",
+    "salida": "docs/despliegue/",
+    "profundidad": "normal",
+    "idioma": "es",
+    "modo": "proponer"
+  },
+  "hechos": [
+    {
+      "pregunta": 1,
+      "hecho": "Un solo proceso Node sirve la API /api/* y los estáticos de la SPA Angular compilada",
+      "evidencia": "Dockerfile (etapas 1-3), backend/src/app.js (FRONTEND_DIST)"
+    },
+    {
+      "pregunta": 2,
+      "hecho": "Proceso persistente: app.listen y un disparador en memoria cada 30 s que envía avisos push con la app cerrada",
+      "evidencia": "backend/src/server.js:12, backend/src/reminders/waker.js:4 y :32"
+    },
+    {
+      "pregunta": 3,
+      "hecho": "Tareas programadas: el tick de 30 s dentro del proceso y el respaldo diario por GitHub Actions (03:17 UTC) que descarga /api/admin/backup con BACKUP_TOKEN",
+      "evidencia": "backend/src/reminders/waker.js:32, .github/workflows/backup.yml:5"
+    },
+    {
+      "pregunta": 4,
+      "hecho": "Escribe en disco local que debe sobrevivir reinicios: la base SQLite y sus copias pre-migración",
+      "evidencia": "backend/src/db.js:6-17, fly.toml [[mounts]]"
+    },
+    {
+      "pregunta": 5,
+      "hecho": "Dependencia nativa better-sqlite3 (binario precompilado linuxmusl-x64 en Alpine, sin toolchain)",
+      "evidencia": "Dockerfile etapa 2 (comentario), backend/package.json"
+    },
+    {
+      "pregunta": 6,
+      "hecho": "SQLite con migraciones propias versionadas (11 aplicadas); cambiar a Postgres implicaría reescribir la capa repo/ y las migraciones",
+      "evidencia": "backend/src/migrations/, specs/013-avisos-push (migración 011)"
+    },
+    {
+      "pregunta": 8,
+      "hecho": "La app está en producción en Fly.io (volumen descanso_data de 1 GB en gru), pero el owner todavía no la usa: no hay cuenta del propietario ni datos reales (confirmado por el owner el 2026-11-18)",
+      "evidencia": "fly.toml; /api/health storage.used_pct 7"
+    },
+    {
+      "pregunta": 9,
+      "hecho": "Datos de salud (sueño, siestas); multiusuario con aislamiento por usuario; constitución principio VIII exige privacidad y honestidad",
+      "evidencia": ".specify/memory/constitution.md, specs/008-multiusuario-perfiles"
+    },
+    {
+      "pregunta": 11,
+      "hecho": "Memoria en reposo con el disparador activo: pico de 18,55 MiB en 10 min con --memory=256m, sin OOM",
+      "evidencia": "specs/013-avisos-push/tasks.md T042 (estado 2026-10-30)"
+    },
+    {
+      "pregunta": 13,
+      "hecho": "CI en GitHub Actions (ci.yml): job quality (lint y tests de backend y frontend), único check requerido, y e2e con Playwright. La imagen Docker no se construye en el CI: la construye el job publish de deploy.yml después del merge",
+      "evidencia": ".github/workflows/ci.yml; .github/workflows/deploy.yml:58"
+    },
+    {
+      "pregunta": 14,
+      "hecho": "Trunk: master protegido con check quality y up-to-date estricto; cada push a master despliega en Fly por SHA de imagen GHCR, con rollback automático si falla el health check",
+      "evidencia": ".github/workflows/deploy.yml, fly.toml [deploy]"
+    },
+    {
+      "pregunta": 15,
+      "hecho": "Secretos de servidor: OWNER_SETUP_TOKEN, BACKUP_TOKEN, VAPID_PRIVATE_KEY (Fly secrets); VAPID_PUBLIC_KEY llega al navegador y no es secreta. GitHub: FLY_API_TOKEN, BACKUP_TOKEN y (pendientes) los del bucket de respaldo",
+      "evidencia": "backend/src/*.js (process.env), compose.yaml, gh secret list"
+    },
+    {
+      "pregunta": 16,
+      "hecho": "Servicios externos: Web Push (servicios push de los navegadores) con VAPID; GHCR para imágenes; bucket S3 compatible (Cloudflare R2) para respaldos, aún sin configurar",
+      "evidencia": "backend/src/reminders/push.js, .github/workflows/deploy.yml y backup.yml"
+    },
+    {
+      "pregunta": 17,
+      "hecho": "Ya está desplegado y aceptado en Fly.io: máquina shared-cpu-1x 256 MB siempre encendida (min_machines_running=1) por decisión del owner, ≈3,3 USD/mes con tarjeta cargada",
+      "evidencia": "fly.toml (comentario de costo, decisión P5b)"
+    },
+    {
+      "pregunta": 9,
+      "hecho": "El repositorio de GitHub es público (no contiene datos ni secretos)",
+      "evidencia": "gh repo view --json visibility"
+    },
+    {
+      "pregunta": 13,
+      "hecho": "deploy.yml ignora docs/** y **/*.md: un cambio solo de documentación no redespliega",
+      "evidencia": ".github/workflows/deploy.yml:6-9"
+    },
+    {
+      "pregunta": 13,
+      "hecho": "setup-flyctl fijado a un commit en lugar de @master",
+      "evidencia": "commit 7c865ea"
+    },
+    {
+      "pregunta": 9,
+      "hecho": "/api/admin limita intentos fallidos (429) y registra accesos",
+      "evidencia": "commit de6cc35; docs/contratos"
+    },
+    {
+      "pregunta": 8,
+      "hecho": "Un fallo del respaldo diario abre un issue en GitHub; el respaldo externo (T014) sigue sin secretos cargados",
+      "evidencia": "commit 795d3e1; docs/despliegue/RUNBOOK-DESPLIEGUE.md (estado 2026-11-17)"
+    }
+  ],
+  "supuestos": [
+    {
+      "pregunta": 7,
+      "supuesto": "Datos de pocos MB y crecimiento lento (unos KB por noche por usuario)",
+      "motivo": "used_pct 7 % de 1 GB incluye el sistema de archivos; no se leyó la base de producción"
+    },
+    {
+      "pregunta": 10,
+      "supuesto": "Uno a tres usuarios en Sudamérica, menos de 1.000 peticiones por día; no necesita funcionar sin conexión",
+      "motivo": "audiencia personal; región gru elegida por cercanía"
+    },
+    {
+      "pregunta": 12,
+      "supuesto": "Basta con no perder datos y que los avisos lleguen a su hora; una caída de minutos se tolera",
+      "motivo": "uso personal"
+    },
+    {
+      "pregunta": 7,
+      "supuesto": "Sin archivos binarios subidos por el usuario",
+      "motivo": "no hay rutas de subida en backend/src/routes"
+    }
+  ],
+  "mediciones": [
+    {
+      "que": "Memoria del contenedor con el disparador de avisos activo, base vacía",
+      "valor": "pico 18,55 MiB en 10 min",
+      "como": "docker stats cada 10 s (T042, 2026-10-30)",
+      "entorno": "local"
+    }
+  ],
+  "restricciones": [
+    "Costo total ≤ 5 USD por mes; el owner acepta tarjeta (ya la tiene cargada en Fly)",
+    "Proceso persistente o un disparador equivalente con resolución de ≤ 1 minuto para los avisos push con la app cerrada",
+    "Datos de salud sensibles: acceso solo con sesión, secretos fuera del repo (que es público), respaldo fuera de la plataforma",
+    "No perder datos: migración desde el volumen actual de Fly verificada antes de cortar",
+    "Latencia razonable desde Sudamérica"
+  ],
+  "pendientesDelOwner": [
+    "¿Dominio propio o seguir en *.fly.dev / subdominio gratuito?",
+    "Cargar los secretos del bucket de respaldo (T014)"
+  ],
+  "contexto": {
+    "resumen": "Ya en producción en Fly.io (app descanso-sleep, gru, ~3,3 USD/mes). Esta corrida repite el panel del 2026-11-13 para probar la versión corregida de la skill y contrastar la decisión con el perfil de hoy.",
+    "decisionVigente": "docs/despliegue/DECISION-DESPLIEGUE.md (2026-11-13): quedarse en Fly; plan B VPS con Docker; respaldo externo como condición obligatoria",
+    "runbookVigente": "docs/despliegue/RUNBOOK-DESPLIEGUE.md: fase 2 puntos 1, 3 y 4 hechos; faltan puntos 2 y 5 (owner) y la fase 1 (respaldo externo, fecha límite 2026-11-30)",
+    "reglasDeFusion": "Ninguna congelación escrita. Trunk: cada merge a master despliega solo; documentación ignorada por el CD.",
+    "enCurso": [
+      {
+        "ruta": "specs/002-pipeline-ci-cd",
+        "tipo": "tareas",
+        "pendientes": 2,
+        "hechas": 24
+      },
+      {
+        "ruta": "specs/013-avisos-push",
+        "tipo": "tareas",
+        "pendientes": 1,
+        "hechas": 41
+      }
+    ],
+    "ramasSinFusionar": [
+      "origin/002-migrar-fly-io",
+      "origin/ops/rotar-backup-token"
+    ]
+  }
+}

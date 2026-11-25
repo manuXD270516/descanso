@@ -57,6 +57,12 @@ Ejemplo de *expand* puro: `008_ciclos_y_diario.js` (feature 006).
 - `010_rachas.js` (feature 011): `CREATE TABLE IF NOT EXISTS streak_achievements` y 8 `ADD COLUMN`
   con `DEFAULT` o `NULL` en `user_settings` (racha desactivada, margen 30, contadores a 0). Solo
   expand: el código de 010 y 006 sigue funcionando (`compat-previous-011.test.js`).
+- `011_avisos_push.js` (feature 013): *expand* con dos tablas nuevas (`push_subscriptions`,
+  `reminder_deliveries`, ambas con `user_id ... ON DELETE CASCADE`) y 6 `ADD COLUMN` con `DEFAULT` o `NULL` en
+  `user_settings`. `push_subscriptions.session_hash` tiene una FK a `sessions(id_hash) ON DELETE CASCADE`:
+  el código anterior borra sesiones (cerrar sesión, caducar, cambiar la contraseña) y la FK borra el
+  dispositivo ligado a ellas, así que el rollback a la imagen anterior no rompe nada. El código de 011
+  sigue funcionando (`compat-previous-013.test.js`).
 
 ### Multiusuario (desde la feature 008)
 

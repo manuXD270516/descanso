@@ -1,0 +1,199 @@
+{
+  "version": 1,
+  "actualizado": "2026-11-24",
+  "estado": "configurado",
+  "modo": "proponer",
+  "parametros": {
+    "profundidad": "normal",
+    "presupuestoUsdMes": 5,
+    "tarjeta": "si",
+    "audiencia": "personal",
+    "datos": "sensibles",
+    "ramas": "trunk",
+    "idioma": "es",
+    "salida": "docs/despliegue",
+    "candidatos": [
+      "fly",
+      "vps-docker",
+      "cloudflare"
+    ],
+    "pesos": {
+      "costo": 15,
+      "ajuste": 20,
+      "seguridad": 25,
+      "operacion": 20,
+      "reversibilidad": 15,
+      "esfuerzo": 5
+    }
+  },
+  "decision": {
+    "plataforma": "fly",
+    "planB": "vps-docker",
+    "fecha": "2026-11-17",
+    "regla": "mayoria-de-primeros",
+    "consenso": {
+      "primeros": 3,
+      "jueces": 3
+    },
+    "arbitro": null,
+    "antecedente": "2026-11-13: mismo resultado, con árbitro por el autoveto del script de entonces",
+    "documento": "docs/despliegue/DECISION-DESPLIEGUE.md",
+    "estadoAprobacion": "aprobada por el owner el 2026-11-18"
+  },
+  "condiciones": [
+    {
+      "id": "C1",
+      "texto": "Respaldo externo cifrado (T014 y T022), restaurado con integrity_check ok, antes del 2026-11-30",
+      "origen": "O-fly-1",
+      "fase": 1,
+      "cerrada": false,
+      "responsable": "Vos y Claude",
+      "comunATodos": true
+    },
+    {
+      "id": "C2",
+      "texto": "Clave privada age en el gestor de contraseñas",
+      "origen": "O-fly-8",
+      "fase": 1,
+      "cerrada": false,
+      "responsable": "Vos",
+      "comunATodos": false
+    },
+    {
+      "id": "C3",
+      "texto": "Supuestos de cuenta validados: precio de gru, exención, medio de pago de R2, snapshots",
+      "origen": "A-fly-2, A-fly-6, A-fly-10, A-fly-14",
+      "fase": "1b",
+      "cerrada": false,
+      "responsable": "Vos",
+      "comunATodos": false
+    },
+    {
+      "id": "C4",
+      "texto": "FLY_API_TOKEN en el environment production, restringido a master, y rotado",
+      "origen": "O-fly-7",
+      "fase": 2,
+      "cerrada": false,
+      "responsable": "Vos",
+      "comunATodos": false
+    },
+    {
+      "id": "C5",
+      "texto": "Secret scanning y push protection activos",
+      "origen": "decisión 2026-11-13",
+      "fase": 2,
+      "cerrada": false,
+      "responsable": "Vos",
+      "comunATodos": false
+    },
+    {
+      "id": "C6",
+      "texto": "Sin :latest en fly.toml, o latest publicado después del health check",
+      "origen": "O-fly-3",
+      "fase": 2,
+      "cerrada": false,
+      "responsable": "Claude",
+      "comunATodos": false,
+      "pr": "#83",
+      "avance": "Fusionado el 2026-11-24; falta verificar «Marcar latest» en el primer Deploy"
+    },
+    {
+      "id": "C7",
+      "texto": "Chequeo externo programado de /api/health",
+      "origen": "disenso del juez de operación",
+      "fase": 2,
+      "cerrada": false,
+      "responsable": "Claude",
+      "comunATodos": false,
+      "pr": "#82",
+      "avance": "Fusionado el 2026-11-23; corrida manual verde el 2026-11-24; falta la prueba con URL inválida y la primera corrida programada"
+    },
+    {
+      "id": "C8",
+      "texto": "Solo si la fase 1 se atrasa: el issue de fallo del respaldo con otra etiqueta mientras faltan secretos, sin dejar de avisar",
+      "origen": "O-fly-2",
+      "fase": 2,
+      "cerrada": false,
+      "responsable": "Claude",
+      "comunATodos": false
+    },
+    {
+      "id": "C9",
+      "texto": "Aviso de prueba con la app cerrada en producción (T042 de la 013)",
+      "origen": "condición del proponente de Fly",
+      "fase": 4,
+      "cerrada": false,
+      "responsable": "Vos",
+      "comunATodos": false
+    },
+    {
+      "id": "C10",
+      "texto": "Memoria medida en producción durante /api/admin/backup con la base real: por debajo de 180 MB",
+      "origen": "O-fly-11",
+      "fase": "después de la 4",
+      "responsable": "Claude",
+      "comunATodos": false,
+      "cerrada": false
+    },
+    {
+      "id": "C11",
+      "texto": "BACKUP_TOKEN en un environment backup restringido a master",
+      "origen": "revisión de completitud 2026-11-17",
+      "fase": 2,
+      "responsable": "Vos y Claude",
+      "comunATodos": false,
+      "cerrada": false,
+      "pr": "#81",
+      "avance": "Código fusionado el 2026-11-23; falta que el owner cree el environment backup y mueva el secreto"
+    }
+  ],
+  "runbook": {
+    "documento": "docs/despliegue/RUNBOOK-DESPLIEGUE.md",
+    "fases": [
+      {
+        "n": 0,
+        "nombre": "Estado actual",
+        "quien": "Claude",
+        "terminada": true,
+        "fecha": "2026-11-13"
+      },
+      {
+        "n": 1,
+        "nombre": "Respaldo externo",
+        "quien": "Vos y Claude",
+        "terminada": false
+      },
+      {
+        "n": "1b",
+        "nombre": "Validar supuestos",
+        "quien": "Vos",
+        "terminada": false
+      },
+      {
+        "n": 2,
+        "nombre": "Endurecer el pipeline",
+        "quien": "Claude y Vos",
+        "terminada": false
+      },
+      {
+        "n": 3,
+        "nombre": "Verificación sin login",
+        "quien": "Claude",
+        "terminada": false,
+        "nota": "Filas 1 a 5 hechas el 2026-11-13; faltan 6 y 7"
+      },
+      {
+        "n": 4,
+        "nombre": "Alta del propietario y avisos",
+        "quien": "Vos",
+        "terminada": false
+      }
+    ]
+  },
+  "reabrirSi": [
+    "La factura de Fly supera los 5 USD por mes, o Fly cambia el plan de máquinas o volúmenes",
+    "La audiencia deja de ser personal",
+    "Se pierde un volumen y la restauración tarda más de lo tolerable",
+    "Se pasa de SQLite a Postgres"
+  ]
+}

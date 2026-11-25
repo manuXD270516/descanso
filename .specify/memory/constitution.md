@@ -1,16 +1,16 @@
 <!--
 Sync Impact Report
-- Versión: 2.1.0 → 2.2.0 (MINOR: se amplía materialmente el principio VIII; nada se elimina ni redefine)
-- Principios modificados: VIII. Datos de salud: privacidad y honestidad (3 viñetas nuevas y una frase en
-  la Razón: motivación solo por conductas controlables; sin comparación, sin canje, sin pérdida;
-  gamificación opcional y ocultable)
+- Versión: 2.2.0 → 2.2.1 (PATCH: aclaración sin efecto semántico sobre la historia del usuario)
+- Principios modificados: II. Persistencia segura (aclaración nueva: los datos operativos no son
+  historia personal y pueden borrarse o podarse por una retención documentada en la spec)
 - Secciones añadidas: ninguna. Secciones eliminadas: ninguna.
 - Plantillas: ✅ .specify/templates/plan-template.md (el "Constitution Check" recorre los principios
   sin enumerarlos; no cambia) · ✅ spec-template.md y tasks-template.md (sin referencias a principios
-  concretos; no cambian) · ✅ docs/sdd/terminos-prohibidos.txt (sin cambios por la enmienda; las
-  palabras de culpa de 011 las vigila la prueba de la propia feature)
-- Features existentes: ninguna tiene gamificación; no hay incumplimientos.
-- TODO pendientes: ninguno. Motivo: requisito previo al plan de 011 (rachas de constancia).
+  concretos; no cambian) · ✅ docs/sdd/terminos-prohibidos.txt (sin cambios)
+- Features existentes: ninguna poda datos operativos hoy; no hay incumplimientos.
+- TODO pendientes: ninguno. Motivo: requisito de 013 (avisos push), research R13 y FR-027: poda del
+  registro de envíos a los 90 días y borrado de dispositivos push al cerrarse su sesión o responder
+  404/410 el servicio de push.
 -->
 # Descanso Constitution
 
@@ -39,6 +39,11 @@ Sync Impact Report
     datos que él elige eliminar) no es un DROP de datos del usuario, sino el ejercicio de su
     derecho de supresión. MUST exigir su confirmación explícita, borrar solo filas de ese
     usuario y quedar probado; los respaldos se purgan por retención, en el plazo documentado.
+  - Aclaración: los **datos operativos** (suscripciones y credenciales push del navegador,
+    registros de envío, sesiones y registros técnicos similares necesarios para que una feature
+    funcione) no son historia personal del usuario. Pueden borrarse o podarse automáticamente según
+    una regla de retención documentada en la spec de la feature, sin afectar nunca a los registros
+    de sueño, siestas ni métricas, al horario ni a los logros de la persona.
 
 **Razón**: los registros de sueño son historia personal irrecuperable; las migraciones
 repetibles evitan pérdidas y estados inconsistentes.
@@ -159,9 +164,10 @@ otra. Entran solo por invitación del propietario. El repositorio contiene la ap
 
 | Versión | Fecha | Tipo | Cambio |
 |---------|-------|------|--------|
+| 2.2.1 | 2026-10-23 | PATCH | **Principio II**, aclaración: los datos operativos (suscripciones y credenciales push, registros de envío, sesiones y similares) no son historia personal y pueden borrarse o podarse por una retención documentada en la spec, sin tocar registros, horario ni logros. Necesaria para 013 (research R13, FR-027). |
 | 2.2.0 | 2026-10-05 | MINOR | **Principio VIII**, ampliación: la motivación se basa solo en conductas controlables; se prohíben las puntuaciones de resultado, la comparación social, las recompensas canjeables y los avisos de pérdida; los logros no se retiran y saltarse un registro no mejora la constancia; toda gamificación es opcional (desactivada por defecto) y ocultable. Necesaria antes del plan de 011. |
 | 2.1.0 | 2026-10-03 | MINOR | **Principio VIII** nuevo, "Datos de salud: privacidad y honestidad": origen declarado, lenguaje no clínico, "sin dato" ≠ 0, estadística prudente con n mínima y lenguaje no causal, consentimiento y revocación por fuente con tokens cifrados, y notificaciones sin datos de salud. Necesaria antes del plan de 006. |
 | 2.0.0 | 2026-10-01 | MAJOR + MINOR | **Alcance**: de mono-usuario a multiusuario con aislamiento estricto (filtrado por usuario, 404 para lo ajeno, suite de aislamiento y transparencia sobre el acceso del operador). **Principio II**: el borrado a petición del propio dueño no es DROP de datos. Necesarias antes del plan de 008. |
 | 1.0.1 | 2026-09-30 | PATCH | Principio II: toda migración pasa por el runner con respaldo previo (feature 003); reconstruir una tabla con copia verificada en la misma migración no es DROP de datos. Necesaria antes del plan de 004. |
 
-**Version**: 2.2.0 | **Ratified**: 2026-09-29 | **Last Amended**: 2026-10-05
+**Version**: 2.2.1 | **Ratified**: 2026-09-29 | **Last Amended**: 2026-10-23

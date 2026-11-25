@@ -8,4 +8,9 @@ import { Injectable, signal } from '@angular/core';
 @Injectable({ providedIn: 'root' })
 export class NightUiService {
   readonly reminderDismissed = signal(false);
+  /**
+   * Feature 013: se abrió #noche-despertar (el aviso "¿Ya despertaste?"): Noche debe mostrar "Ya desperté" a la
+   * vista y enfocarlo. Vive aquí porque Noche se recrea al cambiar de pestaña o tras entrar con la sesión cerrada.
+   */
+  readonly wakeIntent = signal(false);
 }

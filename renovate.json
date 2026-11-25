@@ -1,0 +1,58 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "constraints": {
+    "node": "^22",
+    "npm": "^10"
+  },
+  "packageRules": [
+    {
+      "description": "Angular 21 admite zone.js ~0.15 || ~0.16 (peer de @angular/core); revisar junto con Angular 22",
+      "matchPackageNames": [
+        "zone.js"
+      ],
+      "allowedVersions": "<0.17.0"
+    },
+    {
+      "description": "Angular, su CLI y angular-eslint se quedan en 21 hasta migrar con ng update (una versión mayor por vez)",
+      "matchPackageNames": [
+        "@angular/**",
+        "@angular-devkit/**",
+        "@schematics/angular",
+        "angular-eslint",
+        "@angular-eslint/**"
+      ],
+      "allowedVersions": "<22.0.0"
+    },
+    {
+      "description": "@angular/build 21 declara peer typescript >=5.9 <6.0 (npm ci falla con 6.x); subir junto con Angular 22",
+      "matchPackageNames": [
+        "typescript"
+      ],
+      "allowedVersions": "<6.0.0"
+    },
+    {
+      "description": "karma-jasmine 5.1 (la última) depende de jasmine-core ^4; jasmine-core 7 rompe Karma. Subirlo al cambiar de runner de tests",
+      "matchPackageNames": [
+        "jasmine-core"
+      ],
+      "allowedVersions": "<6.0.0"
+    },
+    {
+      "description": "El proyecto corre en Node 22 (CI, Dockerfile, producción y engines); no subir Node hasta decidir la migración",
+      "matchPackageNames": [
+        "node"
+      ],
+      "allowedVersions": "<23.0.0"
+    },
+    {
+      "description": "Los lockfiles se generan con npm 10 (el de Node 22); npm 11 o superior rompe npm ci del CI",
+      "matchPackageNames": [
+        "npm"
+      ],
+      "allowedVersions": "<11.0.0"
+    }
+  ]
+}

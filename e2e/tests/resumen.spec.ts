@@ -24,9 +24,9 @@ test.describe('Resumen y cinta (US4)', () => {
     await setNow(page, `${TODAY}T10:00`);
   });
 
-  test('US4-5 · sin datos: horas medias "—", duración media "0 min" y 0 siestas', async ({ page }) => {
+  test('US4-5 · sin datos: promedio y horas medias "—" (sin dato no es 0) y 0 siestas', async ({ page }) => {
     await page.goto('/');
-    await expect(stat(page, 'promedio por noche')).toHaveText('0 min');
+    await expect(stat(page, 'promedio por noche')).toHaveText('—');
     await expect(stat(page, 'hora media de dormir')).toHaveText('—');
     await expect(stat(page, 'hora media de despertar')).toHaveText('—');
     await expect(stat(page, 'siestas en 14 días')).toHaveText('0');

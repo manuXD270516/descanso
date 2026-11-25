@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, ElementRef, OnInit, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
@@ -53,6 +53,9 @@ export class NightComponent implements OnInit {
   readonly openSchedule = signal<ScheduleState | null>(null);
 
   readonly open = signal<SleepRecord | null>(null);
+  /** Ya llegó la respuesta de "noche abierta" (con o sin noche). */
+  private readonly opened = signal(false);
+  private readonly wakeBtn = viewChild<ElementRef<HTMLButtonElement>>('wakeBtn');
   readonly records = signal<SleepRecord[]>([]);
   readonly naps = signal<Nap[]>([]);
   readonly stats = signal<Stats | null>(null);
@@ -172,6 +175,17 @@ export class NightComponent implements OnInit {
       `${rows.length - withSleep} sin dato y ${naps} ${naps === 1 ? 'siesta' : 'siestas'}.`;
   });
 
+  /** #noche-despertar (feature 013): "Ya desperté" a la vista y con el foco; sin noche abierta no hay nada que enfocar. */
+  private readonly focusWake = effect(() => {
+    if (!this.ui.wakeIntent() || !this.opened()) return;
+    if (!this.open()) { this.ui.wakeIntent.set(false); return; }
+    const btn = this.wakeBtn()?.nativeElement;
+    if (!btn) return;
+    btn.scrollIntoView?.({ block: 'center' });
+    btn.focus();
+    this.ui.wakeIntent.set(false);
+  });
+
   ngOnInit() {
     this.account.me().subscribe({
       next: (p) => {
@@ -190,6 +204,7 @@ export class NightComponent implements OnInit {
     this.api.openNight().subscribe({
       next: (o) => {
         this.open.set(o);
+        this.opened.set(true);
         this.openSchedule.set(null);
         this.proposeWake();
         if (o) {

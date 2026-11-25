@@ -48,6 +48,7 @@ function sources() {
   };
   walk(path.join(ROOT, 'frontend', 'src'), (n) => n.endsWith('.html') || (n.endsWith('.ts') && !n.endsWith('.spec.ts')));
   walk(path.join(ROOT, 'backend', 'src'), (n) => n.endsWith('.js'));
+  walk(path.join(ROOT, 'frontend', 'public'), (n) => n.endsWith('.js')); // service worker de los avisos (feature 013)
   return out;
 }
 
@@ -87,4 +88,13 @@ test('ningún texto de la interfaz (frontend y mensajes del servidor) usa un té
 test('los avisos y el calendario no mencionan la racha (feature 011, FR-023)', () => {
   const ics = normalize(fs.readFileSync(path.join(ROOT, 'backend', 'src', 'ics.js'), 'utf8'));
   assert.ok(!/racha|constancia/.test(ics));
+});
+
+test('los avisos push y el service worker no mencionan la racha ni usan términos prohibidos (feature 013, FR-022, SC-006)', () => {
+  const terms = loadTerms();
+  for (const file of [path.join(ROOT, 'backend', 'src', 'reminders', 'push.js'), path.join(ROOT, 'frontend', 'public', 'push-sw.js')]) {
+    const text = fs.readFileSync(file, 'utf8');
+    assert.ok(!/racha|constancia/.test(normalize(text)), file);
+    assert.deepEqual(findTerms(text, terms), [], file);
+  }
 });

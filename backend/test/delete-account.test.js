@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const { api, otherApi, anon, db, iso, OTHER_ID, otherSessionId } = require('./helpers');
 const { hashPassword } = require('../src/auth/password');
 const { POLICY_VERSION } = require('../src/policy');
+const { sha256 } = require('../src/auth/sessions');
 
 // Borrar mi cuenta (feature 008, US5, FR-019…FR-021) y exportación por usuario.
 const PASSWORD = 'contraseña de la invitada';
@@ -34,6 +35,10 @@ before(async () => {
   // Feature 011: racha activada y una constelación de B (se borran con la cuenta)
   db.prepare("UPDATE user_settings SET streak_enabled = 1, streak_since = '2026-09-01', streak_best = 7 WHERE user_id = ?").run(OTHER_ID);
   db.prepare("INSERT INTO streak_achievements (user_id, key, achieved_on, wake_spread_min, created_at) VALUES (?, 7, '2026-09-08', 5, 'x')").run(OTHER_ID);
+  // Feature 013: dispositivo con avisos, entregas y preferencias de B (se borran con la cuenta)
+  db.prepare("INSERT INTO push_subscriptions (user_id, session_hash, endpoint, p256dh, auth, label, created_at) VALUES (?, ?, 'https://fcm.googleapis.com/fcm/send/b', 'k', 'a', 'Chrome en Android', 'x')").run(OTHER_ID, sha256(otherSessionId));
+  db.prepare("INSERT INTO reminder_deliveries (user_id, kind, night_date, due_at, status, updated_at) VALUES (?, 'bedtime', '2026-09-05', 'x', 'sent', 'x')").run(OTHER_ID);
+  db.prepare('UPDATE user_settings SET push_prepare = 0, dnd_start_min = 1380, dnd_end_min = 420 WHERE user_id = ?').run(OTHER_ID);
   db.prepare("INSERT INTO invites (token_hash, created_by, created_at, expires_at, used_by, used_at) VALUES ('usada-por-b', 1, 'x', 'y', ?, 'z')").run(OTHER_ID);
   db.prepare("INSERT INTO audit_log (user_id, actor_user_id, action, created_at) VALUES (?, 1, 'reset_link_created', 'x')").run(OTHER_ID);
 });
@@ -60,6 +65,8 @@ test('el propietario no puede borrar su cuenta mientras haya otros usuarios (FR-
 test('borrar la cuenta de B deja 0 filas suyas y no toca las de A (FR-020, SC-004)', async () => {
   const aBefore = rowsOf(1);
   assert.ok(Object.values(rowsOf(OTHER_ID)).some((c) => c > 0));
+  assert.equal(rowsOf(OTHER_ID).push_subscriptions, 1);
+  assert.equal(rowsOf(OTHER_ID).reminder_deliveries, 1);
   const r = await otherApi.delete('/api/me').send({ password: PASSWORD }).expect(204);
   assert.match(r.headers['set-cookie'][0], /Max-Age=0/);
   const after = rowsOf(OTHER_ID);

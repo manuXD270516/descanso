@@ -5,6 +5,7 @@ const repo = require('../repo/export');
 const schedule = require('../repo/schedule');
 const pauses = require('../repo/pauses');
 const streak = require('../repo/streak');
+const push = require('../repo/push');
 const { HttpError } = require('../util');
 
 const r = Router();
@@ -39,6 +40,8 @@ r.get('/export.json', (req, res) => {
   out.pauses = pauses.list(req.user.id);
   // Feature 011: ajustes de la racha y constelaciones (FR-026)
   out.streak = streak.exportData(req.user.id);
+  // Feature 013: preferencias de avisos; los dispositivos (credenciales del navegador) y las entregas no se exportan (FR-028)
+  out.push_preferences = push.preferences(req.user.id);
   res.set('Content-Disposition', `attachment; filename="descanso-${today()}.json"`);
   res.json(out);
 });

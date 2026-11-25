@@ -43,3 +43,13 @@ test('las hijas justificadas realmente cuelgan de su padre con cascada', () => {
   const inv = db.prepare('PRAGMA foreign_key_list(invites)').all();
   assert.ok(inv.some((f) => f.from === 'used_by' && f.table === 'users' && f.on_delete === 'CASCADE'));
 });
+
+test('las tablas de avisos push (feature 013) tienen user_id con borrado en cascada', () => {
+  for (const t of ['push_subscriptions', 'reminder_deliveries']) {
+    const cols = db.prepare(`PRAGMA table_info(${t})`).all().map((c) => c.name);
+    assert.ok(cols.includes('user_id'), t);
+    assert.equal(CHILD[t], undefined, `${t} no necesita clasificación: tiene user_id`);
+  }
+  const session = db.prepare('PRAGMA foreign_key_list(push_subscriptions)').all().find((f) => f.from === 'session_hash');
+  assert.ok(session && session.table === 'sessions' && session.on_delete === 'CASCADE', 'el dispositivo cuelga de la sesión que lo activó');
+});
