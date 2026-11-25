@@ -40,7 +40,7 @@ describe('Feature 013 · app', () => {
       else if (url === '/api/me') r.flush(PROFILE);
       else if (url === '/api/sleep/open') r.flush(open);
       else if (url === '/api/schedule') r.flush({ version: null, lead_min: 30, pause: null });
-      else if (url === '/api/stats') r.flush({ days: [], summary: { nights: 0, avg_sleep_min: 0, avg_nap_min: 0, total_naps: 0, avg_bedtime_min: null, avg_wake_min: null } });
+      else if (url === '/api/stats') r.flush({ days: [], summary: { nights: 0, avg_sleep_min: null, avg_nap_min: null, total_naps: 0, avg_bedtime_min: null, avg_wake_min: null } });
       else if (url === '/api/streak') r.flush({ enabled: false, offered: false, margin_min: 30, offer: false });
       else r.flush([]);
     }
