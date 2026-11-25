@@ -97,3 +97,25 @@ test('SC-008: dos peticiones simultáneas para abrir noche → exactamente una a
   assert.deepEqual(results.map((r) => r.status).sort(), [201, 409]);
   assert.equal(db.prepare('SELECT COUNT(*) AS c FROM sleep_records WHERE wake_time IS NULL').get().c, 1);
 });
+
+test('DEU-06: wake_time y end_time exigen desfase: con ±HH:MM y con Z se aceptan; sin desfase, 400 con mensaje claro', async () => {
+  const msg = /con desfase/;
+  // Noches: POST /api/sleep
+  let r = await api.post('/api/sleep').send({ date: '2026-09-05', bedtime: iso('2026-09-05T23:00'), wake_time: '2026-09-06T07:00:00' }).expect(400);
+  assert.match(r.body.error, msg);
+  r = await api.post('/api/sleep').send({ date: '2026-09-05', bedtime: iso('2026-09-05T23:00'), wake_time: 'Sep 6 2026' }).expect(400);
+  assert.match(r.body.error, msg);
+  await api.post('/api/sleep').send({ date: '2026-09-05', bedtime: iso('2026-09-05T23:00'), wake_time: iso('2026-09-06T07:00') }).expect(201);
+  await api.post('/api/sleep').send({ date: '2026-09-07', bedtime: '2026-09-07T23:00:00-04:00', wake_time: '2026-09-08T11:00:00Z' }).expect(201);
+
+  // Noche abierta: POST /api/sleep/wake
+  await api.post('/api/sleep').send({ date: '2026-09-09', bedtime: iso('2026-09-09T23:00') }).expect(201);
+  r = await api.post('/api/sleep/wake').send({ wake_time: '2026-09-10T07:00' }).expect(400);
+  assert.match(r.body.error, msg);
+  await api.post('/api/sleep/wake').send({ wake_time: '2026-09-10T11:30:00Z' }).expect(200);
+
+  // Siestas
+  r = await api.post('/api/naps').send({ date: '2026-09-06', start_time: iso('2026-09-06T14:00'), end_time: '2026-09-06T14:30' }).expect(400);
+  assert.match(r.body.error, msg);
+  await api.post('/api/naps').send({ date: '2026-09-06', start_time: iso('2026-09-06T14:00'), end_time: '2026-09-06T18:30:00Z' }).expect(201);
+});

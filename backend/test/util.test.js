@@ -2,8 +2,17 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { isIso, isDate, durationMinutes, localDateOf, parseRange, circularAvg, HttpError } = require('../src/util');
 
-test('isIso acepta ISO con offset y rechaza texto o no-strings', () => {
+test('isIso exige ISO 8601 con desfase (±HH:MM o Z) y rechaza texto, fechas sueltas y no-strings', () => {
   assert.equal(isIso('2026-09-07T23:40:00-04:00'), true);
+  assert.equal(isIso('2026-09-07T23:40:00+02:00'), true);
+  assert.equal(isIso('2026-09-07T23:40:00.123+05:30'), true);
+  assert.equal(isIso('2026-09-07T23:40Z'), true);
+  assert.equal(isIso('2026-09-07T23:40:00Z'), true);
+  assert.equal(isIso('Sep 7 2026'), false);
+  assert.equal(isIso('2026-09-07T23:40'), false);
+  assert.equal(isIso('2026-09-07T23:40:00'), false);
+  assert.equal(isIso('2026-09-07'), false);
+  assert.equal(isIso('2026-09-07T25:00:00-04:00'), false);
   assert.equal(isIso('ayer'), false);
   assert.equal(isIso(null), false);
   assert.equal(isIso(1234), false);

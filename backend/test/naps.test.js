@@ -21,7 +21,7 @@ test('fin igual o anterior al inicio → 400 (US3-2, FR-010)', async () => {
 
 test('horas no ISO o fecha inválida → 400', async () => {
   let res = await api.post('/api/naps').send({ date: '2026-09-08', start_time: 'luego', end_time: iso('2026-09-08T14:30') }).expect(400);
-  assert.equal(res.body.error, 'start_time y end_time deben ser ISO');
+  assert.equal(res.body.error, 'start_time y end_time deben ser ISO 8601 con desfase (p. ej. 2026-09-05T23:30:00-04:00)');
   res = await api.post('/api/naps').send({ date: '8/9', start_time: iso('2026-09-08T14:00'), end_time: iso('2026-09-08T14:30') }).expect(400);
   assert.equal(res.body.error, 'date debe tener formato YYYY-MM-DD');
 });

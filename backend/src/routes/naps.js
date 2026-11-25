@@ -7,7 +7,7 @@ const withDuration = (row) => row && { ...row, duration_min: durationMinutes(row
 
 function validate(body) {
   if (!isDate(body.date)) throw new HttpError(400, 'date debe tener formato YYYY-MM-DD');
-  if (!isIso(body.start_time) || !isIso(body.end_time)) throw new HttpError(400, 'start_time y end_time deben ser ISO');
+  if (!isIso(body.start_time) || !isIso(body.end_time)) throw new HttpError(400, 'start_time y end_time deben ser ISO 8601 con desfase (p. ej. 2026-09-05T23:30:00-04:00)');
   if (durationMinutes(body.start_time, body.end_time) <= 0) throw new HttpError(400, 'La siesta debe terminar después de empezar');
   // Igual que las noches: la fecha es el día (local) en que empezó (principio III, DT-04)
   if (body.date !== localDateOf(body.start_time)) {
