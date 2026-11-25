@@ -46,10 +46,11 @@ test('siestas: total y media por día con siestas (US4-4)', async () => {
   assert.equal(summary.avg_nap_min, 48); // (65 + 30) / 2 = 47.5 → 48
 });
 
-test('sin datos: horas medias null y duración media 0 (US4-5)', async () => {
+test('sin datos: horas medias y duraciones medias null, nunca 0 (US4-5, principio VIII)', async () => {
   const { summary, days } = await stats();
   assert.deepEqual(days, []);
-  assert.equal(summary.avg_sleep_min, 0);
+  assert.equal(summary.avg_sleep_min, null);
+  assert.equal(summary.avg_nap_min, null);
   assert.equal(summary.avg_bedtime_min, null);
   assert.equal(summary.avg_wake_min, null);
 });
