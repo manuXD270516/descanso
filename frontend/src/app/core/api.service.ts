@@ -63,8 +63,8 @@ export interface Stats {
   days: DayStat[];
   summary: {
     nights: number;
-    avg_sleep_min: number;
-    avg_nap_min: number;
+    avg_sleep_min: number | null;
+    avg_nap_min: number | null;
     total_naps: number;
     avg_bedtime_min: number | null;
     avg_wake_min: number | null;

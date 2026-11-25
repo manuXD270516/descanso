@@ -27,7 +27,7 @@ r.get('/', (req, res) => {
 
   const list = Object.values(days).sort((a, b) => a.date.localeCompare(b.date));
   const nights = list.filter((d) => d.sleep_min > 0);
-  const avg = (arr, key) => (arr.length ? Math.round(arr.reduce((s, x) => s + x[key], 0) / arr.length) : 0);
+  const avg = (arr, key) => (arr.length ? Math.round(arr.reduce((s, x) => s + x[key], 0) / arr.length) : null);
 
   // Hora media de acostarse/despertar, expresada en minutos desde medianoche (hora local del servidor no importa: se usa la del cliente en el ISO)
   const minutesOfDay = (iso) => {
