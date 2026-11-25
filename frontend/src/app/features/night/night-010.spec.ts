@@ -9,7 +9,7 @@ import { flushStreak } from '../streak/streak.testing';
 
 // Feature 010 en Noche: "¿Ya despertaste?" con horario (US3, FR-012/FR-014) y origen "Anotado después" (FR-013).
 const PROFILE = { id: 1, email: 'yo@x.com', role: 'owner', display_name: 'Yo', timezone: null, sleep_goal_min: 450, cycle_min: 90, latency_min: 15, lead_min: 30, consent_version: null, consent_at: null, created_at: '' };
-const EMPTY_STATS = { from: '', to: '', days: [], summary: { avg_sleep_min: 0, total_naps: 0, avg_bedtime_min: null, avg_wake_min: null } } as unknown as Stats;
+const EMPTY_STATS = { from: '', to: '', days: [], summary: { avg_sleep_min: null, total_naps: 0, avg_bedtime_min: null, avg_wake_min: null } } as unknown as Stats;
 const MIN = 60_000;
 const pad = (n: number) => String(n).padStart(2, '0');
 const localDate = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;

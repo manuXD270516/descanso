@@ -490,8 +490,8 @@ components:
           required: [nights, avg_sleep_min, avg_nap_min, total_naps, avg_bedtime_min, avg_wake_min]
           properties:
             nights: { type: integer }
-            avg_sleep_min: { type: integer }
-            avg_nap_min: { type: integer }
+            avg_sleep_min: { type: [integer, 'null'], description: 'null sin noches en el rango (sin dato no es 0, principio VIII)' }
+            avg_nap_min: { type: [integer, 'null'], description: 'null sin siestas en el rango (sin dato no es 0, principio VIII)' }
             total_naps: { type: integer }
             avg_bedtime_min: { type: [integer, 'null'], minimum: 0, maximum: 1440, description: 'media circular; hoy puede valer 1440 en vez de 0 (DT-21)' }
             avg_wake_min: { type: [integer, 'null'], minimum: 0, maximum: 1440, description: 'media circular; hoy puede valer 1440 en vez de 0 (DT-21)' }

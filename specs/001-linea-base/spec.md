@@ -131,8 +131,9 @@ posición de las barras.
    ningún promedio.
 4. **Given** 3 siestas en el rango, **When** ve el resumen, **Then** muestra "3 siestas en 14
    días".
-5. **Given** sin datos, **When** ve el resumen, **Then** las horas medias se muestran como "—" y
-   la duración media como "0 min".
+5. **Given** sin datos, **When** ve el resumen, **Then** las horas medias y la duración media se
+   muestran como "—" (nunca "0 min": sin dato no es 0). *Enmendada por el principio VIII de la
+   constitución (2.1.0), posterior a esta spec; antes decía "0 min".*
 6. **Given** una noche de 23:00 a 07:00, **When** ve la cinta, **Then** su barra empieza en torno al
    46 % del eje (11 de 24 h) y ocupa un tercio del ancho; una siesta se dibuja en la fila de su día.
 
