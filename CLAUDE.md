@@ -10,7 +10,8 @@ at specs/013-avisos-push/plan.md
   `claude-opus-5-5`).
 - Implementación, tests, archivado y cierre de PRs → agente `implementador` (Claude Sonnet 5.5,
   `claude-sonnet-5-5`).
+- Triage de bugs y deuda técnica con la rúbrica de `docs/calidad/` → agente `triador` (Claude Sonnet 5.5, `claude-sonnet-5-5`).
 - La sesión principal orquesta: reparte el trabajo, revisa diffs, resuelve conflictos e integra.
 - Si una tarea mezcla ambos, primero `arquitecto` (spec y decisiones) y después `implementador`.
-- Para cambiar de versión de modelo en el futuro, se actualiza el `model:` de ambos agentes y esta
+- Para cambiar de versión de modelo en el futuro, se actualiza el `model:` de los agentes y esta
   sección en el mismo PR.
