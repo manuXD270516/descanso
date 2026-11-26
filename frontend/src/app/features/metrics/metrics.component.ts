@@ -17,6 +17,44 @@ interface MetricForm {
   color: string;
 }
 
+/** Colores que la app guardó antes de la feature 014 (migración 001 y `repo/metrics.js`) y su categoría. */
+const LEGACY_CATEGORY: Record<string, number> = { '#5b6ee1': 1, '#e8a33d': 2, '#8a5a3c': 8 };
+
+function hueOf(hex: string): { h: number; s: number } | null {
+  const m = /^#([0-9a-f]{6})$/i.exec(hex);
+  if (!m) return null;
+  const [r, g, b] = [0, 2, 4].map((i) => parseInt(m[1].slice(i, i + 2), 16) / 255);
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const d = max - min;
+  if (d === 0) return { h: 0, s: 0 };
+  const h = max === r ? ((g - b) / d) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
+  return { h: ((h * 60) + 360) % 360, s: d / (1 - Math.abs(max + min - 1) || 1) };
+}
+
+/**
+ * Categoría (1 a 8) para un color guardado: la de la paleta si coincide, la de los colores heredados si
+ * es uno de ellos y, para cualquier otro hex, la de matiz más cercano (los grises van a la 8).
+ */
+export function catIndex(color: string, palette: readonly string[]): number {
+  const key = (color ?? '').toLowerCase();
+  const exact = palette.indexOf(key);
+  if (exact >= 0) return exact + 1;
+  if (LEGACY_CATEGORY[key]) return LEGACY_CATEGORY[key];
+  const c = hueOf(key);
+  if (!c || c.s < 0.15) return 8;
+  let best = 1;
+  let bestDist = Infinity;
+  palette.forEach((p, i) => {
+    const q = hueOf(p);
+    if (!q) return;
+    const diff = Math.abs(c.h - q.h);
+    const dist = Math.min(diff, 360 - diff);
+    if (dist < bestDist) { bestDist = dist; best = i + 1; }
+  });
+  return best;
+}
+
 const EMPTY_FORM: MetricForm = { id: null, name: '', type: 'scale', unit: '', min_value: 1, max_value: 5, color: '#a9b5f5' };
 
 @Component({
@@ -49,10 +87,9 @@ export class MetricsComponent implements OnInit {
   /** Colores guardados (datos del usuario); cada uno se pinta con su token de categoría del tema vigente. */
   readonly palette = ['#a9b5f5', '#f3b76b', '#7fd3a8', '#ea7a70', '#d69ae8', '#6fc8de', '#c9c07a', '#a08f7a'];
 
-  /** Token de categoría para un color guardado; los colores fuera de la paleta usan el primero. */
+  /** Token de categoría (`--cat-1…8`) de un color guardado; ver `catIndex`. */
   cat(color: string): string {
-    const i = this.palette.indexOf((color ?? '').toLowerCase());
-    return `var(--cat-${i < 0 ? 1 : i + 1})`;
+    return `var(--cat-${catIndex(color, this.palette)})`;
   }
 
   readonly active = computed(() => this.metrics().filter((m) => !m.archived));

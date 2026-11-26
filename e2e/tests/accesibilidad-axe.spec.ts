@@ -116,11 +116,15 @@ const TEXT_PAIRS: [string, string[]][] = [
   ['accent', ['surface', 'surface-raised']], ['accent-2', ['surface', 'surface-raised']],
   ['danger', ['surface', 'surface-raised', 'danger-bg']], ['success', ['surface', 'surface-raised']],
   ['on-accent', ['accent']], ['on-accent-2', ['accent-2-fill']], ['on-danger', ['danger']],
+  // Texto de un valor elegido en Métricas: el color de fondo sobre el relleno de cada categoría
+  ...Array.from({ length: 8 }, (_, i): [string, string[]] => ['surface', [`cat-${i + 1}`]]),
 ];
 const NON_TEXT_PAIRS: [string, string[]][] = [
   ['line-strong', ['surface', 'surface-raised', 'surface-sunken']],
   ['focus', ['surface', 'surface-raised', 'surface-sunken']],
-  ...Array.from({ length: 8 }, (_, i): [string, string[]] => [`cat-${i + 1}`, ['surface-raised']]),
+  ['accent-2-fill', ['surface', 'surface-raised', 'surface-sunken']],
+  // Categorías: sobre el panel y sobre el fondo de los botones vecinos sin elegir
+  ...Array.from({ length: 8 }, (_, i): [string, string[]] => [`cat-${i + 1}`, ['surface-raised', 'surface-sunken']]),
 ];
 
 test.describe('Contraste de tokens (servidor compartido, solo lectura)', () => {

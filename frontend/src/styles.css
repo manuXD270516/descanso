@@ -55,6 +55,8 @@
       --accent: light-dark(#3f4fb8, #a9b5f5);
       --on-accent: light-dark(#fbfaf7, #12172b);
       --accent-2: light-dark(#8a4f0c, #f0b46a);
+      --accent-2-fill: light-dark(#945608, #f0b46a);
+      --on-accent-2: light-dark(#fbfaf7, #2e1d02);
       --danger: light-dark(#b3362b, #f08a80);
       --on-danger: light-dark(#fbfaf7, #12172b);
       --danger-bg: light-dark(#f8e9e5, #2a2238);
@@ -207,6 +209,7 @@
 @layer utilities {
   .muted { color: var(--ink-muted); }
   .faint { color: var(--ink-faint); }
+  .no-data { color: var(--no-data); }
   .small { font-size: var(--fs-sm); }
   .tabular { font-variant-numeric: tabular-nums; }
 

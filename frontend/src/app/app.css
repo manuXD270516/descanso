@@ -109,7 +109,7 @@
   }
   /* Feature 008: enlaces del menú Cuenta, aviso de restablecimiento y enlaces bajo "Entrar" */
   .account-links { display: grid; gap: 0.15rem; }
-  .account-links .btn { justify-self: stretch; text-align: left; }
+  .account-links .btn { justify-self: stretch; justify-content: flex-start; text-align: left; }
   .reset-notice {
     max-width: 720px;
     margin: 0.5rem auto 0;
@@ -133,5 +133,9 @@
     border-left: 3px solid var(--line-strong);
     border-radius: var(--radius-sm);
     padding: 0.5rem 0.75rem;
+    display: flex;
+    gap: var(--sp-2);
+    align-items: flex-start;
   }
+  .notice-icon { flex: none; color: var(--ink-muted); }
 }

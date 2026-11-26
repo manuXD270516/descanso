@@ -61,6 +61,10 @@ describe('Racha de constancia (feature 011)', () => {
     button(fixture.nativeElement, 'Cerrar').click();
     expect(closed).toBeTrue();
     const css = Array.from(document.styleSheets).flatMap((s) => Array.from(s.cssRules).map((r) => r.cssText)).join('\n');
+    // Spec 011: el brillo dura como máximo 400 ms
+    const glow = getComputedStyle(card);
+    expect(glow.animationName).toContain('glow');
+    expect(parseFloat(glow.animationDuration)).toBeLessThanOrEqual(0.4);
     // Feature 014: el brillo solo se declara con "sin preferencia" (con "reducir" no hay animación)
     expect(css).toMatch(/prefers-reduced-motion: no-preference\)\s*\{\s*\.glow[^{]*\{\s*animation: glow/);
   });
