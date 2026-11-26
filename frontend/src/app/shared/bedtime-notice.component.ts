@@ -3,7 +3,7 @@ import { PushService } from '../core/push.service';
 import { PushMessage, pushMessageText } from '../core/push';
 import { ApiService } from '../core/api.service';
 import { ScheduleState, ScheduleService } from '../core/schedule.service';
-import { isAround, localDay, prepareInstant } from '../core/schedule';
+import { isAround, localDay, prepareInstant, shiftDay } from '../core/schedule';
 
 const CHECK_MS = 30_000;
 
@@ -98,8 +98,10 @@ export class BedtimeNoticeComponent implements OnInit {
     const today = localDay(now);
     const s = this.state;
     if (!s || s.pause || this.dismissedDay === today) return this.visible.set(false);
-    const prep = prepareInstant(today, s.version, s.lead_min);
-    if (!isAround(now, prep)) return;
+    // Una hora de acostarse después de medianoche pertenece a la noche del día anterior: pasadas las 00:00
+    // el instante de prepararse de esa noche (p. ej. 00:15 para acostarse a las 00:45) cae en el día de hoy.
+    const around = [shiftDay(today, -1), today].some((night) => isAround(now, prepareInstant(night, s.version, s.lead_min)));
+    if (!around) return;
     // Solo si no hay una noche ya abierta
     this.api.openNight().subscribe({
       next: (open) => {

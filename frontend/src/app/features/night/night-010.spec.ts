@@ -18,16 +18,21 @@ function night(p: Partial<SleepRecord>): SleepRecord {
   return { id: 7, date: '2026-09-29', bedtime: '2026-09-29T23:00:00-04:00', wake_time: null, notes: null, duration_min: null, ...p };
 }
 
-describe('NightComponent · feature 010', () => {
+// Reloj fijado (no la hora real) y repetido en instantes que cruzan la medianoche: antes la prueba fallaba
+// según la hora a la que corría el CI.
+const INSTANTS: [string, Date][] = [['13:00', new Date(2026, 10, 25, 13, 0)], ['00:30', new Date(2026, 10, 26, 0, 30)], ['23:40', new Date(2026, 10, 25, 23, 40)]];
+for (const [label, instant] of INSTANTS) describe(`NightComponent · feature 010 (reloj ${label})`, () => {
   let fixture: ComponentFixture<NightComponent>;
   let http: HttpTestingController;
   let el: HTMLElement;
 
   beforeEach(() => {
+    jasmine.clock().install();
+    jasmine.clock().mockDate(instant);
     TestBed.configureTestingModule({ imports: [NightComponent], providers: [provideHttpClient(), provideHttpClientTesting()] });
     http = TestBed.inject(HttpTestingController);
   });
-  afterEach(() => { flushStreak(http); http.verify(); });
+  afterEach(() => { flushStreak(http); http.verify(); jasmine.clock().uninstall(); });
 
   /** Noche abierta "anoche" y horario cuya hora de levantarse fue hace `minutesAgo` minutos. */
   function start(minutesAgo: number, opts: { paused?: boolean; active?: boolean } = {}) {
