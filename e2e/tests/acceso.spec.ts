@@ -14,9 +14,8 @@ test.describe('Acceso protegido (004)', () => {
 
     await page.getByLabel('Código de alta').fill(SETUP_TOKEN);
     await page.getByLabel('Email').fill(OWNER_EMAIL);
-    await page.getByLabel('Contraseña nueva').pressSequentially('corta'); // tecleado: minlength solo valida lo escrito por la persona
+    await page.getByLabel('Contraseña nueva').pressSequentially('corta'); // tecleado: minlength solo valida lo que escribe la persona
     // FR-021 (014): con una contraseña corta no se envía, se marca el campo y recibe el foco
-    await page.getByLabel('Contraseña nueva').blur(); // el error aparece al salir y mueve el botón: se pulsa después
     await page.getByRole('button', { name: 'Crear cuenta' }).click();
     await expect(page.getByLabel('Contraseña nueva')).toBeFocused();
     await expect(page.getByLabel('Contraseña nueva')).toHaveAttribute('aria-invalid', 'true');

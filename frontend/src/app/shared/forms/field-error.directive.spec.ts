@@ -99,4 +99,23 @@ describe('FieldErrorDirective (feature 014)', () => {
     expect(message.getAttribute('aria-hidden')).toBe('true');
     expect(el.querySelector('form')!.children.length).toBe(3); // 2 etiquetas y el botón
   });
+
+  it('N-1 · si el foco pasa al botón de enviar no se marca el campo (lo hace la validación del envío)', () => {
+    const button = el.querySelector('button') as HTMLButtonElement;
+    email().dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget: button }));
+    expect(email().getAttribute('aria-invalid')).toBe('false');
+    expect(errors().length).toBe(0);
+    // con otro destino sí se marca
+    email().dispatchEvent(new FocusEvent('focusout', { bubbles: true }));
+    expect(email().getAttribute('aria-invalid')).toBe('true');
+  });
+
+  it('report() muestra un error propio en el campo, lo enfoca y se limpia al editar', () => {
+    expect(fixture.componentInstance.fe.report('email', 'Texto propio.')).toBeTrue();
+    expect(document.activeElement).toBe(email());
+    expect(el.querySelector('.field-error')!.textContent).toBe('Texto propio.');
+    email().value = 'a@b.co';
+    email().dispatchEvent(new Event('input', { bubbles: true }));
+    expect(errors().length).toBe(0);
+  });
 });

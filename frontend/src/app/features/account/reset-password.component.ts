@@ -33,6 +33,7 @@ import { AuthService } from '../../core/auth.service';
 export class ResetPasswordComponent {
   private auth = inject(AuthService);
   private errorEl = viewChild<ElementRef<HTMLElement>>('errorMsg');
+  private fieldErrors = viewChild(FieldErrorDirective);
 
   readonly token = input.required<string>();
   readonly finished = output<void>();
@@ -47,7 +48,8 @@ export class ResetPasswordComponent {
   }
 
   submit() {
-    if (this.busy() || this.length() < 12) return;
+    if (this.busy()) return;
+    if (this.length() < 12) { this.fieldErrors()?.report('password', 'Usa al menos 12 caracteres.'); return; }
     this.busy.set(true);
     this.error.set(null);
     this.auth.resetPassword(this.token(), this.password).subscribe({

@@ -14,6 +14,7 @@ import { AuthService } from '../../core/auth.service';
 export class SetupComponent {
   readonly auth = inject(AuthService);
   private errorEl = viewChild<ElementRef<HTMLElement>>('errorMsg');
+  private fieldErrors = viewChild(FieldErrorDirective);
 
   static readonly MIN_LENGTH = 12;
   readonly minLength = SetupComponent.MIN_LENGTH;
@@ -30,7 +31,11 @@ export class SetupComponent {
   }
 
   submit() {
-    if (this.busy() || this.passwordLength() < this.minLength) return;
+    if (this.busy()) return;
+    if (this.passwordLength() < this.minLength) {
+      this.fieldErrors()?.report('password', `Usa al menos ${this.minLength} caracteres.`);
+      return;
+    }
     this.busy.set(true);
     this.error.set(null);
     this.auth.setup(this.token, this.email, this.password).subscribe({

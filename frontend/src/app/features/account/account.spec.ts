@@ -69,6 +69,26 @@ describe('Cuenta (feature 008)', () => {
       http.expectOne((r) => r.method === 'POST').flush({}, { status: 500, statusText: 'x' });
     });
 
+    it('N-2 · nombre de solo espacios o contraseña de 11 puntos de código: avisa en el campo y lo enfoca', async () => {
+      const { fixture, el, c } = render(RegisterComponent, { invite: 'tok' });
+      await fixture.whenStable();
+      Object.assign(c, { displayName: '   ', email: 'a@b.co', password: 'una frase larga', accept: true });
+      c.submit();
+      fixture.detectChanges();
+      const name = el.querySelector('input[name="display_name"]') as HTMLInputElement;
+      expect(name.getAttribute('aria-invalid')).toBe('true');
+      expect(document.activeElement).toBe(name);
+      http.expectNone(() => true);
+      c.displayName = 'Ana';
+      c.password = 'ñandú lúcid'; // 11 puntos de código
+      c.submit();
+      fixture.detectChanges();
+      const pw = el.querySelector('input[name="password"]') as HTMLInputElement;
+      expect(pw.getAttribute('aria-invalid')).toBe('true');
+      expect(document.activeElement).toBe(pw);
+      http.expectNone(() => true);
+    });
+
     it('envía la invitación en el cuerpo con la aceptación y la versión de la política', () => {
       const { c } = render(RegisterComponent, { invite: 'tok' });
       Object.assign(c, { displayName: 'Ana', email: 'ana@x.com', password: 'una frase larga', accept: true });
@@ -141,6 +161,23 @@ describe('Cuenta (feature 008)', () => {
       expect(req.request.body).toEqual({ display_name: 'Inés', timezone: 'Europe/Madrid' });
       req.flush({ ...profile, display_name: 'Inés' });
       expect(auth.displayName()).toBe('Inés');
+    });
+
+    it('N-3 · deleteAccount() sin contraseña o sin confirmar no envía y muestra el error en el campo', async () => {
+      const { fixture, el, c } = load();
+      await fixture.whenStable();
+      c.deleteAccount();
+      fixture.detectChanges();
+      const password = el.querySelector('input[name="deletePassword"]') as HTMLInputElement;
+      expect(password.getAttribute('aria-invalid')).toBe('true');
+      http.expectNone((r) => r.method === 'DELETE');
+      Object.assign(c, { deletePassword: 'secreta' });
+      c.deleteAccount();
+      fixture.detectChanges();
+      const confirm = el.querySelector('input[name="deleteConfirm"]') as HTMLInputElement;
+      expect(confirm.getAttribute('aria-invalid')).toBe('true');
+      expect(document.activeElement).toBe(confirm);
+      http.expectNone((r) => r.method === 'DELETE');
     });
 
     it('borrar la cuenta exige contraseña y confirmación (sin ellas no envía y enfoca el primer campo); al terminar vuelve a "Entrar"', async () => {

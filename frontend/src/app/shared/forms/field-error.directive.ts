@@ -28,6 +28,8 @@ let nextId = 0;
 export class FieldErrorDirective {
   private readonly host: HTMLElement = inject(ElementRef).nativeElement;
   private readonly touched = new WeakSet<Control>();
+  /** Errores que decide el componente (reglas que el navegador no valida): se limpian al editar el campo. */
+  private readonly forced = new Map<Control, string>();
   private readonly messages = new Map<Control, HTMLElement>();
   private readonly base = new WeakMap<Control, string | null>();
   private readonly prefix = `fe${nextId++}`;
@@ -53,6 +55,20 @@ export class FieldErrorDirective {
     });
   }
 
+  /**
+   * Muestra un error propio en el campo con ese `name` y lo enfoca (para reglas que `submit()` aplica y el
+   * navegador no valida, como el largo en puntos de código). `true` si encontró el campo.
+   */
+  report(name: string, message: string): boolean {
+    const control = this.controls().find((c) => c.name === name);
+    if (!control) return false;
+    this.forced.set(control, message);
+    this.touched.add(control);
+    this.sync(control);
+    control.focus();
+    return true;
+  }
+
   /** Valida todos los campos del grupo; muestra los errores y enfoca el primero. `true` si no hay errores. */
   validate(): boolean {
     let first: Control | null = null;
@@ -68,14 +84,20 @@ export class FieldErrorDirective {
 
   onTouched(event: FocusEvent): void {
     const control = this.asControl(event.target);
-    // Dentro de un mismo campo (segmentos de fecha) el foco no sale del campo
-    if (control && event.relatedTarget !== control) this.touchAndSync(control);
+    if (!control || event.relatedTarget === control) return; // dentro de un mismo campo (segmentos de fecha)
+    // Si el foco va al botón de enviar, la validación del envío se encarga: marcarlo ahora movería el
+    // botón a mitad del clic
+    const next = event.relatedTarget;
+    if (next instanceof HTMLButtonElement && next.type === 'submit' && next.form === control.form && control.form) return;
+    this.touchAndSync(control);
   }
 
   onInput(event: Event): void {
     // Mientras se escribe solo se limpia un error ya mostrado; no se crea uno nuevo (FR-020)
     const control = this.asControl(event.target);
-    if (control && this.messages.has(control) && control.checkValidity()) this.sync(control);
+    if (!control) return;
+    if (this.forced.delete(control)) this.sync(control);
+    else if (this.messages.has(control) && control.checkValidity()) this.sync(control);
   }
 
   private onSubmit(event: Event): void {
@@ -110,7 +132,7 @@ export class FieldErrorDirective {
   }
 
   private sync(control: Control): void {
-    const invalid = this.touched.has(control) && !control.checkValidity();
+    const invalid = this.touched.has(control) && (!control.checkValidity() || this.forced.has(control));
     control.setAttribute('aria-invalid', String(invalid));
     let message = this.messages.get(control);
     if (!invalid) {
@@ -150,6 +172,8 @@ export class FieldErrorDirective {
   }
 
   private text(control: Control): string {
+    const forced = this.forced.get(control);
+    if (forced) return forced;
     const v = control.validity;
     if (v.valueMissing) return control.type === 'checkbox' ? 'Marca esta casilla para continuar.' : 'Este campo es obligatorio.';
     if (v.typeMismatch) return control.type === 'email' ? 'Escribe un email válido.' : 'El valor no es válido.';

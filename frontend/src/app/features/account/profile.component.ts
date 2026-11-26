@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, output, signal } from '@angular/core';
+import { Component, OnInit, inject, output, signal, viewChildren } from '@angular/core';
 import { FieldErrorDirective } from '../../shared/forms/field-error.directive';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -22,6 +22,7 @@ const ACTIONS: Record<Activity['action'], string> = {
 export class ProfileComponent implements OnInit {
   private account = inject(AccountService);
   private auth = inject(AuthService);
+  private forms = viewChildren(FieldErrorDirective);
 
   /** La cuenta se borró: la app vuelve a "Entrar". */
   readonly deleted = output<void>();
@@ -92,6 +93,14 @@ export class ProfileComponent implements OnInit {
   }
 
   deleteAccount() {
+    // Sin contraseña o sin confirmar no se envía: el error se muestra en el campo
+    if (!this.deletePassword || !this.deleteConfirm) {
+      const [name, message] = !this.deletePassword
+        ? ['deletePassword', 'Este campo es obligatorio.']
+        : ['deleteConfirm', 'Marca esta casilla para continuar.'];
+      this.forms().some((f) => f.report(name, message));
+      return;
+    }
     this.run(this.account.deleteAccount(this.deletePassword), () => {
       this.auth.loggedOut();
       this.deleted.emit();

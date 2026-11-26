@@ -113,8 +113,12 @@ describe('Acceso (feature 004)', () => {
       fixture.detectChanges();
       expect(c.passwordLength()).toBe(11);
       expect(el.querySelector('#password-hint')!.textContent).toContain('llevas 11');
-      c.submit(); // con 11 caracteres no se envía nada
+      c.submit(); // con 11 caracteres no se envía nada, pero avisa en el campo y lo enfoca (N-2)
       http.expectNone(() => true);
+      const pw = el.querySelector('input[name="password"]') as HTMLInputElement;
+      expect(pw.getAttribute('aria-invalid')).toBe('true');
+      expect(document.activeElement).toBe(pw);
+      expect(el.querySelector('.field-error')!.textContent).toContain('Usa al menos 12 caracteres');
       c.password = 'ñandú lúcido';
       fixture.detectChanges();
       expect(c.passwordLength()).toBe(12);

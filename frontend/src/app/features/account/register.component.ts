@@ -50,6 +50,7 @@ import { OPERATOR_NOTICE, POLICY_SECTIONS } from '../../core/privacy';
 export class RegisterComponent {
   private auth = inject(AuthService);
   private errorEl = viewChild<ElementRef<HTMLElement>>('errorMsg');
+  private fieldErrors = viewChild(FieldErrorDirective);
 
   readonly invite = input.required<string>();
   /** Se emite si el registro termina (la sesión ya está iniciada). */
@@ -69,7 +70,11 @@ export class RegisterComponent {
   }
 
   submit() {
-    if (this.busy() || !this.canSubmit()) return;
+    if (this.busy()) return;
+    // Reglas que el navegador no valida (solo espacios, puntos de código): se avisa en el campo
+    if (!this.displayName.trim()) { this.fieldErrors()?.report('display_name', 'Escribe tu nombre.'); return; }
+    if ([...this.password].length < 12) { this.fieldErrors()?.report('password', 'Usa al menos 12 caracteres.'); return; }
+    if (!this.canSubmit()) return;
     this.busy.set(true);
     this.error.set(null);
     this.auth.register({ invite: this.invite(), display_name: this.displayName, email: this.email, password: this.password }).subscribe({
