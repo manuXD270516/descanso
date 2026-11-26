@@ -22,7 +22,7 @@ export interface TableColumn {
         <tbody>
           @for (row of rows(); track $index) {
             <tr>
-              @for (c of columns(); track c.key) { <td>{{ row[c.key] }}</td> }
+              @for (c of columns(); track c.key) { <td>@if (row[c.key] === '—') { <span role="img" aria-label="Sin dato" class="no-data">—</span> } @else { {{ row[c.key] }} }</td> }
             </tr>
           }
         </tbody>

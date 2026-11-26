@@ -22,8 +22,8 @@
   }
   @media (hover: hover) { .scale-btn:hover { background: var(--surface-hover); } }
   @media (prefers-reduced-motion: no-preference) { .scale-btn { transition: background var(--dur-fast), color var(--dur-fast); } }
-  /* Seleccionado: borde grueso del color de la métrica y fondo propio (no solo color) */
-  .scale-btn.on { background: var(--surface-hover); border: 2px solid var(--metric-color, var(--cat-1)); }
+  /* Seleccionado: relleno del color de la métrica con texto en el color de fondo (AA en ambos temas) y negrita */
+  .scale-btn.on { background: var(--metric-color, var(--cat-1)); color: var(--surface); border-color: var(--metric-color, var(--cat-1)); font-weight: 700; }
 
   .num-input { max-width: 10rem; font-size: 1.1rem; }
 
@@ -32,7 +32,7 @@
     background: var(--surface-sunken); border: 1px solid var(--line-strong); font-weight: 600;
     min-block-size: var(--target);
   }
-  .bool.yes { background: var(--surface-hover); border: 2px solid var(--metric-color, var(--cat-1)); }
+  .bool.yes { background: var(--metric-color, var(--cat-1)); color: var(--surface); border-color: var(--metric-color, var(--cat-1)); font-weight: 700; }
   .bool.no { color: var(--ink-muted); }
 
   .history { display: grid; gap: 0.6rem; }
