@@ -84,4 +84,19 @@ describe('FieldErrorDirective (feature 014)', () => {
   it('validate() sirve para grupos sin <form>', () => {
     expect(fixture.componentInstance.fe.validate()).toBeFalse();
   });
+
+  it('un evento change sin salir del campo no muestra el error (FR-020, datetime-local)', () => {
+    email().focus();
+    email().dispatchEvent(new Event('change', { bubbles: true }));
+    expect(email().getAttribute('aria-invalid')).toBe('false');
+    expect(errors().length).toBe(0);
+  });
+
+  it('el mensaje va dentro del label.field (no añade hijos al contenedor) y no entra en el nombre accesible', () => {
+    email().dispatchEvent(new FocusEvent('focusout', { bubbles: true }));
+    const message = el.querySelector('.field-error') as HTMLElement;
+    expect(message.parentElement!.tagName).toBe('LABEL');
+    expect(message.getAttribute('aria-hidden')).toBe('true');
+    expect(el.querySelector('form')!.children.length).toBe(3); // 2 etiquetas y el botón
+  });
 });

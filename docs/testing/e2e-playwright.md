@@ -201,12 +201,10 @@ reproducible. Un test que las necesite las pide con `test.use({ serverEnv: {...}
    `filter({ has | hasText })` (p. ej. la tarjeta `article` de una noche). Recurre a CSS solo si
    la interfaz no tiene semántica (resumen, cinta, grupos de siestas) y déjalo comentado.
 8. **Diálogos de confirmación:** la app usa un `<dialog>` propio (no `confirm()` del navegador).
-   `confirmDialog` espera el diálogo, devuelve su texto (`título
-cuerpo`) y pulsa el botón:
+   `confirmDialog` espera el diálogo, devuelve su texto (`título\ncuerpo`) y pulsa el botón:
    ```ts
    await card.getByRole('button', { name: 'Eliminar' }).click();
-   expect(await confirmDialog(page, 'Conservar')).toBe('¿Borrar esta siesta?
-Se borra la siesta del … No se puede recuperar.');
+   expect(await confirmDialog(page, 'Conservar')).toBe('¿Borrar esta siesta?\nSe borra la siesta del … No se puede recuperar.');
    await card.getByRole('button', { name: 'Eliminar' }).click();
    await confirmDialog(page, 'Borrar');
    ```

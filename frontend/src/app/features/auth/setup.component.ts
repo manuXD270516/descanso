@@ -30,7 +30,7 @@ export class SetupComponent {
   }
 
   submit() {
-    if (this.busy()) return;
+    if (this.busy() || this.passwordLength() < this.minLength) return;
     this.busy.set(true);
     this.error.set(null);
     this.auth.setup(this.token, this.email, this.password).subscribe({

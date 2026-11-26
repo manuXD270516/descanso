@@ -13,7 +13,7 @@
     <label class="field"><span>Contraseña</span>
       <input type="password" name="password" [(ngModel)]="password" autocomplete="current-password" required>
     </label>
-    <button class="btn btn-moon" type="submit" [disabled]="busy() || !email || !password">
+    <button class="btn btn-moon" type="submit" [disabled]="busy()">
       {{ busy() ? 'Entrando…' : 'Entrar' }}
     </button>
   </form>

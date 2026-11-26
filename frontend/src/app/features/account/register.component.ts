@@ -35,14 +35,14 @@ import { OPERATOR_NOTICE, POLICY_SECTIONS } from '../../core/privacy';
           <input type="email" name="email" [(ngModel)]="email" autocomplete="username" required>
         </label>
         <label class="field"><span>Contraseña</span>
-          <input type="password" name="password" [(ngModel)]="password" autocomplete="new-password" aria-describedby="reg-pw-hint" required>
+          <input type="password" name="password" [(ngModel)]="password" autocomplete="new-password" aria-describedby="reg-pw-hint" minlength="12" required>
           <small id="reg-pw-hint" class="muted small">Al menos 12 caracteres. Usa una frase de 3–4 palabras.</small>
         </label>
         <label class="check">
-          <input type="checkbox" name="accept" [(ngModel)]="accept">
+          <input type="checkbox" name="accept" [(ngModel)]="accept" required>
           <span>He leído y acepto la política de privacidad y el tratamiento de mis datos de sueño (datos de salud).</span>
         </label>
-        <button class="btn btn-moon" type="submit" [disabled]="busy() || !canSubmit()">{{ busy() ? 'Creando…' : 'Crear mi cuenta' }}</button>
+        <button class="btn btn-moon" type="submit" [disabled]="busy()">{{ busy() ? 'Creando…' : 'Crear mi cuenta' }}</button>
       </form>
     </section>
   `,

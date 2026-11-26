@@ -19,14 +19,14 @@
     </label>
     <label class="field"><span>Contraseña nueva</span>
       <input type="password" name="password" [(ngModel)]="password" autocomplete="new-password"
-             aria-describedby="password-hint" required>
+             aria-describedby="password-hint" [attr.minlength]="minLength" required>
       <small id="password-hint" class="muted small">
         Al menos {{ minLength }} caracteres. Usa una frase de 3–4 palabras.
         @if (password && passwordLength() < minLength) { (llevas {{ passwordLength() }}) }
       </small>
     </label>
     <button class="btn btn-moon" type="submit"
-            [disabled]="busy() || !token || !email || passwordLength() < minLength">
+            [disabled]="busy()">
       {{ busy() ? 'Creando…' : 'Crear cuenta' }}
     </button>
   </form>

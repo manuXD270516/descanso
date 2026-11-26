@@ -74,6 +74,7 @@ export class ProfileComponent implements OnInit {
   }
 
   saveEmail() {
+    if (this.newEmail === this.profile()?.email) { this.message.set(null); this.error.set('Ese ya es tu email.'); return; }
     this.run(this.account.changeEmail(this.newEmail, this.emailPassword), (p) => {
       this.load(p as Profile);
       this.auth.email.set((p as Profile).email);

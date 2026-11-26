@@ -88,22 +88,36 @@ describe('Acceso (feature 004)', () => {
       return { fixture, el: fixture.nativeElement as HTMLElement, c: fixture.componentInstance };
     }
 
+    it('FR-021 · "Crear cuenta" con campos vacíos no envía, marca el primero y le da el foco', async () => {
+      const { fixture, el } = create();
+      const button = el.querySelector('button[type="submit"]') as HTMLButtonElement;
+      await fixture.whenStable();
+      expect(button.disabled).toBeFalse();
+      button.click();
+      fixture.detectChanges();
+      const token = el.querySelector('input[name="token"]') as HTMLInputElement;
+      expect(document.activeElement).toBe(token);
+      expect(token.getAttribute('aria-invalid')).toBe('true');
+      http.expectNone(() => true);
+    });
+
     it('muestra "Tus N noches están a salvo" (singular con 1)', () => {
       expect(create(5).el.textContent).toContain('Tus 5 noches están a salvo');
     });
 
-    it('el botón exige 12 caracteres reales (con acentos) y el código usa autocomplete="off"', () => {
+    it('cuenta 12 caracteres reales (con acentos), no envía con 11 y el código usa autocomplete="off"', () => {
       const { fixture, el, c } = create();
-      const button = el.querySelector('button[type="submit"]') as HTMLButtonElement;
       c.token = 'código';
       c.email = 'yo@ejemplo.com';
       c.password = 'ñandú lúcid';
       fixture.detectChanges();
-      expect(button.disabled).toBeTrue();
+      expect(c.passwordLength()).toBe(11);
       expect(el.querySelector('#password-hint')!.textContent).toContain('llevas 11');
+      c.submit(); // con 11 caracteres no se envía nada
+      http.expectNone(() => true);
       c.password = 'ñandú lúcido';
       fixture.detectChanges();
-      expect(button.disabled).toBeFalse();
+      expect(c.passwordLength()).toBe(12);
       expect(el.querySelector('input[name="token"]')!.getAttribute('autocomplete')).toBe('off');
       expect(el.querySelector('input[name="password"]')!.getAttribute('autocomplete')).toBe('new-password');
     });

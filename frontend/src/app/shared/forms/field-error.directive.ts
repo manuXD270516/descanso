@@ -2,7 +2,7 @@ import { DestroyRef, Directive, ElementRef, afterNextRender, inject } from '@ang
 
 type Control = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 
-const CONTROLS = 'input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="button"]):not([type="submit"]), select, textarea';
+const CONTROLS = 'input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="button"]):not([type="submit"]), select, textarea, input[type="checkbox"][required]';
 let nextId = 0;
 
 /**
@@ -19,7 +19,9 @@ let nextId = 0;
   exportAs: 'appFieldError',
   host: {
     '(focusout)': 'onTouched($event)',
-    '(change)': 'onTouched($event)',
+    // `change` y `input` solo limpian un error ya mostrado: un `datetime-local` dispara `change` al borrar
+    // un segmento y el error no debe aparecer mientras se escribe (FR-020)
+    '(change)': 'onInput($event)',
     '(input)': 'onInput($event)',
   },
 })
@@ -64,9 +66,10 @@ export class FieldErrorDirective {
     return !first;
   }
 
-  onTouched(event: Event): void {
+  onTouched(event: FocusEvent): void {
     const control = this.asControl(event.target);
-    if (control) this.touchAndSync(control);
+    // Dentro de un mismo campo (segmentos de fecha) el foco no sale del campo
+    if (control && event.relatedTarget !== control) this.touchAndSync(control);
   }
 
   onInput(event: Event): void {
@@ -122,7 +125,16 @@ export class FieldErrorDirective {
       message = document.createElement('span');
       message.id = `${this.prefix}-${this.count++}`;
       message.className = 'field-error';
-      (control.closest('label') ?? control).insertAdjacentElement('afterend', message);
+      // Dentro de `label.field` (rejilla de una columna) para no añadir hijos a rejillas como `.grid-2`;
+      // `aria-hidden` evita que el mensaje pase a formar parte del nombre accesible del campo y se
+      // anuncia como descripción (`aria-describedby`). Fuera de un `.field` va después de la etiqueta.
+      const label = control.closest('label');
+      if (label?.classList.contains('field')) {
+        message.setAttribute('aria-hidden', 'true');
+        label.append(message);
+      } else {
+        (label ?? control).insertAdjacentElement('afterend', message);
+      }
       this.messages.set(control, message);
       this.base.set(control, control.getAttribute('aria-describedby'));
       const others = control.getAttribute('aria-describedby');
@@ -139,7 +151,7 @@ export class FieldErrorDirective {
 
   private text(control: Control): string {
     const v = control.validity;
-    if (v.valueMissing) return 'Este campo es obligatorio.';
+    if (v.valueMissing) return control.type === 'checkbox' ? 'Marca esta casilla para continuar.' : 'Este campo es obligatorio.';
     if (v.typeMismatch) return control.type === 'email' ? 'Escribe un email válido.' : 'El valor no es válido.';
     if (v.tooShort) return `Usa al menos ${control.getAttribute('minlength')} caracteres.`;
     if (v.rangeUnderflow || v.rangeOverflow) return 'El valor está fuera del rango permitido.';

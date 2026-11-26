@@ -21,10 +21,10 @@ import { AuthService } from '../../core/auth.service';
         }
         <form appFieldError (ngSubmit)="submit()">
           <label class="field"><span>Contraseña nueva</span>
-            <input type="password" name="password" [(ngModel)]="password" autocomplete="new-password" required>
+            <input type="password" name="password" [(ngModel)]="password" autocomplete="new-password" minlength="12" required>
             <small class="muted small">Al menos 12 caracteres.</small>
           </label>
-          <button class="btn btn-moon" type="submit" [disabled]="busy() || length() < 12">Guardar contraseña</button>
+          <button class="btn btn-moon" type="submit" [disabled]="busy()">Guardar contraseña</button>
         </form>
       }
     </section>
@@ -47,7 +47,7 @@ export class ResetPasswordComponent {
   }
 
   submit() {
-    if (this.busy()) return;
+    if (this.busy() || this.length() < 12) return;
     this.busy.set(true);
     this.error.set(null);
     this.auth.resetPassword(this.token(), this.password).subscribe({
