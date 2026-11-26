@@ -188,4 +188,31 @@ test.describe('Accesibilidad base 014 (servidor compartido, solo lectura)', () =
       await expect(notice.getByRole('button')).toHaveCount(0);
     }
   });
+
+  test('FR-023 · a 1280 px con el texto al 200 % el resumen de Noche tiene menos columnas', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto('/');
+    const columns = () => page.evaluate(() => {
+      const el = document.querySelector('.summary');
+      return el ? getComputedStyle(el).gridTemplateColumns.split(' ').length : 0;
+    });
+    await expect(page.locator('.summary')).toBeVisible();
+    const normal = await columns();
+    await page.addStyleTag({ content: 'html { font-size: 200% }' });
+    expect(await columns()).toBeLessThan(normal);
+  });
+
+  test('SC-006 · sin scroll horizontal en las cuatro pestañas a 320, 375, 768 y 1280 px', async ({ page }) => {
+    for (const width of [320, 375, 768, 1280]) {
+      await page.setViewportSize({ width, height: 800 });
+      await page.goto('/');
+      for (const tab of TABS) {
+        await openTab(page, tab);
+        await expandTab(page, tab);
+        await waitForTab(page, tab);
+        const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+        expect(overflow, `scroll horizontal en ${tab} a ${width} px`).toBeLessThanOrEqual(0);
+      }
+    }
+  });
 });

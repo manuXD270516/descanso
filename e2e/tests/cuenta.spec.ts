@@ -57,7 +57,11 @@ test.describe('Cuenta (008)', () => {
     await p.getByRole('button', { name: 'Mi perfil' }).click();
     await expect(p.getByText('máximo de 14 días')).toBeVisible();
     const del = p.getByRole('button', { name: 'Borrar mi cuenta' });
-    await expect(del).toBeDisabled();
+    // FR-021 (014): sin contraseña ni confirmación no se envía y el foco va al primer campo con error
+    await del.click();
+    await expect(p.locator('input[name="deletePassword"]')).toBeFocused();
+    await expect(p.locator('input[name="deletePassword"]')).toHaveAttribute('aria-invalid', 'true');
+    expect((await api.people()).some((x) => x.email === GUEST_EMAIL)).toBe(true);
     await p.locator('input[name="deletePassword"]').fill(GUEST_PASSWORD);
     await p.getByLabel('Entiendo que es definitivo.').check();
     await del.click();

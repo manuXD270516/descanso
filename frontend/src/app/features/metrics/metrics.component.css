@@ -1,5 +1,5 @@
 @layer components {
-  :host { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+  :host { container-type: inline-size; display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; }
   .between { justify-content: space-between; }
   .end { justify-content: flex-end; }
 
@@ -55,7 +55,7 @@
   }
   .type-btn.on { border-color: var(--accent); background: var(--surface-hover); }
   .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.6rem; }
-  @media (width < 30rem) { .grid-3 { grid-template-columns: 1fr; } .types { grid-template-columns: 1fr; } }
+  @container (width < 30rem) { .grid-3 { grid-template-columns: 1fr; } .types { grid-template-columns: 1fr; } }
   .swatches { display: flex; gap: 0.4rem; flex-wrap: wrap; }
   .swatch { width: var(--target); height: var(--target); border-radius: 50%; border: 2px solid transparent; }
   .swatch.on { border-color: var(--ink); box-shadow: 0 0 0 2px var(--surface-sunken); border-width: 3px; }
@@ -65,7 +65,7 @@
   .cfg-actions { display: flex; gap: 0.1rem; flex-wrap: wrap; justify-content: flex-end; }
 
   /* Móvil: nombre arriba, acciones abajo */
-  @media (width < 35rem) {
+  @container (width < 35rem) {
     .config-list li { grid-template-columns: auto 1fr; }
     .cfg-actions { grid-column: 1 / -1; justify-content: flex-start; }
   }

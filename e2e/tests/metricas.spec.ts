@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
 import { addDays } from '../support/api';
-import { answerNextDialog, expect, fmtDateShort, openTab, setNow, test } from '../support/fixtures';
+import { confirmDialog, expect, fmtDateShort, openTab, setNow, test } from '../support/fixtures';
 
 // US5 · Métricas personalizables (specs/001-linea-base/spec.md)
 
@@ -167,14 +167,12 @@ test.describe('Métricas (US5)', () => {
     await page.getByRole('button', { name: '1 archivada' }).click();
     const archived = configItem(page, 'Cafés');
 
-    const cancelled = answerNextDialog(page, false);
     await archived.getByRole('button', { name: 'Eliminar' }).click();
-    expect(await cancelled).toBe('confirm: ¿Eliminar "Cafés" y todos sus registros? Esta acción no se puede deshacer.');
+    expect(await confirmDialog(page, 'Conservar')).toBe('¿Borrar la métrica «Cafés»?\nSe borran la métrica y todos sus registros. No se puede recuperar.');
     await expect(archived).toBeVisible();
 
-    const accepted = answerNextDialog(page, true);
     await archived.getByRole('button', { name: 'Eliminar' }).click();
-    await accepted;
+    await confirmDialog(page, 'Borrar');
     await expect(archived).toHaveCount(0);
     await expect(page.getByRole('button', { name: /archivada/ })).toHaveCount(0);
     expect((await api.metrics()).map((m) => m.name)).toEqual(['Calidad del sueño', 'Energía al despertar']);

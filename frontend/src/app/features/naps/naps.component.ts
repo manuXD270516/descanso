@@ -1,10 +1,11 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, ElementRef, OnInit, computed, inject, signal, viewChild } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { ApiService, Nap } from '../../core/api.service';
 import { addDays, fmtDateShort, fmtDuration, fmtTime, inputLocalToIso, isoToInputLocal, localDate, nightDate, toInputLocal } from '../../core/time';
 import { OriginBadgeComponent } from '../../shared/origin/origin-badge.component';
+import { ConfirmService } from '../../shared/confirm/confirm.service';
 
 @Component({
   selector: 'app-naps',
@@ -14,6 +15,8 @@ import { OriginBadgeComponent } from '../../shared/origin/origin-badge.component
 })
 export class NapsComponent implements OnInit {
   private api = inject(ApiService);
+  private confirm = inject(ConfirmService);
+  private readonly listHead = viewChild<ElementRef<HTMLElement>>('listHead');
 
   readonly naps = signal<Nap[]>([]);
   readonly error = signal<string | null>(null);
@@ -85,9 +88,13 @@ export class NapsComponent implements OnInit {
     );
   }
 
-  remove(n: Nap) {
-    if (!confirm('¿Eliminar esta siesta?')) return;
-    this.run(this.api.deleteNap(n.id));
+  async remove(n: Nap) {
+    const ok = await this.confirm.ask({
+      title: '¿Borrar esta siesta?',
+      body: `Se borra la siesta del ${fmtDateShort(n.date)}. No se puede recuperar.`,
+    });
+    if (!ok) return;
+    this.run(this.api.deleteNap(n.id), () => this.listHead()?.nativeElement.focus());
   }
 
   private run(obs: Observable<unknown>, after?: () => void) {

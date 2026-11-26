@@ -50,7 +50,10 @@ test.describe('Multiusuario (008)', () => {
     await p2.getByLabel('Tu nombre').fill('Ana');
     await p2.getByLabel('Email').fill('ana@descanso.test');
     await p2.getByLabel('Contraseña').fill(GUEST_PASSWORD);
-    await expect(p2.getByRole('button', { name: 'Crear mi cuenta' })).toBeDisabled();
+    // FR-021 (014): sin aceptar la política no se envía y el foco va a la casilla
+    await p2.getByRole('button', { name: 'Crear mi cuenta' }).click();
+    await expect(p2.getByLabel(/He leído y acepto la política/)).toBeFocused();
+    await expect(p2.getByLabel(/He leído y acepto la política/)).toHaveAttribute('aria-invalid', 'true');
     await p2.getByLabel(/He leído y acepto la política/).check();
     await p2.getByRole('button', { name: 'Crear mi cuenta' }).click();
     // Feature 005: tras registrarse, la bienvenida pregunta el objetivo (se salta: 7 h)

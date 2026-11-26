@@ -14,6 +14,8 @@ import { OriginBadgeComponent, Origin, blockOrigin } from '../../shared/origin/o
 import { CycleCalculatorComponent } from './cycle-calculator.component';
 import { AWAKENINGS_OPTIONS, NightCardComponent, SOL_OPTIONS } from './night-card.component';
 import { NightUiService } from './night-ui.service';
+import { FieldErrorDirective } from '../../shared/forms/field-error.directive';
+import { ConfirmService } from '../../shared/confirm/confirm.service';
 import { ScheduleService, ScheduleState } from '../../core/schedule.service';
 import { scheduledWakeCheck } from '../../core/schedule';
 import { StreakMorningComponent } from '../streak/streak-morning.component';
@@ -39,7 +41,7 @@ interface Ribbon {
 
 @Component({
   selector: 'app-night',
-  imports: [FormsModule, ChartTableComponent, OriginBadgeComponent, CycleCalculatorComponent, NightCardComponent, StreakMorningComponent],
+  imports: [FieldErrorDirective, FormsModule, ChartTableComponent, OriginBadgeComponent, CycleCalculatorComponent, NightCardComponent, StreakMorningComponent],
   templateUrl: './night.component.html',
   styleUrl: './night.component.css',
 })
@@ -47,6 +49,7 @@ export class NightComponent implements OnInit {
   private api = inject(ApiService);
   private account = inject(AccountService);
   private ui = inject(NightUiService);
+  private confirm = inject(ConfirmService);
   private schedules = inject(ScheduleService);
 
   /** Horario y pausa vigentes hoy, que se aplican a la noche abierta (feature 010). */
@@ -55,6 +58,7 @@ export class NightComponent implements OnInit {
   readonly open = signal<SleepRecord | null>(null);
   /** Ya llegó la respuesta de "noche abierta" (con o sin noche). */
   private readonly opened = signal(false);
+  private readonly listHead = viewChild<ElementRef<HTMLElement>>('listHead');
   private readonly wakeBtn = viewChild<ElementRef<HTMLButtonElement>>('wakeBtn');
   readonly records = signal<SleepRecord[]>([]);
   readonly naps = signal<Nap[]>([]);
@@ -318,9 +322,14 @@ export class NightComponent implements OnInit {
     return parts.join(' · ');
   }
 
-  remove(r: SleepRecord) {
-    if (!confirm(`¿Eliminar la noche del ${fmtDateShort(r.date)}?`)) return;
-    this.run(this.api.deleteSleep(r.id));
+  async remove(r: SleepRecord) {
+    const ok = await this.confirm.ask({
+      title: '¿Borrar esta noche?',
+      body: `Se borra el registro de la noche del ${fmtDateShort(r.date)}. No se puede recuperar.`,
+    });
+    if (!ok) return;
+    // Tras borrar, el foco va al encabezado de la lista (el botón ya no existe)
+    this.run(this.api.deleteSleep(r.id), () => this.listHead()?.nativeElement.focus());
   }
 
   private run<T>(obs: Observable<T>, after?: (result: T) => void) {

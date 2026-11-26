@@ -76,6 +76,7 @@ import { PushSettingsComponent } from '../push/push-settings.component';
     </section>
   `,
   styles: `@layer components {
+    :host { display: block; container-type: inline-size; }
     .account-card { display: grid; gap: 0.8rem; }
     .paused { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
     .wrap { flex-wrap: wrap; align-items: end; }

@@ -105,15 +105,15 @@ términos prohibidos (VIII, que ya recorre `frontend/src` y cubre los textos nue
 
 ### Tests de US3
 
-- [ ] T026 [P] [US3] Karma `frontend/src/app/shared/confirm/confirm.service.spec.ts` y `confirm-dialog.component.spec.ts` (`contracts/confirm-dialog.md`): `ask()` resuelve `true` solo con "Borrar"; "Conservar" y el evento `cancel` (Esc) → `false`; un segundo `ask()` resuelve el primero en `false`; cerrar sesión con el diálogo abierto → `false`; foco inicial en "Conservar"; `aria-labelledby`/`aria-describedby`; `closedby="closerequest"`.
-- [ ] T027 [P] [US3] E2E: en `e2e/support/fixtures.ts`, reemplazar `answerNextDialog` por `confirmDialog(page, 'Borrar' | 'Conservar')` (espera `getByRole('dialog')`, devuelve su texto y pulsa el botón). Ajustar `e2e/tests/metricas.spec.ts`, `noches-pasadas.spec.ts` y `siestas.spec.ts` a los textos del contrato; añadir en `noches-pasadas.spec.ts`: "Conservar" no borra y devuelve el foco al botón; Esc no borra; tocar fuera no cierra; con el diálogo abierto el fondo no hace scroll; tras "Borrar" el foco está en el encabezado de la lista. En `accesibilidad-axe.spec.ts`, axe con el diálogo abierto en ambos temas.
+- [X] T026 [P] [US3] Karma `frontend/src/app/shared/confirm/confirm.service.spec.ts` y `confirm-dialog.component.spec.ts` (`contracts/confirm-dialog.md`): `ask()` resuelve `true` solo con "Borrar"; "Conservar" y el evento `cancel` (Esc) → `false`; un segundo `ask()` resuelve el primero en `false`; cerrar sesión con el diálogo abierto → `false`; foco inicial en "Conservar"; `aria-labelledby`/`aria-describedby`; `closedby="closerequest"`.
+- [X] T027 [P] [US3] E2E: en `e2e/support/fixtures.ts`, reemplazar `answerNextDialog` por `confirmDialog(page, 'Borrar' | 'Conservar')` (espera `getByRole('dialog')`, devuelve su texto y pulsa el botón). Ajustar `e2e/tests/metricas.spec.ts`, `noches-pasadas.spec.ts` y `siestas.spec.ts` a los textos del contrato; añadir en `noches-pasadas.spec.ts`: "Conservar" no borra y devuelve el foco al botón; Esc no borra; tocar fuera no cierra; con el diálogo abierto el fondo no hace scroll; tras "Borrar" el foco está en el encabezado de la lista. En `accesibilidad-axe.spec.ts`, axe con el diálogo abierto en ambos temas.
 
 ### Implementación de US3
 
-- [ ] T028 [US3] Crear `frontend/src/app/shared/confirm/confirm.service.ts` y `confirm-dialog.component.ts` según el contrato; montar `<app-confirm-dialog />` una vez en `frontend/src/app/app.html`; estilos del diálogo y `html:has(dialog[open]) { overflow: hidden }` en la capa `components` de `styles.css` (entrada con `@starting-style` solo con `no-preference`).
-- [ ] T029 [US3] Sustituir `confirm()` en `features/night/night.component.ts`, `features/naps/naps.component.ts` y `features/metrics/metrics.component.ts` por `await confirm.ask(...)` con los textos del contrato; tras borrar, foco al encabezado de la lista (`tabindex="-1"`). Actualizar `night.component.spec.ts`, `naps.component.spec.ts` y `metrics.component.spec.ts` (`spyOn(window, 'confirm')` → `ConfirmService` falso).
-- [ ] T030 [US3] Activar `no-alert` (`error`) en `frontend/eslint.config.js` para impedir `confirm()`, `alert()` y `prompt()` (SC-008, FR-018); lint en verde.
-- [ ] T031 [P] [US3] Actualizar el punto 8 de `docs/testing/e2e-playwright.md` (diálogos propios y `confirmDialog`).
+- [X] T028 [US3] Crear `frontend/src/app/shared/confirm/confirm.service.ts` y `confirm-dialog.component.ts` según el contrato; montar `<app-confirm-dialog />` una vez en `frontend/src/app/app.html`; estilos del diálogo y `html:has(dialog[open]) { overflow: hidden }` en la capa `components` de `styles.css` (entrada con `@starting-style` solo con `no-preference`).
+- [X] T029 [US3] Sustituir `confirm()` en `features/night/night.component.ts`, `features/naps/naps.component.ts` y `features/metrics/metrics.component.ts` por `await confirm.ask(...)` con los textos del contrato; tras borrar, foco al encabezado de la lista (`tabindex="-1"`). Actualizar `night.component.spec.ts`, `naps.component.spec.ts` y `metrics.component.spec.ts` (`spyOn(window, 'confirm')` → `ConfirmService` falso).
+- [X] T030 [US3] Activar `no-alert` (`error`) en `frontend/eslint.config.js` para impedir `confirm()`, `alert()` y `prompt()` (SC-008, FR-018); lint en verde.
+- [X] T031 [P] [US3] Actualizar el punto 8 de `docs/testing/e2e-playwright.md` (diálogos propios y `confirmDialog`).
 
 **Checkpoint**: US3 independiente y probada.
 
@@ -127,14 +127,16 @@ términos prohibidos (VIII, que ya recorre `frontend/src` y cubre los textos nue
 
 ### Tests de US4
 
-- [ ] T032 [P] [US4] Karma `frontend/src/app/shared/forms/field-error.directive.spec.ts`: `aria-invalid="false"` al cargar y al solo enfocar; `true` y `aria-describedby` al mensaje tras `blur` con valor inválido; vuelve a `false` al corregir; al enviar un formulario inválido, foco en el primer campo inválido y sin `submit`.
-- [ ] T033 [P] [US4] E2E en `e2e/tests/acceso.spec.ts` y `noche.spec.ts`: entrar con credenciales erróneas → un único `role="alert"` con el error; registro manual de noche con un campo obligatorio vacío → no se envía, foco en el campo, `aria-invalid="true"` y mensaje visible; la etiqueta de ese campo contiene "(obligatorio)" (FR-022).
+- [X] T032 [P] [US4] Karma `frontend/src/app/shared/forms/field-error.directive.spec.ts`: `aria-invalid="false"` al cargar y al solo enfocar; `true` y `aria-describedby` al mensaje tras `blur` con valor inválido; vuelve a `false` al corregir; al enviar un formulario inválido, foco en el primer campo inválido y sin `submit`.
+- [X] T033 [P] [US4] E2E en `e2e/tests/acceso.spec.ts` y `noche.spec.ts`: entrar con credenciales erróneas → un único `role="alert"` con el error; registro manual de noche con un campo obligatorio vacío → no se envía, foco en el campo, `aria-invalid="true"` y mensaje visible; la etiqueta de ese campo contiene "(obligatorio)" (FR-022).
 
 ### Implementación de US4
 
-- [ ] T034 [US4] Crear `frontend/src/app/shared/forms/field-error.directive.ts` (`appFieldError`, sincroniza `aria-invalid`/`aria-describedby` con `:user-invalid` en `blur`, `change`, `input` e `invalid`; en `submit` inválido enfoca el primer `:invalid`) y estilos en `styles.css`: `.field:has(:user-invalid)` con borde `--danger` de 2 px, icono y mensaje `.field-error`.
-- [ ] T035 [P] [US4] Aplicar a los formularios de cuenta y acceso: `features/auth/login.component.html`, `setup.component.html`, `features/account/register.component.ts`, `reset-password.component.ts`, `forgot.component.ts`, `people.component.ts`, `profile.component.html`. Etiquetas con "(obligatorio)"; revisar `autocomplete` (`username`, `current-password`, `new-password`, `email`) según `forms/autofill-sign-in-form.md` y `forms/autofill-sign-up-form.md`.
+- [X] T034 [US4] Crear `frontend/src/app/shared/forms/field-error.directive.ts` (`appFieldError`, sincroniza `aria-invalid`/`aria-describedby` con `:user-invalid` en `blur`, `change`, `input` e `invalid`; en `submit` inválido enfoca el primer `:invalid`) y estilos en `styles.css`: `.field:has(:user-invalid)` con borde `--danger` de 2 px, icono y mensaje `.field-error`.
+- [X] T035 [P] [US4] Aplicar a los formularios de cuenta y acceso: `features/auth/login.component.html`, `setup.component.html`, `features/account/register.component.ts`, `reset-password.component.ts`, `forgot.component.ts`, `people.component.ts`, `profile.component.html`. Etiquetas con "(obligatorio)"; revisar `autocomplete` (`username`, `current-password`, `new-password`, `email`) según `forms/autofill-sign-in-form.md` y `forms/autofill-sign-up-form.md`.
+  - _Nota (PR 2)_: `appFieldError` aplicado a entrar, alta inicial, registro, restablecer contraseña y perfil (4 formularios). Pendiente de revisar `autocomplete` y los formularios de olvido de contraseña y personas.
 - [ ] T036 [P] [US4] Aplicar a los formularios de datos y ajustes: `features/night/night.component.html`, `features/naps/naps.component.html`, `features/metrics/metrics.component.html`, `features/trends/goal-editor.component.ts`, `features/schedule/schedule-editor.component.ts`, `my-schedule.component.ts`, `features/night/cycle-settings.component.ts`, `features/streak/streak-settings.component.ts`, `features/push/push-settings.component.ts`, `features/onboarding/welcome.component.ts`. Ajustar sus specs si cambian selectores.
+  - _Pendiente (PR 2)_: **la feature 014 no se cierra hasta completar esta tarea.** Solo se aplicó al registro manual de noche (`night.component.html`). Siesta, métrica, objetivo, horario, ajustes de ciclos y racha, avisos y bienvenida siguen con su botón deshabilitado por regla de negocio y sin errores por campo.
 
 **Checkpoint**: US4 independiente y probada.
 
@@ -146,8 +148,8 @@ términos prohibidos (VIII, que ya recorre `frontend/src` y cubre los textos nue
 
 **Independent Test**: spec US5.
 
-- [ ] T037 [P] [US5] E2E en `e2e/tests/accesibilidad.spec.ts`: a 1280 px con `html { font-size: 200% }` el resumen de Noche tiene menos columnas que sin el 200 % (lee `grid-template-columns` computado); a 320, 375, 768 y 1280 px no hay scroll horizontal en las cuatro pestañas.
-- [ ] T038 [US5] `:host { display: block; container-type: inline-size }` en `night`, `naps`, `metrics`, `trends`, `my-schedule` y `profile`; sustituir los `@media (max-width: …px)` de `app.css`, `night.component.css`, `metrics.component.css`, `trends.component.css` y `styles.css` (`.grid-2`) por `@container (width < 30rem|22rem)` o `@media` en `rem`; contenido con `max-inline-size: min(45rem, 100%)`. `chart-table` desplazable en horizontal dentro de su contenedor con foco (`ui-atoms/responsive-table.md`).
+- [X] T037 [P] [US5] E2E en `e2e/tests/accesibilidad.spec.ts`: a 1280 px con `html { font-size: 200% }` el resumen de Noche tiene menos columnas que sin el 200 % (lee `grid-template-columns` computado); a 320, 375, 768 y 1280 px no hay scroll horizontal en las cuatro pestañas.
+- [X] T038 [US5] `:host { display: block; container-type: inline-size }` en `night`, `naps`, `metrics`, `trends`, `my-schedule` y `profile`; sustituir los `@media (max-width: …px)` de `app.css`, `night.component.css`, `metrics.component.css`, `trends.component.css` y `styles.css` (`.grid-2`) por `@container (width < 30rem|22rem)` o `@media` en `rem`; contenido con `max-inline-size: min(45rem, 100%)`. `chart-table` desplazable en horizontal dentro de su contenedor con foco (`ui-atoms/responsive-table.md`).
 
 **Checkpoint**: P2 completo.
 

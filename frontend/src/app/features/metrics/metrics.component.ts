@@ -1,9 +1,10 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, ElementRef, OnInit, computed, inject, signal, viewChild } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { ApiService, Metric, MetricEntry, MetricType } from '../../core/api.service';
 import { addDays, fmtDateShort, localDate } from '../../core/time';
+import { ConfirmService } from '../../shared/confirm/confirm.service';
 
 const HISTORY_DAYS = 7;
 
@@ -65,6 +66,8 @@ const EMPTY_FORM: MetricForm = { id: null, name: '', type: 'scale', unit: '', mi
 })
 export class MetricsComponent implements OnInit {
   private api = inject(ApiService);
+  private confirm = inject(ConfirmService);
+  private readonly listHead = viewChild<ElementRef<HTMLElement>>('listHead');
 
   readonly metrics = signal<Metric[]>([]);
   readonly entries = signal<MetricEntry[]>([]);
@@ -179,9 +182,13 @@ export class MetricsComponent implements OnInit {
 
   archive(m: Metric, archived: boolean) { this.run(this.api.updateMetric(m.id, { archived: archived ? 1 : 0 })); }
 
-  removeMetric(m: Metric) {
-    if (!confirm(`¿Eliminar "${m.name}" y todos sus registros? Esta acción no se puede deshacer.`)) return;
-    this.run(this.api.deleteMetric(m.id));
+  async removeMetric(m: Metric) {
+    const ok = await this.confirm.ask({
+      title: `¿Borrar la métrica «${m.name}»?`,
+      body: 'Se borran la métrica y todos sus registros. No se puede recuperar.',
+    });
+    if (!ok) return;
+    this.run(this.api.deleteMetric(m.id), () => this.listHead()?.nativeElement.focus());
   }
 
   move(m: Metric, dir: -1 | 1) {

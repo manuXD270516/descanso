@@ -14,6 +14,8 @@ module.exports = tseslint.config(
     ],
     processor: angular.processInlineTemplates,
     rules: {
+      // Feature 014: los diálogos del navegador se sustituyen por ConfirmService
+      "no-alert": "error",
       "@angular-eslint/directive-selector": [
         "error",
         {

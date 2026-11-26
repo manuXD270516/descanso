@@ -46,7 +46,7 @@ describe('Cuenta (feature 008)', () => {
   });
 
   describe('RegisterComponent (US1, US6)', () => {
-    it('muestra el texto honesto y exige aceptar la política y 12 caracteres', () => {
+    it('muestra el texto honesto; sin aceptar la política no envía, marca la casilla y le da el foco (FR-021)', async () => {
       const { fixture, el, c } = render(RegisterComponent, { invite: 'tok' });
       expect(el.textContent).toContain(OPERATOR_NOTICE);
       const button = el.querySelector('button[type="submit"]') as HTMLButtonElement;
@@ -54,10 +54,39 @@ describe('Cuenta (feature 008)', () => {
       c.email = 'ana@x.com';
       c.password = 'una frase larga';
       fixture.detectChanges();
-      expect(button.disabled).toBeTrue();
+      await fixture.whenStable();
+      expect(button.disabled).toBeFalse();
+      button.click();
+      fixture.detectChanges();
+      const accept = el.querySelector('input[name="accept"]') as HTMLInputElement;
+      expect(document.activeElement).toBe(accept);
+      expect(accept.getAttribute('aria-invalid')).toBe('true');
+      http.expectNone(() => true);
       c.accept = true;
       fixture.detectChanges();
-      expect(button.disabled).toBeFalse();
+      await fixture.whenStable();
+      button.click();
+      http.expectOne((r) => r.method === 'POST').flush({}, { status: 500, statusText: 'x' });
+    });
+
+    it('N-2 · nombre de solo espacios o contraseña de 11 puntos de código: avisa en el campo y lo enfoca', async () => {
+      const { fixture, el, c } = render(RegisterComponent, { invite: 'tok' });
+      await fixture.whenStable();
+      Object.assign(c, { displayName: '   ', email: 'a@b.co', password: 'una frase larga', accept: true });
+      c.submit();
+      fixture.detectChanges();
+      const name = el.querySelector('input[name="display_name"]') as HTMLInputElement;
+      expect(name.getAttribute('aria-invalid')).toBe('true');
+      expect(document.activeElement).toBe(name);
+      http.expectNone(() => true);
+      c.displayName = 'Ana';
+      c.password = 'ñandú lúcid'; // 11 puntos de código
+      c.submit();
+      fixture.detectChanges();
+      const pw = el.querySelector('input[name="password"]') as HTMLInputElement;
+      expect(pw.getAttribute('aria-invalid')).toBe('true');
+      expect(document.activeElement).toBe(pw);
+      http.expectNone(() => true);
     });
 
     it('envía la invitación en el cuerpo con la aceptación y la versión de la política', () => {
@@ -134,13 +163,36 @@ describe('Cuenta (feature 008)', () => {
       expect(auth.displayName()).toBe('Inés');
     });
 
-    it('borrar la cuenta exige contraseña y confirmación; al terminar vuelve a "Entrar"', () => {
+    it('N-3 · deleteAccount() sin contraseña o sin confirmar no envía y muestra el error en el campo', async () => {
+      const { fixture, el, c } = load();
+      await fixture.whenStable();
+      c.deleteAccount();
+      fixture.detectChanges();
+      const password = el.querySelector('input[name="deletePassword"]') as HTMLInputElement;
+      expect(password.getAttribute('aria-invalid')).toBe('true');
+      http.expectNone((r) => r.method === 'DELETE');
+      Object.assign(c, { deletePassword: 'secreta' });
+      c.deleteAccount();
+      fixture.detectChanges();
+      const confirm = el.querySelector('input[name="deleteConfirm"]') as HTMLInputElement;
+      expect(confirm.getAttribute('aria-invalid')).toBe('true');
+      expect(document.activeElement).toBe(confirm);
+      http.expectNone((r) => r.method === 'DELETE');
+    });
+
+    it('borrar la cuenta exige contraseña y confirmación (sin ellas no envía y enfoca el primer campo); al terminar vuelve a "Entrar"', async () => {
       const { fixture, el, c } = load();
       const button = Array.from(el.querySelectorAll('button')).find((b) => b.textContent!.includes('Borrar mi cuenta')) as HTMLButtonElement;
-      expect(button.disabled).toBeTrue();
+      await fixture.whenStable();
+      expect(button.disabled).toBeFalse();
+      button.click();
+      fixture.detectChanges();
+      const password = el.querySelector('input[name="deletePassword"]') as HTMLInputElement;
+      expect(document.activeElement).toBe(password);
+      expect(password.getAttribute('aria-invalid')).toBe('true');
+      http.expectNone((r) => r.method === 'DELETE');
       Object.assign(c, { deletePassword: 'secreta', deleteConfirm: true });
       fixture.detectChanges();
-      expect(button.disabled).toBeFalse();
       c.deleteAccount();
       const req = http.expectOne((r) => r.url === '/api/me' && r.method === 'DELETE');
       expect(req.request.body).toEqual({ password: 'secreta' });

@@ -74,6 +74,7 @@ eliminar la noche tras confirmar.
    **Then** aparece una noche cerrada cuya fecha de noche es el día de la hora de dormir.
 2. **Given** el formulario manual, **When** falta la hora de dormir o la de despertar, **Then**
    el botón "Guardar noche" está deshabilitado.
+   _Enmienda (feature 014, FR-021): el botón ya no se deshabilita; al pulsarlo con campos vacíos no se envía nada, se marca el campo y el foco va al primero con error._
 3. **Given** una noche registrada, **When** edita sus horas y notas y guarda, **Then** la lista
    y la duración reflejan los nuevos valores.
 4. **Given** una noche registrada, **When** pulsa "Eliminar" y confirma, **Then** desaparece de

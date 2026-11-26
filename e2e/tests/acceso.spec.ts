@@ -14,8 +14,12 @@ test.describe('Acceso protegido (004)', () => {
 
     await page.getByLabel('Código de alta').fill(SETUP_TOKEN);
     await page.getByLabel('Email').fill(OWNER_EMAIL);
-    await page.getByLabel('Contraseña nueva').fill('corta');
-    await expect(page.getByRole('button', { name: 'Crear cuenta' })).toBeDisabled();
+    await page.getByLabel('Contraseña nueva').pressSequentially('corta'); // tecleado: minlength solo valida lo que escribe la persona
+    // FR-021 (014): con una contraseña corta no se envía, se marca el campo y recibe el foco
+    await page.getByRole('button', { name: 'Crear cuenta' }).click();
+    await expect(page.getByLabel('Contraseña nueva')).toBeFocused();
+    await expect(page.getByLabel('Contraseña nueva')).toHaveAttribute('aria-invalid', 'true');
+    await expect(page.getByRole('heading', { name: 'Crea tu contraseña' })).toBeVisible();
     await page.getByLabel('Contraseña nueva').fill(OWNER_PASSWORD);
     await page.getByRole('button', { name: 'Crear cuenta' }).click();
 
@@ -23,6 +27,26 @@ test.describe('Acceso protegido (004)', () => {
     await expect(page.getByRole('button', { name: 'Me voy a dormir' })).toBeVisible();
     // La API sin sesión (el cliente `api` no tiene cookie) sigue cerrada
     expect((await api.request.get('/api/sleep')).status()).toBe(401);
+  });
+
+  test('US4 · entrar: campo vacío al salir se marca, el servidor se anuncia una sola vez (014)', async ({ page, api }) => {
+    await api.setupOwner();
+    await page.goto('/');
+    const email = page.getByLabel('Email');
+    await expect(email).toHaveAccessibleName(/\(obligatorio\)/);
+    await expect(email).toHaveAttribute('aria-invalid', 'false');
+    await email.focus();
+    await expect(email).toHaveAttribute('aria-invalid', 'false'); // solo entrar no marca
+    await page.getByLabel('Contraseña').focus(); // salir sin escribir
+    await expect(email).toHaveAttribute('aria-invalid', 'true');
+    await expect(email).toHaveAccessibleDescription('Este campo es obligatorio.');
+    await email.fill(OWNER_EMAIL);
+    await expect(email).toHaveAttribute('aria-invalid', 'false');
+
+    await page.getByLabel('Contraseña').fill('no es la contraseña');
+    await page.getByRole('button', { name: 'Entrar' }).click();
+    await expect(page.getByRole('alert')).toHaveCount(1);
+    await expect(page.getByRole('alert')).toHaveText('Email o contraseña incorrectos');
   });
 
   test('US1-1/US1-5/US1-6 · entrar, error genérico, y cerrar sesión la invalida', async ({ page, api }) => {

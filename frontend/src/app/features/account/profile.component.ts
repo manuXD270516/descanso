@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, output, signal } from '@angular/core';
+import { Component, OnInit, inject, output, signal, viewChildren } from '@angular/core';
+import { FieldErrorDirective } from '../../shared/forms/field-error.directive';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { AccountService, Activity, Profile } from '../../core/account.service';
@@ -14,13 +15,14 @@ const ACTIONS: Record<Activity['action'], string> = {
 /** Mi perfil (feature 008, US3–US5). */
 @Component({
   selector: 'app-profile',
-  imports: [FormsModule, GoalEditorComponent, CycleSettingsComponent],
+  imports: [FieldErrorDirective, FormsModule, GoalEditorComponent, CycleSettingsComponent],
   templateUrl: './profile.component.html',
   styleUrl: './account.css',
 })
 export class ProfileComponent implements OnInit {
   private account = inject(AccountService);
   private auth = inject(AuthService);
+  private forms = viewChildren(FieldErrorDirective);
 
   /** La cuenta se borró: la app vuelve a "Entrar". */
   readonly deleted = output<void>();
@@ -73,6 +75,7 @@ export class ProfileComponent implements OnInit {
   }
 
   saveEmail() {
+    if (this.newEmail === this.profile()?.email) { this.message.set(null); this.error.set('Ese ya es tu email.'); return; }
     this.run(this.account.changeEmail(this.newEmail, this.emailPassword), (p) => {
       this.load(p as Profile);
       this.auth.email.set((p as Profile).email);
@@ -90,6 +93,14 @@ export class ProfileComponent implements OnInit {
   }
 
   deleteAccount() {
+    // Sin contraseña o sin confirmar no se envía: el error se muestra en el campo
+    if (!this.deletePassword || !this.deleteConfirm) {
+      const [name, message] = !this.deletePassword
+        ? ['deletePassword', 'Este campo es obligatorio.']
+        : ['deleteConfirm', 'Marca esta casilla para continuar.'];
+      this.forms().some((f) => f.report(name, message));
+      return;
+    }
     this.run(this.account.deleteAccount(this.deletePassword), () => {
       this.auth.loggedOut();
       this.deleted.emit();

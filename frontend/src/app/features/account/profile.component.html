@@ -5,7 +5,7 @@
   @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
 
   @if (profile(); as p) {
-    <form class="account-form" (ngSubmit)="saveProfile()">
+    <form appFieldError class="account-form" (ngSubmit)="saveProfile()">
       <label class="field"><span>Nombre visible</span>
         <input type="text" name="display_name" [(ngModel)]="displayName" maxlength="60" required>
       </label>
@@ -27,26 +27,26 @@
     <app-cycle-settings [cycleMin]="p.cycle_min" [latencyMin]="p.latency_min" (changed)="cycleChanged($event)" />
 
     <h3>Email</h3>
-    <form class="account-form" (ngSubmit)="saveEmail()">
+    <form appFieldError class="account-form" (ngSubmit)="saveEmail()">
       <label class="field"><span>Email</span>
         <input type="email" name="email" [(ngModel)]="newEmail" autocomplete="username" required>
       </label>
       <label class="field"><span>Contraseña actual</span>
         <input type="password" name="emailPassword" [(ngModel)]="emailPassword" autocomplete="current-password" required>
       </label>
-      <button class="btn" type="submit" [disabled]="!emailPassword || newEmail === p.email">Cambiar email</button>
+      <button class="btn" type="submit">Cambiar email</button>
     </form>
 
     <h3>Contraseña</h3>
-    <form class="account-form" (ngSubmit)="savePassword()">
+    <form appFieldError class="account-form" (ngSubmit)="savePassword()">
       <label class="field"><span>Contraseña actual</span>
         <input type="password" name="currentPassword" [(ngModel)]="currentPassword" autocomplete="current-password" required>
       </label>
       <label class="field"><span>Contraseña nueva</span>
-        <input type="password" name="newPassword" [(ngModel)]="newPassword" autocomplete="new-password" required>
+        <input type="password" name="newPassword" [(ngModel)]="newPassword" autocomplete="new-password" minlength="12" required>
         <small class="muted small">Al menos 12 caracteres. Se cerrarán tus otras sesiones.</small>
       </label>
-      <button class="btn" type="submit" [disabled]="!currentPassword || newPassword.length < 12">Cambiar contraseña</button>
+      <button class="btn" type="submit">Cambiar contraseña</button>
     </form>
 
     <h3>Actividad de la cuenta</h3>
@@ -69,15 +69,15 @@
       @if (p.role === 'owner') {
         <p class="small muted">Como propietario, solo puedes borrar tu cuenta cuando no quede nadie más usando Descanso.</p>
       }
-      <form class="account-form" (ngSubmit)="deleteAccount()">
+      <form appFieldError class="account-form" (ngSubmit)="deleteAccount()">
         <label class="field"><span>Contraseña</span>
           <input type="password" name="deletePassword" [(ngModel)]="deletePassword" autocomplete="current-password" required>
         </label>
         <label class="check">
-          <input type="checkbox" name="deleteConfirm" [(ngModel)]="deleteConfirm">
+          <input type="checkbox" name="deleteConfirm" [(ngModel)]="deleteConfirm" required>
           <span>Entiendo que es definitivo.</span>
         </label>
-        <button class="btn btn-danger" type="submit" [disabled]="!deletePassword || !deleteConfirm">Borrar mi cuenta</button>
+        <button class="btn btn-danger" type="submit">Borrar mi cuenta</button>
       </form>
     </div>
   } @else if (!error()) {

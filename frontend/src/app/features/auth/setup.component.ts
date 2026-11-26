@@ -1,4 +1,5 @@
 import { Component, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { FieldErrorDirective } from '../../shared/forms/field-error.directive';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/auth.service';
@@ -6,13 +7,14 @@ import { AuthService } from '../../core/auth.service';
 /** Pantalla "Crea tu contraseña": alta del propietario con el código de alta (feature 004, US2). */
 @Component({
   selector: 'app-setup',
-  imports: [FormsModule],
+  imports: [FieldErrorDirective, FormsModule],
   templateUrl: './setup.component.html',
   styleUrl: './auth.css',
 })
 export class SetupComponent {
   readonly auth = inject(AuthService);
   private errorEl = viewChild<ElementRef<HTMLElement>>('errorMsg');
+  private fieldErrors = viewChild(FieldErrorDirective);
 
   static readonly MIN_LENGTH = 12;
   readonly minLength = SetupComponent.MIN_LENGTH;
@@ -30,6 +32,10 @@ export class SetupComponent {
 
   submit() {
     if (this.busy()) return;
+    if (this.passwordLength() < this.minLength) {
+      this.fieldErrors()?.report('password', `Usa al menos ${this.minLength} caracteres.`);
+      return;
+    }
     this.busy.set(true);
     this.error.set(null);
     this.auth.setup(this.token, this.email, this.password).subscribe({

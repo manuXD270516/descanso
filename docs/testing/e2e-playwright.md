@@ -33,7 +33,7 @@ e2e/
 ├── support/
 │   ├── env.ts              puerto compartido (3100) y zona horaria de los tests
 │   ├── server.ts           AppServer: arranca/reinicia/para un `node backend/src/server.js`
-│   ├── fixtures.ts         test/expect extendidos: server, api, setNow, openTab, answerNextDialog…
+│   ├── fixtures.ts         test/expect extendidos: server, api, setNow, openTab, confirmDialog…
 │   ├── api.ts              cliente mínimo de la API para preparar y verificar datos
 │   └── global-teardown.ts  borra la carpeta temporal de la ejecución
 └── tests/                  un spec por área
@@ -200,12 +200,15 @@ reproducible. Un test que las necesite las pide con `test.use({ serverEnv: {...}
 7. **Usa selectores accesibles:** `getByRole`, `getByLabel`, `getByText`. Acota con
    `filter({ has | hasText })` (p. ej. la tarjeta `article` de una noche). Recurre a CSS solo si
    la interfaz no tiene semántica (resumen, cinta, grupos de siestas) y déjalo comentado.
-8. **Diálogos `confirm()`:** crea la promesa antes del clic:
+8. **Diálogos de confirmación:** la app usa un `<dialog>` propio (no `confirm()` del navegador).
+   `confirmDialog` espera el diálogo, devuelve su texto (`título\ncuerpo`) y pulsa el botón:
    ```ts
-   const answered = answerNextDialog(page, false);   // false = Cancelar
    await card.getByRole('button', { name: 'Eliminar' }).click();
-   expect(await answered).toBe('confirm: ¿Eliminar esta siesta?');
+   expect(await confirmDialog(page, 'Conservar')).toBe('¿Borrar esta siesta?\nSe borra la siesta del … No se puede recuperar.');
+   await card.getByRole('button', { name: 'Eliminar' }).click();
+   await confirmDialog(page, 'Borrar');
    ```
+   Tras "Conservar" el foco vuelve al botón que lo abrió; tras "Borrar" va al encabezado de la lista.
 9. **Aislamiento:** por defecto el test tiene su propio servidor con base vacía. Solo si el test
    **no escribe nada** puede usar el compartido con `test.use({ isolate: false })`. Para
    variables del backend: `test.use({ serverEnv: { APP_VERSION: '…' } })`. Para reiniciar el

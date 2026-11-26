@@ -1,4 +1,5 @@
 import { Component, ElementRef, inject, input, output, signal, viewChild } from '@angular/core';
+import { FieldErrorDirective } from '../../shared/forms/field-error.directive';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/auth.service';
@@ -6,7 +7,7 @@ import { AuthService } from '../../core/auth.service';
 /** Contraseña nueva con un enlace de recuperación del propietario (feature 008, US4). */
 @Component({
   selector: 'app-reset-password',
-  imports: [FormsModule],
+  imports: [FieldErrorDirective, FormsModule],
   styleUrl: './account.css',
   template: `
     <section class="panel account-card" aria-labelledby="reset-title">
@@ -18,12 +19,12 @@ import { AuthService } from '../../core/auth.service';
         @if (error()) {
           <p class="error" role="alert" tabindex="-1" #errorMsg>{{ error() }}</p>
         }
-        <form (ngSubmit)="submit()">
+        <form appFieldError (ngSubmit)="submit()">
           <label class="field"><span>Contraseña nueva</span>
-            <input type="password" name="password" [(ngModel)]="password" autocomplete="new-password" required>
+            <input type="password" name="password" [(ngModel)]="password" autocomplete="new-password" minlength="12" required>
             <small class="muted small">Al menos 12 caracteres.</small>
           </label>
-          <button class="btn btn-moon" type="submit" [disabled]="busy() || length() < 12">Guardar contraseña</button>
+          <button class="btn btn-moon" type="submit" [disabled]="busy()">Guardar contraseña</button>
         </form>
       }
     </section>
@@ -32,6 +33,7 @@ import { AuthService } from '../../core/auth.service';
 export class ResetPasswordComponent {
   private auth = inject(AuthService);
   private errorEl = viewChild<ElementRef<HTMLElement>>('errorMsg');
+  private fieldErrors = viewChild(FieldErrorDirective);
 
   readonly token = input.required<string>();
   readonly finished = output<void>();
@@ -47,6 +49,7 @@ export class ResetPasswordComponent {
 
   submit() {
     if (this.busy()) return;
+    if (this.length() < 12) { this.fieldErrors()?.report('password', 'Usa al menos 12 caracteres.'); return; }
     this.busy.set(true);
     this.error.set(null);
     this.auth.resetPassword(this.token(), this.password).subscribe({
