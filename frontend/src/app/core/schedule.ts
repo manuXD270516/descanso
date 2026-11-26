@@ -111,7 +111,7 @@ export function dayOf(version: ScheduleVersion | null, nightDate: string): Sched
   return d && d.active ? d : null;
 }
 
-function shiftDay(date: string, n: number): string {
+export function shiftDay(date: string, n: number): string {
   const [y, m, d] = date.split('-').map(Number);
   return localDay(new Date(y, m - 1, d + n));
 }
