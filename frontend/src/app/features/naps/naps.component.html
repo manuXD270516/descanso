@@ -8,7 +8,7 @@
   </div>
   <label class="field"><span>Notas (opcional)</span><input type="text" [(ngModel)]="form.notes" placeholder="Ej. después del almuerzo"></label>
   <div class="row between">
-    <span class="muted small tabular">{{ formDuration() ? 'Duración: ' + fmtDuration(formDuration()) : 'El fin debe ser posterior al inicio' }}</span>
+    <span class="muted small tabular">{{ formDuration() ? 'Duración: ' + fmtDuration(formDuration()) : fe.hasError('end') ? '' : 'El fin debe ser posterior al inicio' }}</span>
     <button class="btn btn-dawn" type="button" data-submit (click)="save(fe)" [disabled]="busy()">Guardar siesta</button>
   </div>
 </section>

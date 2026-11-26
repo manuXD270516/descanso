@@ -24,13 +24,15 @@ class HostComponent {
   imports: [FormsModule, FieldErrorDirective],
   template: `
     <div appFieldError #g="appFieldError">
-      <label class="field"><span>Minutos</span><input type="number" name="min" [(ngModel)]="min" min="0" max="59" step="5" required></label>
+      <label class="field"><span>Minutos</span><input type="number" name="min" data-unit="minutos" [(ngModel)]="min" min="0" max="59" step="5" required></label>
+      <label class="field"><span>Hasta</span><input type="number" name="to" [(ngModel)]="to" min="10" data-error-underflow="«Hasta» no puede ser anterior a «Desde»." required></label>
       <button type="button" data-submit (click)="g.validate() && (sent = sent + 1)">Guardar</button>
     </div>
   `,
 })
 class GroupComponent {
   min: number | null = 0;
+  to: number | null = 20;
   sent = 0;
 }
 
@@ -160,6 +162,18 @@ describe('FieldErrorDirective (feature 014)', () => {
       field().dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget: null }));
       expect(field().getAttribute('aria-invalid')).toBe('false');
       expect(group.nativeElement.querySelectorAll('.field-error').length).toBe(0);
+    });
+
+    it('el mensaje de rango dice los límites y la unidad; un campo puede traer su propio texto', () => {
+      field().value = '70';
+      field().dispatchEvent(new Event('input', { bubbles: true }));
+      group.componentInstance.to = 5;
+      const to = group.nativeElement.querySelectorAll('input')[1] as HTMLInputElement;
+      to.value = '5';
+      to.dispatchEvent(new Event('input', { bubbles: true }));
+      save().click();
+      const messages = Array.from(group.nativeElement.querySelectorAll('.field-error')).map((m) => (m as HTMLElement).textContent);
+      expect(messages).toEqual(['Debe estar entre 0 y 59 minutos.', '«Hasta» no puede ser anterior a «Desde».']);
     });
 
     it('un valor fuera de rango no pasa, pero un múltiplo distinto del paso sí (step no cuenta)', () => {

@@ -84,6 +84,39 @@ describe('Feature 010 · horario', () => {
       expect(el.textContent).toContain('Se aplica desde hoy; los días anteriores no cambian');
     });
 
+    it('FR-021 · sin horario completo "Guardar horario" no envía: marca la hora que falta y, si no, avisa con un mensaje', async () => {
+      const { f, c, el } = render(null);
+      await f.whenStable();
+      const save = Array.from(el.querySelectorAll('button')).find((b) => b.textContent!.trim() === 'Guardar horario') as HTMLButtonElement;
+      save.click();
+      f.detectChanges();
+      const wake = el.querySelector('input[name="weekWake"]') as HTMLInputElement;
+      expect(wake.getAttribute('aria-invalid')).toBe('true');
+      expect(document.activeElement).toBe(wake);
+      http.expectNone((r) => r.method === 'PUT');
+      // cualquier otro camino que llegue a save() sin horario tampoco sale en silencio
+      c.draft.set(null);
+      c.save();
+      f.detectChanges();
+      expect(el.querySelector('[role="alert"]')!.textContent).toContain('Completa todas las horas');
+      http.expectNone((r) => r.method === 'PUT');
+    });
+
+    it('FR-021 · en "Cada día distinto" una celda vacía se marca (todas las horas son obligatorias)', async () => {
+      const { f, el } = render(null);
+      await f.whenStable();
+      (Array.from(el.querySelectorAll('input[type="radio"]')).find((r) => (r as HTMLInputElement).value === 'each') as HTMLInputElement).click();
+      f.detectChanges();
+      await f.whenStable();
+      const save = Array.from(el.querySelectorAll('button')).find((b) => b.textContent!.trim() === 'Guardar horario') as HTMLButtonElement;
+      save.click();
+      f.detectChanges();
+      const first = el.querySelector('input[name="wake1"], input[type="time"]') as HTMLInputElement;
+      expect(first.getAttribute('aria-invalid')).toBe('true');
+      expect(document.activeElement).toBe(first);
+      http.expectNone((r) => r.method === 'PUT');
+    });
+
     it('sin horario no hay descarga; el aviso se guarda en el perfil', () => {
       const { c, el } = render(null);
       expect(el.querySelector('a[download]')).toBeNull();

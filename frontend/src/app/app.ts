@@ -122,11 +122,15 @@ export class App implements OnInit {
       change();
       return;
     }
-    // Se espera a que Angular pinte el nuevo estado: la transición anima del "antes" al "después"
-    doc.startViewTransition(async () => {
+    // Se pinta el nuevo estado de forma síncrona (tick) y la transición anima del "antes" al "después".
+    // No se espera `whenStable()`: cuenta también las peticiones HTTP y congelaría la pantalla con red lenta.
+    const transition = doc.startViewTransition(async () => {
       change();
-      await this.appRef.whenStable();
-    });
+      this.appRef.tick();
+    }) as { finished?: Promise<void>; updateCallbackDone?: Promise<void> } | undefined;
+    // Una transición omitida (otra empieza, la pestaña se oculta) rechaza estas promesas: no es un error
+    transition?.updateCallbackDone?.catch(() => undefined);
+    transition?.finished?.catch(() => undefined);
   }
 
   selectTab(id: Tab) {

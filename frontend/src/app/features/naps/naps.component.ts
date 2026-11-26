@@ -86,6 +86,11 @@ export class NapsComponent implements OnInit {
 
   saveEdit(id: number, fe: FieldErrorDirective) {
     if (!fe.validate()) return;
+    // Mismo criterio que al crear: el fin va después del inicio, y el error queda en el campo "Fin"
+    if (new Date(this.edit.end).getTime() <= new Date(this.edit.start).getTime()) {
+      fe.report('editEnd', 'El fin debe ser posterior al inicio.');
+      return;
+    }
     const start = inputLocalToIso(this.edit.start);
     this.run(
       this.api.updateNap(id, { date: nightDate(start), start_time: start, end_time: inputLocalToIso(this.edit.end), notes: this.edit.notes || null }),

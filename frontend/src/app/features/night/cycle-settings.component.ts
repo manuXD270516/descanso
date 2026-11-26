@@ -17,10 +17,10 @@ import { CYCLE_MIN, LATENCY_MIN } from '../../core/cycles';
     <div class="cycle-settings" appFieldError #fe="appFieldError">
       <div class="row wrap">
         <label class="field"><span>Duración del ciclo (min)</span>
-          <input type="number" name="cycleMin" [(ngModel)]="cycle" min="70" max="110" step="5" required>
+          <input type="number" name="cycleMin" data-unit="minutos" [(ngModel)]="cycle" min="70" max="110" step="5" required>
         </label>
         <label class="field"><span>Tiempo en dormirte (min)</span>
-          <input type="number" name="latencyMin" [(ngModel)]="latency" min="0" max="60" step="5" required>
+          <input type="number" name="latencyMin" data-unit="minutos" [(ngModel)]="latency" min="0" max="60" step="5" required>
         </label>
         <button type="button" class="btn btn-sm" data-submit (click)="fe.validate() && save()" [disabled]="busy()">Guardar ajustes</button>
       </div>

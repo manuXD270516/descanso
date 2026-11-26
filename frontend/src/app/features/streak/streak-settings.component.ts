@@ -24,7 +24,7 @@ import { StreakService } from '../../core/streak.service';
       @if (enabled()) {
         <div class="row wrap" appFieldError #fe="appFieldError">
           <label class="field"><span>Margen (minutos)</span>
-            <input type="number" name="streakMargin" [(ngModel)]="margin" min="15" max="60" step="5" required>
+            <input type="number" name="streakMargin" data-unit="minutos" [(ngModel)]="margin" min="15" max="60" step="5" required>
           </label>
           <button type="button" class="btn btn-sm" data-submit [disabled]="busy()" (click)="fe.validate() && save({ margin_min: margin })">Guardar margen</button>
         </div>

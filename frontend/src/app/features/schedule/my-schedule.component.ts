@@ -29,7 +29,7 @@ import { PushSettingsComponent } from '../push/push-settings.component';
       }
       @if (loaded()) {
         <div appFieldError #sched="appFieldError">
-          <app-schedule-editor [goalMin]="goalMin()" [initial]="version()?.days ?? null" [requireWake]="true" (changed)="draft.set($event)" />
+          <app-schedule-editor [goalMin]="goalMin()" [initial]="version()?.days ?? null" [requireTimes]="true" (changed)="draft.set($event)" />
           <div class="row wrap">
             <button type="button" class="btn" data-submit [disabled]="busy()" (click)="sched.validate() && save()">Guardar horario</button>
           </div>
@@ -42,7 +42,7 @@ import { PushSettingsComponent } from '../push/push-settings.component';
       <p class="small muted">El calendario del móvil te avisará antes de tu hora de acostarte, aunque Descanso esté cerrada. El archivo no contiene datos de tu sueño.</p>
       <div class="row wrap" appFieldError #leadFe="appFieldError">
         <label class="field"><span>Avisarme antes (minutos)</span>
-          <input type="number" name="lead" [(ngModel)]="lead" min="15" max="60" step="5" required>
+          <input type="number" name="lead" data-unit="minutos" [(ngModel)]="lead" min="15" max="60" step="5" required>
         </label>
         <button type="button" class="btn btn-sm" data-submit (click)="leadFe.validate() && saveLead()">Guardar aviso</button>
         @if (version()) {
@@ -60,8 +60,8 @@ import { PushSettingsComponent } from '../push/push-settings.component';
       <h3>Modo pausa (viaje, malestar, turnos)</h3>
       <p class="small muted">Durante la pausa, Descanso no te avisa: ni dentro de la app ni en el móvil. Hasta 14 días, 2 pausas cada 30 días.</p>
       <div class="row wrap" appFieldError #pauseFe="appFieldError">
-        <label class="field"><span>Desde</span><input type="date" name="pauseFrom" [(ngModel)]="pauseFrom" [min]="today" required></label>
-        <label class="field"><span>Hasta</span><input type="date" name="pauseTo" [(ngModel)]="pauseTo" [min]="pauseFrom" required></label>
+        <label class="field"><span>Desde</span><input type="date" name="pauseFrom" [(ngModel)]="pauseFrom" [min]="today" data-error-underflow="«Desde» no puede ser anterior a hoy." required></label>
+        <label class="field"><span>Hasta</span><input type="date" name="pauseTo" [(ngModel)]="pauseTo" [min]="pauseFrom" data-error-underflow="«Hasta» no puede ser anterior a «Desde»." required></label>
         <button type="button" class="btn btn-sm" data-submit (click)="pauseFe.validate() && createPause()" [disabled]="busy()">Activar pausa</button>
       </div>
       @if (pauseError()) { <p class="error" role="alert">{{ pauseError() }}</p> }
@@ -132,7 +132,12 @@ export class MyScheduleComponent implements OnInit {
 
   save() {
     const days = this.draft();
-    if (!days) return;
+    if (!days) {
+      // Los campos obligatorios ya lo avisan al pulsar; esto cubre cualquier otro camino: nunca se sale sin aviso
+      this.error.set('Completa todas las horas de tu horario antes de guardar.');
+      return;
+    }
+    this.error.set(null);
     this.busy.set(true);
     this.saved.set(false);
     this.service.save(this.today, days).subscribe({

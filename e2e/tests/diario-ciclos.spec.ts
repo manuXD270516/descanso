@@ -27,7 +27,7 @@ test('ajustes de ciclo: 100/20 se guardan y se conservan; 120 → error con el r
   await calc.getByRole('button', { name: 'Guardar ajustes' }).click();
   // FR-021 (014): el rango se valida en el campo antes de enviar (el servidor lo sigue exigiendo)
   await expect(calc.getByLabel(/^Duración del ciclo/)).toHaveAttribute('aria-invalid', 'true');
-  await expect(calc.getByLabel(/^Duración del ciclo/)).toHaveAccessibleDescription('El valor está fuera del rango permitido.');
+  await expect(calc.getByLabel(/^Duración del ciclo/)).toHaveAccessibleDescription('Debe estar entre 70 y 110 minutos.');
   expect(((await (await api.request.get('/api/me')).json()) as { cycle_min: number }).cycle_min).toBe(90);
 
   await calc.getByLabel(/^Duración del ciclo/).fill('100');

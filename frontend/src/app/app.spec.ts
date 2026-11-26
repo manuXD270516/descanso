@@ -17,6 +17,11 @@ describe('App', () => {
     http = TestBed.inject(HttpTestingController);
   });
 
+  afterEach(() => {
+    // Restaura el método del navegador (el beforeEach lo anula con una propiedad propia)
+    delete (document as unknown as { startViewTransition?: unknown }).startViewTransition;
+  });
+
   /** Crea la app y responde al estado de acceso y a la salud. */
   function render(status: object, health: object | null = { ok: true, time: '', version: 'dev' }) {
     const fixture = TestBed.createComponent(App);
@@ -183,6 +188,21 @@ describe('App', () => {
       doc.startViewTransition = undefined;
       c.selectTab('metrics');
       expect(c.tab()).toBe('metrics');
+    });
+
+    it('la transición no espera a las peticiones HTTP pendientes y no deja rechazos sin atender', async () => {
+      let callback!: Promise<void>;
+      doc.startViewTransition = (cb: () => Promise<void>) => {
+        callback = cb();
+        // una transición omitida rechaza estas promesas: selectTab() las atiende
+        return { updateCallbackDone: Promise.reject(new Error('omitida')), finished: Promise.reject(new Error('omitida')) };
+      };
+      spyOn(window, 'matchMedia').and.returnValue({ matches: false } as MediaQueryList);
+      const c = app();
+      c.selectTab('trends'); // Tendencias pide sus datos: queda una petición HTTP sin responder
+      await callback; // con whenStable() esto no terminaría hasta responderla
+      expect(c.tab()).toBe('trends');
+      expect(http.match(() => true).length).toBeGreaterThan(0);
     });
 
     it('dos cambios seguidos terminan en el último y el foco no se mueve', () => {

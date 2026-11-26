@@ -55,6 +55,10 @@ test.describe('Versión desplegada (servidor propio con APP_VERSION)', () => {
     await page.goto('/');
     await expect(page.getByRole('contentinfo')).toHaveText('Versión 0123456');
   });
+});
+
+test.describe('Transición entre pestañas (servidor compartido, solo lectura)', () => {
+  test.use({ isolate: false });
 
   test('FR-024 · con movimiento permitido el cambio de pestaña funciona con transición y el foco sigue en la pestaña', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'no-preference' });

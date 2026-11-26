@@ -194,6 +194,22 @@ export class FieldErrorDirective {
     else control.removeAttribute('aria-describedby');
   }
 
+  /** "Debe estar entre 70 y 110 minutos." con `min`, `max` y, si lo hay, la unidad de `data-unit`. */
+  private rangeText(control: Control): string {
+    const min = control.getAttribute('min');
+    const max = control.getAttribute('max');
+    const unit = control.dataset['unit'] ? ` ${control.dataset['unit']}` : '';
+    if (min !== null && max !== null) return `Debe estar entre ${min} y ${max}${unit}.`;
+    if (min !== null) return `Debe ser ${min}${unit} o más.`;
+    return `Debe ser ${max}${unit} o menos.`;
+  }
+
+  /** ¿Se está mostrando un error en el campo con ese `name`? */
+  hasError(name: string): boolean {
+    const control = this.controls().find((c) => c.name === name);
+    return !!control && this.messages.has(control);
+  }
+
   private text(control: Control): string {
     const forced = this.forced.get(control);
     if (forced) return forced;
@@ -201,7 +217,9 @@ export class FieldErrorDirective {
     if (v.valueMissing) return control.type === 'checkbox' ? 'Marca esta casilla para continuar.' : 'Este campo es obligatorio.';
     if (v.typeMismatch) return control.type === 'email' ? 'Escribe un email válido.' : 'El valor no es válido.';
     if (v.tooShort) return `Usa al menos ${control.getAttribute('minlength')} caracteres.`;
-    if (v.rangeUnderflow || v.rangeOverflow) return 'El valor está fuera del rango permitido.';
+    if (v.rangeUnderflow && control.dataset['errorUnderflow']) return control.dataset['errorUnderflow'];
+    if (v.rangeOverflow && control.dataset['errorOverflow']) return control.dataset['errorOverflow'];
+    if (v.rangeUnderflow || v.rangeOverflow) return this.rangeText(control);
     if (v.patternMismatch) return 'El formato no es válido.';
     return control.validationMessage || 'El valor no es válido.';
   }

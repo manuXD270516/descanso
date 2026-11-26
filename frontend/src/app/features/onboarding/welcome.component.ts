@@ -30,8 +30,8 @@ import { StreakOfferComponent } from '../streak/streak-offer.component';
         }
       </div>
       <div class="row wrap">
-        <label class="field"><span>Horas</span><input type="number" name="h" [ngModel]="hours()" (ngModelChange)="setParts($event, minutes())" min="4" max="12" required></label>
-        <label class="field"><span>Minutos</span><input type="number" name="m" [ngModel]="minutes()" (ngModelChange)="setParts(hours(), $event)" min="0" max="59" step="5" required></label>
+        <label class="field"><span>Horas</span><input type="number" name="h" data-unit="horas" [ngModel]="hours()" (ngModelChange)="setParts($event, minutes())" min="4" max="12" required></label>
+        <label class="field"><span>Minutos</span><input type="number" name="m" data-unit="minutos" [ngModel]="minutes()" (ngModelChange)="setParts(hours(), $event)" min="0" max="59" step="5" required></label>
       </div>
       <p class="small faint">Un ciclo de sueño dura unos {{ cycle }} minutos (varía entre personas): despertar al final de uno suele sentar mejor.</p>
 

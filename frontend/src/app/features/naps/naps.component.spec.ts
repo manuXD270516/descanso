@@ -104,4 +104,21 @@ describe('NapsComponent', () => {
     req.flush(null);
     flushList();
   });
+
+  it('editar con fin igual o anterior al inicio no guarda y avisa en el campo "Fin" (FR-021)', async () => {
+    flushList([{ id: 5, date: '2026-09-08', start_time: '2026-09-08T13:00:00-04:00', end_time: '2026-09-08T13:20:00-04:00', notes: null, duration_min: 20 }]);
+    button('Editar').click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.componentInstance.edit.end = fixture.componentInstance.edit.start;
+    fixture.detectChanges();
+    await fixture.whenStable();
+    button('Guardar cambios').click();
+    fixture.detectChanges();
+    const end = el.querySelector('input[name="editEnd"]') as HTMLInputElement;
+    expect(end.getAttribute('aria-invalid')).toBe('true');
+    expect(document.activeElement).toBe(end);
+    expect(el.querySelectorAll('.field-error').length).toBe(1);
+    http.expectNone((r) => r.method === 'PUT');
+  });
 });

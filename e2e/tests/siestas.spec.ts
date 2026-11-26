@@ -34,7 +34,7 @@ test.describe('Siestas (US3)', () => {
 
     for (const value of ['2026-09-08T14:30', '2026-09-08T14:00']) {
       await end.fill(value);
-      await expect(form.getByText('El fin debe ser posterior al inicio').first()).toBeVisible();
+      await expect(form.getByText('El fin debe ser posterior al inicio')).toBeVisible();
       await expect(save).toBeEnabled();
       await save.click();
       await expect(end).toBeFocused();
