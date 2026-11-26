@@ -16,7 +16,7 @@
     <p class="empty">No hay métricas activas. Crea la primera desde el panel de configuración.</p>
   }
   @for (m of active(); track m.id) {
-    <article class="panel metric" [style.--accent]="m.color">
+    <article class="panel metric" [style.--metric-color]="cat(m.color)">
       <div class="metric-head">
         <h3>{{ m.name }}</h3>
         @if (m.unit) { <span class="muted small">{{ m.unit }}</span> }
@@ -54,7 +54,7 @@
 @if (active().length > 0) {
   <section class="panel history">
     <h2>Últimos 7 días</h2>
-    <div class="table-wrap">
+    <div class="table-wrap" tabindex="0" role="region" aria-label="Historial de métricas">
       <table>
         <thead>
           <tr>
@@ -65,7 +65,7 @@
         <tbody>
           @for (m of active(); track m.id) {
             <tr>
-              <th class="row-name"><i class="dot" [style.background]="m.color"></i>{{ m.name }}</th>
+              <th class="row-name"><i class="dot" [style.background]="cat(m.color)"></i>{{ m.name }}</th>
               @for (d of historyDates(); track d) {
                 <td class="tabular" [class.faint]="value(m.id, d) === undefined" [class.today]="d === date()">{{ display(m, d) }}</td>
               }
@@ -112,7 +112,7 @@
       <div class="field"><span>Color</span>
         <div class="swatches">
           @for (c of palette; track c) {
-            <button type="button" class="swatch" [style.background]="c" [class.on]="form().color === c" (click)="patch('color', c)" [attr.aria-label]="'Color ' + c"></button>
+            <button type="button" class="swatch" [style.background]="cat(c)" [class.on]="form().color === c" (click)="patch('color', c)" [attr.aria-label]="'Color ' + c"></button>
           }
         </div>
       </div>
@@ -128,7 +128,7 @@
   <ul class="config-list">
     @for (m of active(); track m.id; let i = $index; let last = $last) {
       <li>
-        <i class="dot" [style.background]="m.color"></i>
+        <i class="dot" [style.background]="cat(m.color)"></i>
         <span class="cfg-name">{{ m.name }} <span class="muted small">{{ m.type === 'scale' ? m.min_value + '–' + m.max_value : m.type === 'number' ? (m.unit || 'número') : m.type === 'boolean' ? 'sí/no' : 'texto' }}</span></span>
         <span class="cfg-actions">
           <button class="btn btn-ghost btn-sm" type="button" (click)="move(m, -1)" [disabled]="i === 0" aria-label="Subir">↑</button>
@@ -148,7 +148,7 @@
       <ul class="config-list archived">
         @for (m of archived(); track m.id) {
           <li>
-            <i class="dot" [style.background]="m.color"></i>
+            <i class="dot" [style.background]="cat(m.color)"></i>
             <span class="cfg-name muted">{{ m.name }}</span>
             <span class="cfg-actions">
               <button class="btn btn-ghost btn-sm" type="button" (click)="archive(m, false)">Restaurar</button>

@@ -21,11 +21,11 @@ import { StreakService } from '../../core/streak.service';
       </div>
     </section>
   `,
-  styles: `
+  styles: `@layer components {
     .streak-offer { display: grid; gap: 0.5rem; }
     h3 { margin: 0; font-size: 1.05rem; }
     .wrap { flex-wrap: wrap; }
-  `,
+  }`,
 })
 export class StreakOfferComponent {
   private streak = inject(StreakService);

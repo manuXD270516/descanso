@@ -75,13 +75,13 @@ import { PushSettingsComponent } from '../push/push-settings.component';
       <app-streak-settings />
     </section>
   `,
-  styles: `
+  styles: `@layer components {
     .account-card { display: grid; gap: 0.8rem; }
     .paused { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
     .wrap { flex-wrap: wrap; align-items: end; }
     .field input[type=number] { width: 6rem; }
     h3 { font-size: 1.05rem; margin-top: 0.6rem; }
-  `,
+  }`,
 })
 export class MyScheduleComponent implements OnInit {
   private service = inject(ScheduleService);

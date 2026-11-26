@@ -11,6 +11,7 @@ export interface TableColumn {
   template: `
     <details class="chart-table">
       <summary>Ver como tabla</summary>
+      <div class="scroll" tabindex="0" role="region" [attr.aria-label]="caption()">
       <table>
         <caption>{{ caption() }}</caption>
         <thead>
@@ -21,21 +22,23 @@ export interface TableColumn {
         <tbody>
           @for (row of rows(); track $index) {
             <tr>
-              @for (c of columns(); track c.key) { <td>{{ row[c.key] }}</td> }
+              @for (c of columns(); track c.key) { <td>@if (row[c.key] === '—') { <span role="img" aria-label="Sin dato" class="no-data">—</span> } @else { {{ row[c.key] }} }</td> }
             </tr>
           }
         </tbody>
       </table>
+      </div>
     </details>
   `,
-  styles: `
-    .chart-table { font-size: 0.875rem; }
-    .chart-table summary { cursor: pointer; color: var(--ink-dim); }
+  styles: `@layer components {
+    .chart-table { font-size: var(--fs-sm); }
+    .scroll { overflow-x: auto; }
+    .chart-table summary { cursor: pointer; color: var(--ink-muted); }
     table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; }
-    caption { text-align: left; color: var(--ink-dim); padding-bottom: 0.3rem; }
+    caption { text-align: left; color: var(--ink-muted); padding-bottom: 0.3rem; }
     th, td { text-align: left; padding: 0.25rem 0.4rem; border-bottom: 1px solid var(--line); }
-    th { color: var(--ink-dim); font-weight: 600; }
-  `,
+    th { color: var(--ink-muted); font-weight: 600; }
+  }`,
 })
 export class ChartTableComponent {
   readonly caption = input.required<string>();

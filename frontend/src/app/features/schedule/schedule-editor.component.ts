@@ -69,7 +69,7 @@ interface Pair { wake: string; bed: string }
       </fieldset>
     </div>
   `,
-  styles: `
+  styles: `@layer components {
     .schedule-editor { display: grid; gap: 0.8rem; }
     .pair { display: flex; flex-wrap: wrap; gap: 0.8rem; border: 0; padding: 0; margin: 0; }
     .pair legend, .actives legend { margin-bottom: 0.3rem; }
@@ -78,7 +78,7 @@ interface Pair { wake: string; bed: string }
     .each { border-collapse: collapse; }
     .each th, .each td { padding: 0.2rem 0.4rem; text-align: left; }
     .each caption { text-align: left; }
-  `,
+  }`,
 })
 export class ScheduleEditorComponent {
   /** Objetivo de sueño para proponer la hora de acostarse. */

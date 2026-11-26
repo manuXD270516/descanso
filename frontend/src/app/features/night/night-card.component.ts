@@ -47,11 +47,11 @@ export const AWAKENINGS_OPTIONS: { value: AwakeningsBucket; label: string }[] = 
       @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
     </section>
   `,
-  styles: `
+  styles: `@layer components {
     .night-card { display: grid; gap: 0.6rem; }
     .question { display: grid; gap: 0.3rem; }
     .wrap { flex-wrap: wrap; }
-  `,
+  }`,
 })
 export class NightCardComponent {
   private api = inject(ApiService);

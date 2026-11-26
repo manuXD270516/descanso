@@ -56,20 +56,20 @@ const STAR: Record<StreakDay['state'], string> = { met: '★', missed: '☆', pa
       }
     }
   `,
-  styles: `
+  styles: `@layer components {
     .streak-panel { display: grid; gap: 0.6rem; }
     .day { font-size: 1.15rem; font-weight: 700; margin: 0; }
     .week { list-style: none; display: flex; gap: 0.4rem; padding: 0; margin: 0; flex-wrap: wrap; }
     .star { display: grid; justify-items: center; gap: 0.15rem; min-width: 2.6rem; padding: 0.3rem; border-radius: 10px; border: 1px solid var(--line); }
     .glyph { font-size: 1.3rem; line-height: 1; }
-    .wd { font-size: 0.72rem; color: var(--ink-dim); }
-    .star.met .glyph { color: var(--dawn); }
-    .star.missed .glyph, .star.pending .glyph, .star.paused .glyph { color: var(--ink-dim); }
+    .wd { font-size: 0.72rem; color: var(--ink-muted); }
+    .star.met .glyph { color: var(--accent-2); }
+    .star.missed .glyph, .star.pending .glyph, .star.paused .glyph { color: var(--ink-muted); }
     .star.paused { border-style: dashed; }
     .star.off { opacity: 0.4; }
     .collection { padding-left: 1.1rem; margin: 0; display: grid; gap: 0.3rem; }
     h3 { font-size: 1rem; margin: 0.4rem 0 0; }
-  `,
+  }`,
 })
 export class StreakPanelComponent implements OnInit {
   private service = inject(StreakService);

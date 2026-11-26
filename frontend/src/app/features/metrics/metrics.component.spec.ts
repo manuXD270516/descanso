@@ -3,6 +3,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { MetricsComponent } from './metrics.component';
 import { Metric, MetricEntry } from '../../core/api.service';
+import { catIndex } from './metrics.component';
 import { addDays, localDate } from '../../core/time';
 
 function metric(p: Partial<Metric>): Metric {
@@ -151,5 +152,25 @@ describe('MetricsComponent', () => {
     fixture.componentInstance.patch('name', 'Ánimo');
     fixture.detectChanges();
     expect(button('Crear métrica').disabled).toBeFalse();
+  });
+});
+
+describe('catIndex (colores guardados → --cat-n)', () => {
+  const palette = ['#a9b5f5', '#f3b76b', '#7fd3a8', '#ea7a70', '#d69ae8', '#6fc8de', '#c9c07a', '#a08f7a'];
+  it('los colores de la paleta usan su categoría', () => {
+    palette.forEach((c, i) => expect(catIndex(c, palette)).toBe(i + 1));
+    expect(catIndex('#A9B5F5', palette)).toBe(1);
+  });
+  it('las tres métricas iniciales heredadas quedan en categorías distintas', () => {
+    expect(catIndex('#5b6ee1', palette)).toBe(1);
+    expect(catIndex('#e8a33d', palette)).toBe(2);
+    expect(catIndex('#8a5a3c', palette)).toBe(8);
+  });
+  it('cualquier otro hex va a la categoría de matiz más cercano, no siempre a la 1', () => {
+    expect(catIndex('#ff0000', palette)).toBe(4);
+    expect(catIndex('#00ff00', palette)).toBe(3);
+    expect(catIndex('#00bcd4', palette)).toBe(6);
+    expect(catIndex('#808080', palette)).toBe(8);
+    expect(catIndex('no es un color', palette)).toBe(8);
   });
 });

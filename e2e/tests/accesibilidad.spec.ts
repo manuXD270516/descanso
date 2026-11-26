@@ -1,25 +1,9 @@
 import type { Page } from '@playwright/test';
 import { expect, openTab, setNow, test } from '../support/fixtures';
+import { expandTab, TABS, waitForTab } from '../support/tabs';
 
 // Accesibilidad básica · FR-027 (001) y principio VII de la constitución:
 // español, responsive, foco visible y movimiento reducido.
-
-const TABS = ['Noche', 'Tendencias', 'Siestas', 'Métricas'] as const;
-
-/** Abre las secciones plegables de cada pestaña para revisar también sus controles. */
-async function expandTab(page: Page, tab: (typeof TABS)[number]) {
-  if (tab === 'Noche') await page.getByRole('button', { name: 'Registrar una noche pasada' }).click();
-  if (tab === 'Tendencias') await page.getByRole('button', { name: 'Editar objetivo' }).click();
-  if (tab === 'Métricas') await page.getByRole('button', { name: 'Nueva métrica' }).click();
-}
-
-/** Espera a que el contenido de la pestaña (con sus secciones plegables abiertas) esté pintado. */
-async function waitForTab(page: Page, tab: (typeof TABS)[number]) {
-  if (tab === 'Noche') await expect(page.getByRole('button', { name: 'Ocultar registro manual' })).toBeVisible();
-  if (tab === 'Tendencias') await expect(page.getByRole('button', { name: 'Guardar objetivo' })).toBeVisible();
-  if (tab === 'Siestas') await expect(page.getByRole('heading', { name: 'Últimos 30 días' })).toBeVisible();
-  if (tab === 'Métricas') await expect(page.getByRole('heading', { name: 'Nueva métrica' })).toBeVisible();
-}
 
 /** Estilo del contorno del elemento con el foco. */
 const focusOutline = (page: Page) =>
@@ -109,6 +93,99 @@ test.describe('Móvil 375 px (servidor propio con datos)', () => {
       await expandTab(page, tab);
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
       expect(overflow, `scroll horizontal en ${tab}`).toBeLessThanOrEqual(0);
+    }
+  });
+});
+
+// Feature 014 · accesibilidad base (US2): texto al 200 %, objetivos de 44 px, foco único,
+// movimiento reducido y aviso médico.
+test.describe('Accesibilidad base 014 (servidor compartido, solo lectura)', () => {
+  test.use({ isolate: false });
+
+  test('SC-006 · con el texto al 200 % y 320 px no hay scroll horizontal ni texto cortado', async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 640 });
+    await page.goto('/');
+    await page.addStyleTag({ content: 'html { font-size: 200% }' });
+    const check = async (where: string) => {
+      const problems = await page.evaluate(() => {
+        const out: string[] = [];
+        const doc = document.documentElement;
+        if (doc.scrollWidth - doc.clientWidth > 0) out.push(`documento: ${doc.scrollWidth - doc.clientWidth}px de scroll horizontal`);
+        for (const el of Array.from(document.querySelectorAll<HTMLElement>('.btn, .tab, h2'))) {
+          if (!el.checkVisibility()) continue; // oculto (p. ej. el menú Cuenta cerrado)
+          if (el.scrollWidth > el.clientWidth + 1) out.push(`${el.tagName.toLowerCase()}.${el.className} "${(el.textContent ?? '').trim().slice(0, 30)}" recortado`);
+        }
+        return out;
+      });
+      expect(problems, where).toEqual([]);
+    };
+    for (const tab of TABS) {
+      await openTab(page, tab);
+      await expandTab(page, tab);
+      await waitForTab(page, tab);
+      await check(tab);
+    }
+    await page.getByText('Cuenta', { exact: true }).click();
+    await page.getByRole('button', { name: 'Mi perfil' }).click();
+    await expect(page.getByRole('heading', { name: 'Mi perfil' })).toBeVisible();
+    await check('Mi perfil');
+  });
+
+  test('SC-010 · a 375 px pestañas, botones y el menú Cuenta miden al menos 44 px', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto('/');
+    for (const tab of TABS) {
+      await openTab(page, tab);
+      await expandTab(page, tab);
+      await waitForTab(page, tab);
+      const small = await page.evaluate(() => {
+        const out: string[] = [];
+        for (const el of Array.from(document.querySelectorAll<HTMLElement>('button, summary, .btn, .tab'))) {
+          const r = el.getBoundingClientRect();
+          if (r.width === 0 || r.height === 0) continue;
+          if (r.height < 43.5 || r.width < 43.5) out.push(`${el.tagName.toLowerCase()} "${(el.textContent ?? '').trim().slice(0, 24)}" ${Math.round(r.width)}x${Math.round(r.height)}`);
+        }
+        return out;
+      });
+      expect(small, `objetivos pequeños en ${tab}`).toEqual([]);
+    }
+  });
+
+  test('FR-007 · el menú Cuenta muestra el mismo anillo de foco que las pestañas', async ({ page }) => {
+    await page.goto('/');
+    const ring = () => page.evaluate(() => {
+      const s = getComputedStyle(document.activeElement as Element);
+      return `${s.outlineStyle} ${s.outlineWidth} ${s.outlineColor}`;
+    });
+    await page.getByRole('navigation', { name: 'Secciones' }).getByRole('button', { name: 'Noche' }).focus();
+    await page.keyboard.press('Tab'); // se mueve por el teclado: :focus-visible aplica
+    const tabRing = await ring();
+    await page.getByText('Cuenta', { exact: true }).focus();
+    await page.keyboard.press('Shift+Tab');
+    await page.keyboard.press('Tab');
+    await expect(page.getByText('Cuenta', { exact: true })).toBeFocused();
+    expect(await ring()).toBe(tabRing);
+  });
+
+  test('SC-009 · con movimiento reducido botones y pestañas no tienen transición ni animación', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/');
+    const durations = await page.evaluate(() =>
+      Array.from(document.querySelectorAll<HTMLElement>('.btn, .tab')).map((el) => {
+        const s = getComputedStyle(el);
+        return `${s.transitionDuration}|${s.animationDuration}`;
+      }));
+    expect(durations.length).toBeGreaterThan(0);
+    for (const d of durations) expect(d).toMatch(/^0s(, 0s)*\|0s(, 0s)*$/);
+  });
+
+  test('FR-012 · el aviso médico está visible y no se puede cerrar en Noche, Tendencias y Siestas', async ({ page }) => {
+    await page.goto('/');
+    for (const tab of ['Noche', 'Tendencias', 'Siestas'] as const) {
+      await openTab(page, tab);
+      const notice = page.getByRole('note').filter({ hasText: 'No es un dispositivo médico' });
+      await expect(notice, `aviso en ${tab}`).toBeVisible();
+      await expect(notice.getByRole('button')).toHaveCount(0);
     }
   });
 });

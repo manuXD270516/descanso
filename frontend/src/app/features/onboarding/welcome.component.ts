@@ -48,12 +48,12 @@ import { StreakOfferComponent } from '../streak/streak-offer.component';
       </div>
     </section>
   `,
-  styles: `
+  styles: `@layer components {
     .welcome { max-width: 560px; margin: 1rem auto 0; display: grid; gap: 0.8rem; }
     .wrap { flex-wrap: wrap; }
     .field input { width: 5.5rem; }
     h3 { font-size: 1.05rem; margin-top: 0.4rem; }
-  `,
+  }`,
 })
 export class WelcomeComponent {
   private http = inject(HttpClient);

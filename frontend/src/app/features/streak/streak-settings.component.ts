@@ -33,7 +33,7 @@ import { StreakService } from '../../core/streak.service';
     @if (saved()) { <p class="small" role="status">{{ saved() }}</p> }
     @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
   `,
-  styles: `.check { gap: 0.5rem; align-items: center; } .wrap { flex-wrap: wrap; } .field input { width: 6rem; }`,
+  styles: `@layer components {.check { gap: 0.5rem; align-items: center; } .wrap { flex-wrap: wrap; } .field input { width: 6rem; }}`,
 })
 export class StreakSettingsComponent implements OnInit {
   private service = inject(StreakService);

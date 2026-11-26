@@ -65,7 +65,6 @@ test.describe('Persistencia (US6)', () => {
 
     // Otro navegador: contexto nuevo, sin estado compartido con el primero
     const other = await browser.newContext({ baseURL: server.url, timezoneId: TIMEZONE, locale: 'es-ES' });
-    await other.route(/^https:\/\/fonts\.(googleapis|gstatic)\.com\//, (route) => route.abort());
     // Feature 004: en el otro dispositivo también has entrado con tu cuenta
     await other.addCookies((await api.request.storageState()).cookies);
     try {

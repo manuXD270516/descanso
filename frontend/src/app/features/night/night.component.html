@@ -65,9 +65,9 @@
 <!-- Resumen -->
 @if (stats(); as s) {
   <section class="summary">
-    <div><span class="num tabular">{{ fmtDuration(s.summary.avg_sleep_min) }}</span><span class="lbl">promedio por noche</span></div>
-    <div><span class="num tabular">{{ fmtMinutesOfDay(s.summary.avg_bedtime_min) }}</span><span class="lbl">hora media de dormir</span></div>
-    <div><span class="num tabular">{{ fmtMinutesOfDay(s.summary.avg_wake_min) }}</span><span class="lbl">hora media de despertar</span></div>
+    <div><span class="num tabular">@if (s.summary.avg_sleep_min === null) {<span role="img" aria-label="Sin dato" class="no-data">—</span>} @else {{{ fmtDuration(s.summary.avg_sleep_min) }}}</span><span class="lbl">promedio por noche</span></div>
+    <div><span class="num tabular">@if (s.summary.avg_bedtime_min === null) {<span role="img" aria-label="Sin dato" class="no-data">—</span>} @else {{{ fmtMinutesOfDay(s.summary.avg_bedtime_min) }}}</span><span class="lbl">hora media de dormir</span></div>
+    <div><span class="num tabular">@if (s.summary.avg_wake_min === null) {<span role="img" aria-label="Sin dato" class="no-data">—</span>} @else {{{ fmtMinutesOfDay(s.summary.avg_wake_min) }}}</span><span class="lbl">hora media de despertar</span></div>
     <div><span class="num tabular">{{ s.summary.total_naps }}</span><span class="lbl">siestas en 14 días</span></div>
   </section>
 }

@@ -133,7 +133,7 @@ import { fmtDateShort } from '../../core/time';
       }
     </section>
   `,
-  styles: `
+  styles: `@layer components {
     .push { display: grid; gap: 0.6rem; }
     h3 { margin-top: 0.6rem; font-size: 1.05rem; }
     h4 { margin: 0.4rem 0 0; font-size: 0.95rem; font-weight: 600; }
@@ -141,14 +141,14 @@ import { fmtDateShort } from '../../core/time';
     .list-plain { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
     .times { display: flex; gap: 0.4rem 1.2rem; flex-wrap: wrap; font-weight: 600; }
     .device { justify-content: space-between; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
-    .badge { margin-left: 0.4rem; padding: 0.05rem 0.5rem; border: 1px solid var(--moon); border-radius: 999px; font-size: 0.8rem; font-weight: 600; color: var(--moon); }
+    .badge { margin-left: 0.4rem; padding: 0.05rem 0.5rem; border: 1px solid var(--accent); border-radius: 999px; font-size: 0.8rem; font-weight: 600; color: var(--accent); }
     fieldset { border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 0.5rem 0.8rem; display: grid; gap: 0.4rem; margin: 0; }
-    legend { padding: 0 0.3rem; color: var(--ink-dim); }
+    legend { padding: 0 0.3rem; color: var(--ink-muted); }
     .check { gap: 0.5rem; align-items: center; }
     .wrap { flex-wrap: wrap; align-items: end; }
     .mute { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
-    input[type=time] { width: 8rem; background: var(--night); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 0.45rem 0.6rem; color: var(--ink); }
-  `,
+    input[type=time] { width: 8rem; background: var(--surface-sunken); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); padding: 0.45rem 0.6rem; color: var(--ink); }
+  }`,
 })
 export class PushSettingsComponent implements OnInit {
   private push = inject(PushService);

@@ -32,9 +32,9 @@ const CHECK_MS = 30_000;
       </div>
     }
   `,
-  styles: `
+  styles: `@layer components {
     .bedtime-notice {
-      max-width: 720px;
+      max-width: 45rem;
       margin: 0.5rem auto 0;
       padding: 0.6rem 1rem;
       display: flex;
@@ -42,13 +42,14 @@ const CHECK_MS = 30_000;
       align-items: center;
       justify-content: space-between;
       border: 1px solid var(--line);
-      border-radius: 12px;
-      background: var(--night-2);
-      animation: notice-in 0.3s ease-out;
+      border-radius: var(--radius);
+      background: var(--surface-raised);
     }
-    @keyframes notice-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
-    @media (prefers-reduced-motion: reduce) { .bedtime-notice { animation: none; } }
-  `,
+    @media (prefers-reduced-motion: no-preference) {
+      .bedtime-notice { animation: notice-in var(--dur-base) var(--ease-out); }
+      @keyframes notice-in { from { opacity: 0; transform: translateY(-0.25rem); } to { opacity: 1; transform: none; } }
+    }
+  }`,
 })
 export class BedtimeNoticeComponent implements OnInit {
   private schedule = inject(ScheduleService);

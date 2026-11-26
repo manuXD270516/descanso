@@ -62,14 +62,14 @@ export function detectPlatform(userAgent: string): Platform {
       </div>
     </div>
   `,
-  styles: `
+  styles: `@layer components {
     .guide { display: grid; gap: 0.6rem; }
     .platform summary { cursor: pointer; font-weight: 600; }
     .platform h4 { margin: 0.6rem 0 0.3rem; font-size: 0.95rem; }
     .platform ol, .platform ul { margin: 0.2rem 0 0 1.2rem; padding: 0; display: grid; gap: 0.25rem; }
     .notice { border-left: 3px solid var(--line); padding-left: 0.6rem; display: grid; gap: 0.3rem; }
     .times { margin: 0 0 0 1.2rem; padding: 0; }
-  `,
+  }`,
 })
 export class CalendarGuideComponent {
   readonly days = input<ScheduleDay[]>([]);
