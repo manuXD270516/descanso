@@ -141,31 +141,45 @@ describe('Feature 010 · horario', () => {
   });
 
   describe('aviso con la app abierta (US5)', () => {
-    it('a la hora de prepararse (±1 min) aparece silencioso con role="status"; fuera de hora o en pausa no', () => {
+    // Reloj fijado con jasmine.clock: ngOnInit usa new Date(), así que nada depende de la hora real.
+    beforeEach(() => jasmine.clock().install());
+    afterEach(() => jasmine.clock().uninstall());
+    function prepare(now: Date, bedMin: number) {
+      jasmine.clock().mockDate(now);
       const f = TestBed.createComponent(BedtimeNoticeComponent);
-      const c = f.componentInstance;
-      const now = new Date(); // el componente usa la hora real; el margen es de ±1 min
-      const night = localDay(now);
-      // Horario de hoy: acostarse dentro de 30 min exactos → ahora es la hora de prepararse
-      const bedMin = (now.getHours() * 60 + now.getMinutes() + 30) % 1440;
       const days = [0, 1, 2, 3, 4, 5, 6].map((weekday) => ({ weekday, bed_min: bedMin, wake_min: 420, active: true }));
       f.detectChanges(); // ngOnInit: carga el horario de hoy y comprueba la hora
-      http.expectOne((r) => r.url === '/api/schedule').flush({ version: { id: 1, effective_from: night, days }, lead_min: 30, pause: null });
-      // si la hora de acostarse cae antes de mediodía se interpreta como de madrugada (día siguiente):
-      // en ese caso no aplica hoy, y la prueba solo comprueba que no aparece
-      const reqs = http.match('/api/sleep/open');
-      if (bedMin >= 720) {
-        expect(reqs.length).toBe(1);
-        reqs[0].flush(null);
-        f.detectChanges();
-        const notice = (f.nativeElement as HTMLElement).querySelector('[role="status"]')!;
-        expect(notice.textContent).toContain('En 30 min es tu hora de dormir');
-        c.dismiss();
-        f.detectChanges();
-        expect((f.nativeElement as HTMLElement).querySelector('[role="status"]')).toBeNull();
-      } else {
-        expect(reqs.length).toBe(0);
-      }
+      http.expectOne((r) => r.url === '/api/schedule').flush({ version: { id: 1, effective_from: localDay(now), days }, lead_min: 30, pause: null });
+      return { f, c: f.componentInstance, el: f.nativeElement as HTMLElement };
+    }
+
+    it('a la hora de prepararse (±1 min) aparece silencioso con role="status" y se puede cerrar', () => {
+      const { f, c, el } = prepare(new Date(2026, 10, 25, 19, 0), 19 * 60 + 30);
+      http.expectOne('/api/sleep/open').flush(null);
+      f.detectChanges();
+      expect(el.querySelector('[role="status"]')!.textContent).toContain('En 30 min es tu hora de dormir');
+      c.dismiss();
+      f.detectChanges();
+      expect(el.querySelector('[role="status"]')).toBeNull();
+    });
+
+    it('fuera de hora no aparece (ni consulta la noche abierta)', () => {
+      prepare(new Date(2026, 10, 25, 18, 0), 19 * 60 + 30);
+      http.expectNone('/api/sleep/open');
+    });
+
+    it('cruce de medianoche: a las 23:40 con acostarse a las 00:10 avisa (la noche es la de hoy)', () => {
+      const { f, el } = prepare(new Date(2026, 10, 25, 23, 40), 10);
+      http.expectOne('/api/sleep/open').flush(null);
+      f.detectChanges();
+      expect(el.querySelector('[role="status"]')!.textContent).toContain('En 30 min es tu hora de dormir');
+    });
+
+    it('pasada la medianoche: a las 00:15 con acostarse a las 00:45 avisa (es la noche de ayer)', () => {
+      const { f, el } = prepare(new Date(2026, 10, 26, 0, 15), 45);
+      http.expectOne('/api/sleep/open').flush(null);
+      f.detectChanges();
+      expect(el.querySelector('[role="status"]')!.textContent).toContain('En 30 min es tu hora de dormir');
     });
 
     it('en pausa no aparece', () => {
