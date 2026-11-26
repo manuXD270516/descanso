@@ -23,6 +23,8 @@ describe('Feature 013 · app', () => {
   let http: HttpTestingController;
 
   beforeEach(() => {
+    // Cambios de pestaña síncronos en estas pruebas: sin transición de vista
+    (document as unknown as { startViewTransition?: unknown }).startViewTransition = undefined;
     TestBed.configureTestingModule({
       imports: [App],
       providers: [provideHttpClient(withInterceptors([authInterceptor])), provideHttpClientTesting()],

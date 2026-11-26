@@ -8,6 +8,8 @@ describe('App', () => {
   let http: HttpTestingController;
 
   beforeEach(() => {
+    // Los cambios de pestaña de estas pruebas son síncronos: sin transición de vista (se prueba aparte)
+    (document as unknown as { startViewTransition?: unknown }).startViewTransition = undefined;
     TestBed.configureTestingModule({
       imports: [App],
       providers: [provideHttpClient(withInterceptors([authInterceptor])), provideHttpClientTesting()],
@@ -144,6 +146,54 @@ describe('App', () => {
       const { el } = render(authenticated, null);
       expect(el.querySelector('footer')).toBeNull();
       expect(el.querySelector('nav.tabs')).not.toBeNull();
+    });
+  });
+
+  describe('transiciones entre vistas (feature 014, FR-024)', () => {
+    interface Doc { startViewTransition?: (cb: () => Promise<void>) => unknown }
+    const doc = document as unknown as Doc;
+    let original: Doc['startViewTransition'];
+    beforeEach(() => { original = doc.startViewTransition; });
+    afterEach(() => { doc.startViewTransition = original; });
+
+    function app() {
+      const { fixture } = render(authenticated);
+      http.match(() => true).forEach((r) => r.flush({}));
+      return fixture.componentInstance;
+    }
+
+    it('con soporte y sin "reducir movimiento" el cambio va dentro de startViewTransition', () => {
+      const spy = jasmine.createSpy('svt').and.callFake((cb: () => Promise<void>) => { void cb(); });
+      doc.startViewTransition = spy;
+      spyOn(window, 'matchMedia').and.returnValue({ matches: false } as MediaQueryList);
+      const c = app();
+      c.selectTab('naps');
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(c.tab()).toBe('naps');
+    });
+
+    it('con "reducir movimiento" o sin soporte el cambio es directo', () => {
+      const spy = jasmine.createSpy('svt');
+      doc.startViewTransition = spy;
+      spyOn(window, 'matchMedia').and.returnValue({ matches: true } as MediaQueryList);
+      const c = app();
+      c.selectTab('trends');
+      expect(spy).not.toHaveBeenCalled();
+      expect(c.tab()).toBe('trends');
+      doc.startViewTransition = undefined;
+      c.selectTab('metrics');
+      expect(c.tab()).toBe('metrics');
+    });
+
+    it('dos cambios seguidos terminan en el último y el foco no se mueve', () => {
+      doc.startViewTransition = (cb: () => Promise<void>) => { void cb(); };
+      spyOn(window, 'matchMedia').and.returnValue({ matches: false } as MediaQueryList);
+      const c = app();
+      const before = document.activeElement;
+      c.selectTab('naps');
+      c.selectTab('metrics');
+      expect(c.tab()).toBe('metrics');
+      expect(document.activeElement).toBe(before);
     });
   });
 });

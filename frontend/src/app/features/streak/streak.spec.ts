@@ -144,10 +144,20 @@ describe('Racha de constancia (feature 011)', () => {
     expect(el.textContent).not.toContain('La semana pasada');
   });
 
-  it('ajustes: activar, margen y el error del servidor', () => {
+  it('ajustes: activar, margen y el error del servidor', async () => {
     const { fixture, el } = mount(StreakSettingsComponent, { ...ON });
     expect(el.textContent).toContain('Llevar una racha de constancia');
+    // FR-021 (014): un margen fuera de 15–60 no se envía; el campo lo avisa
     fixture.componentInstance.margin = 14;
+    fixture.detectChanges();
+    await fixture.whenStable();
+    button(el, 'Guardar margen').click();
+    fixture.detectChanges();
+    http.expectNone('/api/streak/settings');
+    expect(el.querySelector('input[name="streakMargin"]')!.getAttribute('aria-invalid')).toBe('true');
+    fixture.componentInstance.margin = 20;
+    fixture.detectChanges();
+    await fixture.whenStable();
     button(el, 'Guardar margen').click();
     http.expectOne('/api/streak/settings').flush({ error: 'El margen debe ser entre 15 y 60 minutos' }, { status: 400, statusText: 'Bad Request' });
     fixture.detectChanges();

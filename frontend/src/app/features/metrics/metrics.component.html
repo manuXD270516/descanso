@@ -85,10 +85,10 @@
   </div>
 
   @if (configOpen()) {
-    <div class="form">
+    <div class="form" appFieldError #fe="appFieldError">
       <h3>{{ form().id === null ? 'Nueva métrica' : 'Editar métrica' }}</h3>
       <label class="field"><span>Nombre</span>
-        <input type="text" [ngModel]="form().name" (ngModelChange)="patch('name', $event)" placeholder="Ej. Estado de ánimo" maxlength="60">
+        <input type="text" name="metricName" [ngModel]="form().name" (ngModelChange)="patch('name', $event)" placeholder="Ej. Estado de ánimo" maxlength="60" required>
       </label>
       <div class="field"><span>Tipo</span>
         <div class="types">
@@ -118,7 +118,7 @@
       </div>
       <div class="row end">
         <button class="btn btn-ghost btn-sm" type="button" (click)="configOpen.set(false)">Cancelar</button>
-        <button class="btn btn-sm btn-moon" type="button" (click)="saveMetric()" [disabled]="busy() || !form().name.trim()">
+        <button class="btn btn-sm btn-moon" type="button" data-submit (click)="saveMetric(fe)" [disabled]="busy()">
           {{ form().id === null ? 'Crear métrica' : 'Guardar cambios' }}
         </button>
       </div>

@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { FieldErrorDirective } from '../../shared/forms/field-error.directive';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { StreakSettingsPatch } from '../../core/streak';
@@ -10,7 +11,7 @@ import { StreakService } from '../../core/streak.service';
  */
 @Component({
   selector: 'app-streak-settings',
-  imports: [FormsModule],
+  imports: [FieldErrorDirective, FormsModule],
   template: `
     <h3>Racha de constancia</h3>
     <p class="small muted">Cuenta un día si te acuestas y te levantas a tu hora, o si registras la noche cuando no tienes
@@ -21,11 +22,11 @@ import { StreakService } from '../../core/streak.service';
         <span>Llevar una racha de constancia</span>
       </label>
       @if (enabled()) {
-        <div class="row wrap">
+        <div class="row wrap" appFieldError #fe="appFieldError">
           <label class="field"><span>Margen (minutos)</span>
-            <input type="number" name="streakMargin" [(ngModel)]="margin" min="15" max="60" step="5">
+            <input type="number" name="streakMargin" [(ngModel)]="margin" min="15" max="60" step="5" required>
           </label>
-          <button type="button" class="btn btn-sm" [disabled]="busy()" (click)="save({ margin_min: margin })">Guardar margen</button>
+          <button type="button" class="btn btn-sm" data-submit [disabled]="busy()" (click)="fe.validate() && save({ margin_min: margin })">Guardar margen</button>
         </div>
         <p class="small muted">Tu hora puede pasarse hasta el margen sin que deje de contar. Adelantarte nunca resta.</p>
       }

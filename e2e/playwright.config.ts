@@ -35,6 +35,8 @@ export default defineConfig({
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
+    // Feature 014: sin transiciones de vista ni animaciones por defecto (determinismo); los tests de movimiento lo cambian
+    reducedMotion: 'reduce',
   },
 
   projects: [

@@ -234,6 +234,14 @@
   }
 }
 
+/* Transición entre vistas (feature 014, FR-024): fundido corto; sin ella con "reducir movimiento" */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root), ::view-transition-new(root) { animation-duration: var(--dur-base); }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none; }
+}
+
 @layer utilities {
   .muted { color: var(--ink-muted); }
   .faint { color: var(--ink-faint); }

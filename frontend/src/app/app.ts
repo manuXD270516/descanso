@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { ApplicationRef, Component, OnInit, inject, signal } from '@angular/core';
 import { ApiService } from './core/api.service';
 import { AuthService } from './core/auth.service';
 import { readLinkTokens } from './core/link-tokens';
@@ -42,6 +42,7 @@ export class App implements OnInit {
   readonly auth = inject(AuthService);
   private nightUi = inject(NightUiService);
   private push = inject(PushService);
+  private appRef = inject(ApplicationRef);
 
   // La pestaña vive en App: si la sesión caduca y vuelves a entrar, sigues donde estabas
   readonly tab = signal<Tab>('night');
@@ -92,6 +93,7 @@ export class App implements OnInit {
   private openNightLink() {
     if (location.hash !== '#noche' && location.hash !== '#noche-despertar') return;
     if (location.hash === '#noche-despertar') this.nightUi.wakeIntent.set(true);
+    // Sin transición: abrir un enlace de aviso es inmediato y ya lleva su propia intención de foco
     this.accountView.set(null);
     this.tab.set('night');
     history.replaceState(null, '', location.pathname + location.search);
@@ -110,14 +112,33 @@ export class App implements OnInit {
     return !!(links.invite || links.reset);
   }
 
+  /**
+   * Cambia de pestaña o de vista con un fundido corto (feature 014, FR-024) donde el navegador lo admite.
+   * Sin soporte o con "reducir movimiento" el cambio es directo. El foco no se mueve.
+   */
+  navigate(change: () => void): void {
+    const doc = document as Document & { startViewTransition?: (update: () => Promise<void>) => unknown };
+    if (!doc.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      change();
+      return;
+    }
+    // Se espera a que Angular pinte el nuevo estado: la transición anima del "antes" al "después"
+    doc.startViewTransition(async () => {
+      change();
+      await this.appRef.whenStable();
+    });
+  }
+
   selectTab(id: Tab) {
-    this.accountView.set(null);
-    this.tab.set(id);
+    this.navigate(() => {
+      this.accountView.set(null);
+      this.tab.set(id);
+    });
   }
 
   openAccount(view: AccountView, menu?: HTMLDetailsElement) {
     if (menu) menu.open = false;
-    this.accountView.set(view);
+    this.navigate(() => this.accountView.set(view));
   }
 
   closePublic() {

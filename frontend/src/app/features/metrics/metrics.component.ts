@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { ApiService, Metric, MetricEntry, MetricType } from '../../core/api.service';
 import { addDays, fmtDateShort, localDate } from '../../core/time';
 import { ConfirmService } from '../../shared/confirm/confirm.service';
+import { FieldErrorDirective } from '../../shared/forms/field-error.directive';
 
 const HISTORY_DAYS = 7;
 
@@ -60,7 +61,7 @@ const EMPTY_FORM: MetricForm = { id: null, name: '', type: 'scale', unit: '', mi
 
 @Component({
   selector: 'app-metrics',
-  imports: [FormsModule],
+  imports: [FieldErrorDirective, FormsModule],
   templateUrl: './metrics.component.html',
   styleUrl: './metrics.component.css',
 })
@@ -168,8 +169,10 @@ export class MetricsComponent implements OnInit {
     this.form.update((f) => ({ ...f, type: t, min_value: t === 'scale' ? 1 : null, max_value: t === 'scale' ? 5 : null }));
   }
 
-  saveMetric() {
+  saveMetric(fe: FieldErrorDirective) {
     const f = this.form();
+    if (!fe.validate()) return;
+    if (!f.name.trim()) { fe.report('metricName', 'Escribe un nombre para la métrica.'); return; }
     const body: Partial<Metric> = {
       name: f.name, type: f.type, unit: f.unit || null, color: f.color,
       min_value: f.type === 'text' || f.type === 'boolean' ? null : f.min_value,

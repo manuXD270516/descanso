@@ -20,6 +20,20 @@ class HostComponent {
   @ViewChild('fe') fe!: FieldErrorDirective;
 }
 
+@Component({
+  imports: [FormsModule, FieldErrorDirective],
+  template: `
+    <div appFieldError #g="appFieldError">
+      <label class="field"><span>Minutos</span><input type="number" name="min" [(ngModel)]="min" min="0" max="59" step="5" required></label>
+      <button type="button" data-submit (click)="g.validate() && (sent = sent + 1)">Guardar</button>
+    </div>
+  `,
+})
+class GroupComponent {
+  min: number | null = 0;
+  sent = 0;
+}
+
 describe('FieldErrorDirective (feature 014)', () => {
   let fixture: ComponentFixture<HostComponent>;
   let el: HTMLElement;
@@ -117,5 +131,46 @@ describe('FieldErrorDirective (feature 014)', () => {
     email().value = 'a@b.co';
     email().dispatchEvent(new Event('input', { bubbles: true }));
     expect(errors().length).toBe(0);
+  });
+
+  describe('grupo sin <form> con botón data-submit', () => {
+    let group: ComponentFixture<GroupComponent>;
+    beforeEach(async () => {
+      group = TestBed.createComponent(GroupComponent);
+      group.detectChanges();
+      await group.whenStable();
+    });
+    const field = () => group.nativeElement.querySelector('input') as HTMLInputElement;
+    const save = () => group.nativeElement.querySelector('button') as HTMLButtonElement;
+
+    it('ir al botón data-submit no marca el campo; la validación del clic sí', () => {
+      field().value = '';
+      field().dispatchEvent(new Event('input', { bubbles: true }));
+      field().dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget: save() }));
+      expect(field().getAttribute('aria-invalid')).toBe('false');
+      save().click();
+      expect(field().getAttribute('aria-invalid')).toBe('true');
+      expect(group.componentInstance.sent).toBe(0);
+    });
+
+    it('Safari: pointerdown sobre el botón con relatedTarget null tampoco marca el campo antes del clic', () => {
+      field().value = '';
+      field().dispatchEvent(new Event('input', { bubbles: true }));
+      save().dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+      field().dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget: null }));
+      expect(field().getAttribute('aria-invalid')).toBe('false');
+      expect(group.nativeElement.querySelectorAll('.field-error').length).toBe(0);
+    });
+
+    it('un valor fuera de rango no pasa, pero un múltiplo distinto del paso sí (step no cuenta)', () => {
+      field().value = '70';
+      field().dispatchEvent(new Event('input', { bubbles: true }));
+      save().click();
+      expect(group.componentInstance.sent).toBe(0);
+      field().value = '7';
+      field().dispatchEvent(new Event('input', { bubbles: true }));
+      save().click();
+      expect(group.componentInstance.sent).toBe(1);
+    });
   });
 });

@@ -56,12 +56,19 @@ describe('NapsComponent', () => {
     expect(button('Guardar siesta').disabled).toBeFalse();
   });
 
-  it('con fin igual o anterior al inicio avisa y deshabilita "Guardar siesta" (US3-2)', () => {
+  it('con fin igual o anterior al inicio avisa y no guarda: el error va en el campo "Fin" (US3-2, FR-021)', async () => {
     flushList();
     fixture.componentInstance.form.end = '2026-09-08T14:30';
     fixture.detectChanges();
+    await fixture.whenStable();
     expect(hint()).toBe('El fin debe ser posterior al inicio');
-    expect(button('Guardar siesta').disabled).toBeTrue();
+    expect(button('Guardar siesta').disabled).toBeFalse();
+    button('Guardar siesta').click();
+    fixture.detectChanges();
+    const end = el.querySelector('input[name="end"]') as HTMLInputElement;
+    expect(end.getAttribute('aria-invalid')).toBe('true');
+    expect(document.activeElement).toBe(end);
+    http.expectNone((r) => r.method === 'POST');
   });
 
   it('agrupa por día con número de siestas y total (US3-3)', () => {
@@ -74,8 +81,9 @@ describe('NapsComponent', () => {
     expect(heads).toEqual(['2 siestas · 1 h 05 min', '1 siesta · 30 min']);
   });
 
-  it('guardar envía la fecha del día del inicio y horas ISO con offset (FR-011)', () => {
+  it('guardar envía la fecha del día del inicio y horas ISO con offset (FR-011)', async () => {
     flushList();
+    await fixture.whenStable();
     button('Guardar siesta').click();
     const req = http.expectOne((r) => r.url === '/api/naps' && r.method === 'POST');
     expect(req.request.body.date).toBe('2026-09-08');

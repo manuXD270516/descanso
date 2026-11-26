@@ -59,7 +59,7 @@ test.describe('Accesibilidad básica (servidor compartido, solo lectura)', () =>
     // Feature 004: el menú Cuenta va tras las pestañas
     await expect(page.getByText('Cuenta', { exact: true })).toBeFocused();
     await page.keyboard.press('Tab');
-    await expect(page.getByLabel('Inicio', { exact: true })).toBeFocused();
+    await expect(page.getByLabel(/^Inicio/)).toBeFocused();
     expect(await focusOutline(page)).toBe('solid 2px');
   });
 
@@ -214,5 +214,31 @@ test.describe('Accesibilidad base 014 (servidor compartido, solo lectura)', () =
         expect(overflow, `scroll horizontal en ${tab} a ${width} px`).toBeLessThanOrEqual(0);
       }
     }
+  });
+
+  test('FR-007 · en colores forzados el foco y el borde de error siguen visibles (T042)', async ({ page }) => {
+    await page.emulateMedia({ forcedColors: 'active' });
+    await page.goto('/');
+    await page.getByRole('navigation', { name: 'Secciones' }).getByRole('button', { name: 'Noche' }).focus();
+    await page.keyboard.press('Tab');
+    expect(await page.evaluate(() => getComputedStyle(document.activeElement as Element).outlineStyle)).not.toBe('none');
+    await page.getByRole('button', { name: 'Registrar una noche pasada' }).click();
+    await page.getByRole('button', { name: 'Guardar noche' }).click(); // sin datos: marca el campo
+    const field = page.getByLabel('Me dormí');
+    await expect(field).toHaveAttribute('aria-invalid', 'true');
+    expect(await field.evaluate((el) => getComputedStyle(el).borderStyle)).not.toBe('none');
+  });
+});
+
+test.describe('Pulido táctil (servidor compartido, solo lectura)', () => {
+  test.use({ isolate: false, hasTouch: true, viewport: { width: 375, height: 812 } });
+
+  test('FR-025 · en pantallas táctiles el hover no deja el botón "pegado" tras tocarlo', async ({ page }) => {
+    await page.goto('/');
+    const button = page.getByRole('button', { name: /Registrar una noche pasada|Ocultar registro manual/ });
+    const rest = await button.evaluate((el) => getComputedStyle(el).backgroundColor);
+    await button.tap();
+    await page.getByRole('heading', { level: 1 }).tap();
+    expect(await button.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe(rest);
   });
 });

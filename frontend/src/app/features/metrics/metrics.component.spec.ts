@@ -150,14 +150,25 @@ describe('MetricsComponent', () => {
     load([metric({ id: 2, name: 'Energía', sort_order: 0 }), metric({ id: 1, sort_order: 1 })]);
   });
 
-  it('"Crear métrica" está deshabilitado mientras no hay nombre (US5-2)', () => {
+  it('"Crear métrica" sin nombre no envía y marca el campo; con nombre sí (US5-2, FR-021)', async () => {
     load([]);
     button('Nueva métrica').click();
     fixture.detectChanges();
-    expect(button('Crear métrica').disabled).toBeTrue();
-    fixture.componentInstance.patch('name', 'Ánimo');
-    fixture.detectChanges();
+    await fixture.whenStable();
     expect(button('Crear métrica').disabled).toBeFalse();
+    button('Crear métrica').click();
+    fixture.detectChanges();
+    const name = el.querySelector('input[name="metricName"]') as HTMLInputElement;
+    expect(name.getAttribute('aria-invalid')).toBe('true');
+    expect(document.activeElement).toBe(name);
+    http.expectNone((r) => r.method === 'POST');
+    fixture.componentInstance.patch('name', '   '); // solo espacios: también se avisa
+    fixture.detectChanges();
+    await fixture.whenStable();
+    button('Crear métrica').click();
+    fixture.detectChanges();
+    expect(el.querySelector('.field-error')!.textContent).toContain('Escribe un nombre');
+    http.expectNone((r) => r.method === 'POST');
   });
 });
 

@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { FieldErrorDirective } from '../../shared/forms/field-error.directive';
 import { AccountService } from '../../core/account.service';
 import { Pause, ScheduleDay, ScheduleVersion, localDay } from '../../core/schedule';
 import { ScheduleService } from '../../core/schedule.service';
@@ -16,7 +17,7 @@ import { PushSettingsComponent } from '../push/push-settings.component';
  */
 @Component({
   selector: 'app-my-schedule',
-  imports: [FormsModule, ScheduleEditorComponent, CalendarGuideComponent, StreakSettingsComponent, PushSettingsComponent],
+  imports: [FieldErrorDirective, FormsModule, ScheduleEditorComponent, CalendarGuideComponent, StreakSettingsComponent, PushSettingsComponent],
   template: `
     <section class="panel account-card" aria-labelledby="schedule-title">
       <h2 id="schedule-title">Mi horario</h2>
@@ -27,9 +28,11 @@ import { PushSettingsComponent } from '../push/push-settings.component';
         </div>
       }
       @if (loaded()) {
-        <app-schedule-editor [goalMin]="goalMin()" [initial]="version()?.days ?? null" (changed)="draft.set($event)" />
-        <div class="row wrap">
-          <button type="button" class="btn" [disabled]="!draft() || busy()" (click)="save()">Guardar horario</button>
+        <div appFieldError #sched="appFieldError">
+          <app-schedule-editor [goalMin]="goalMin()" [initial]="version()?.days ?? null" [requireWake]="true" (changed)="draft.set($event)" />
+          <div class="row wrap">
+            <button type="button" class="btn" data-submit [disabled]="busy()" (click)="sched.validate() && save()">Guardar horario</button>
+          </div>
         </div>
         @if (saved()) { <p class="small" role="status">Horario guardado. Se aplica desde hoy; los días anteriores no cambian.</p> }
       }
@@ -37,11 +40,11 @@ import { PushSettingsComponent } from '../push/push-settings.component';
 
       <h3>Añadir a mi calendario</h3>
       <p class="small muted">El calendario del móvil te avisará antes de tu hora de acostarte, aunque Descanso esté cerrada. El archivo no contiene datos de tu sueño.</p>
-      <div class="row wrap">
+      <div class="row wrap" appFieldError #leadFe="appFieldError">
         <label class="field"><span>Avisarme antes (minutos)</span>
-          <input type="number" name="lead" [(ngModel)]="lead" min="15" max="60" step="5">
+          <input type="number" name="lead" [(ngModel)]="lead" min="15" max="60" step="5" required>
         </label>
-        <button type="button" class="btn btn-sm" (click)="saveLead()">Guardar aviso</button>
+        <button type="button" class="btn btn-sm" data-submit (click)="leadFe.validate() && saveLead()">Guardar aviso</button>
         @if (version()) {
           <a class="btn btn-moon" [href]="icsUrl" download="descanso-horario.ics">Añadir a mi calendario</a>
         } @else {
@@ -56,10 +59,10 @@ import { PushSettingsComponent } from '../push/push-settings.component';
 
       <h3>Modo pausa (viaje, malestar, turnos)</h3>
       <p class="small muted">Durante la pausa, Descanso no te avisa: ni dentro de la app ni en el móvil. Hasta 14 días, 2 pausas cada 30 días.</p>
-      <div class="row wrap">
-        <label class="field"><span>Desde</span><input type="date" name="pauseFrom" [(ngModel)]="pauseFrom" [min]="today"></label>
-        <label class="field"><span>Hasta</span><input type="date" name="pauseTo" [(ngModel)]="pauseTo" [min]="pauseFrom"></label>
-        <button type="button" class="btn btn-sm" (click)="createPause()" [disabled]="busy()">Activar pausa</button>
+      <div class="row wrap" appFieldError #pauseFe="appFieldError">
+        <label class="field"><span>Desde</span><input type="date" name="pauseFrom" [(ngModel)]="pauseFrom" [min]="today" required></label>
+        <label class="field"><span>Hasta</span><input type="date" name="pauseTo" [(ngModel)]="pauseTo" [min]="pauseFrom" required></label>
+        <button type="button" class="btn btn-sm" data-submit (click)="pauseFe.validate() && createPause()" [disabled]="busy()">Activar pausa</button>
       </div>
       @if (pauseError()) { <p class="error" role="alert">{{ pauseError() }}</p> }
       @if (upcoming().length) {

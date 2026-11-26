@@ -7,10 +7,10 @@
   @if (profile(); as p) {
     <form appFieldError class="account-form" (ngSubmit)="saveProfile()">
       <label class="field"><span>Nombre visible</span>
-        <input type="text" name="display_name" [(ngModel)]="displayName" maxlength="60" required>
+        <input type="text" name="display_name" [(ngModel)]="displayName" maxlength="60" autocomplete="nickname" required>
       </label>
       <label class="field"><span>Zona horaria</span>
-        <input type="text" name="timezone" [(ngModel)]="timezone" list="tz-list" aria-describedby="tz-hint" required>
+        <input type="text" name="timezone" [(ngModel)]="timezone" list="tz-list" aria-describedby="tz-hint" autocomplete="off" required>
         <datalist id="tz-list">
           @for (tz of timezones; track tz) { <option [value]="tz"></option> }
         </datalist>
@@ -29,7 +29,7 @@
     <h3>Email</h3>
     <form appFieldError class="account-form" (ngSubmit)="saveEmail()">
       <label class="field"><span>Email</span>
-        <input type="email" name="email" [(ngModel)]="newEmail" autocomplete="username" required>
+        <input type="email" name="email" [(ngModel)]="newEmail" autocomplete="email" required>
       </label>
       <label class="field"><span>Contraseña actual</span>
         <input type="password" name="emailPassword" [(ngModel)]="emailPassword" autocomplete="current-password" required>
