@@ -5,6 +5,7 @@ import { NightComponent } from './night.component';
 import { Nap, SleepRecord, Stats } from '../../core/api.service';
 import { addDays, localDate, nightDate } from '../../core/time';
 import { flushStreak } from '../streak/streak.testing';
+import { ConfirmService } from '../../shared/confirm/confirm.service';
 
 const EMPTY_STATS: Stats = {
   days: [],
@@ -18,6 +19,8 @@ function record(p: Partial<SleepRecord>): SleepRecord {
 const PROFILE = { id: 1, email: 'yo@x.com', role: 'owner', display_name: 'Yo', timezone: null, sleep_goal_min: 450, cycle_min: 90, latency_min: 15, consent_version: null, consent_at: null, created_at: '' };
 
 describe('NightComponent', () => {
+  // Feature 014: el diálogo propio sustituye a confirm(); aquí se responde con un servicio falso
+  const confirmFake = { ask: jasmine.createSpy('ask') };
   let fixture: ComponentFixture<NightComponent>;
   let http: HttpTestingController;
   let el: HTMLElement;
@@ -42,7 +45,7 @@ describe('NightComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [NightComponent],
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [provideHttpClient(), provideHttpClientTesting(), { provide: ConfirmService, useValue: confirmFake }],
     });
     http = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(NightComponent);
@@ -136,16 +139,21 @@ describe('NightComponent', () => {
       fixture.detectChanges();
     });
 
-    it('"Guardar noche" está deshabilitado si falta dormir o despertar (US2-2)', () => {
-      expect(button('Guardar noche').disabled).toBeTrue();
+    it('"Guardar noche" con dormir o despertar vacíos no envía y marca el campo (US2-2, US4)', async () => {
+      button('Guardar noche').click();
+      expect(fixture.nativeElement.querySelector('input[name="bedtime"]').getAttribute('aria-invalid')).toBe('true');
       fixture.componentInstance.manual = { bedtime: '2026-09-01T23:00', wake: '', notes: '' };
       fixture.detectChanges();
-      expect(button('Guardar noche').disabled).toBeTrue();
+      await fixture.whenStable();
+      button('Guardar noche').click();
+      expect(fixture.nativeElement.querySelector('input[name="wake"]').getAttribute('aria-invalid')).toBe('true');
+      http.expectNone((r) => r.url === '/api/sleep' && r.method === 'POST');
     });
 
-    it('guardar crea una noche cerrada con fecha de noche = día de la hora de dormir (US2-1)', () => {
+    it('guardar crea una noche cerrada con fecha de noche = día de la hora de dormir (US2-1)', async () => {
       fixture.componentInstance.manual = { bedtime: '2026-09-01T23:00', wake: '2026-09-02T07:00', notes: 'ok' };
       fixture.detectChanges();
+      await fixture.whenStable();
       button('Guardar noche').click();
       const req = http.expectOne((r) => r.url === '/api/sleep' && r.method === 'POST');
       expect(req.request.body.date).toBe('2026-09-01');
@@ -196,15 +204,18 @@ describe('NightComponent', () => {
     flushLoad();
   });
 
-  it('eliminar pide confirmación y solo borra si se confirma (US2-4)', () => {
+  it('eliminar pide confirmación y solo borra si se confirma (US2-4)', async () => {
     const closed = record({ id: 7, wake_time: '2026-09-08T07:10:00-04:00', duration_min: 450 });
     flushLoad({ records: [closed] });
-    const confirmSpy = spyOn(window, 'confirm').and.returnValue(false);
+    confirmFake.ask.and.resolveTo(false);
     button('Eliminar').click();
+    await fixture.whenStable();
     http.expectNone('/api/sleep/7');
 
-    confirmSpy.and.returnValue(true);
+    confirmFake.ask.and.resolveTo(true);
     button('Eliminar').click();
+    await fixture.whenStable();
+    expect(confirmFake.ask.calls.mostRecent().args[0].title).toBe('¿Borrar esta noche?');
     const req = http.expectOne('/api/sleep/7');
     expect(req.request.method).toBe('DELETE');
     req.flush(null);

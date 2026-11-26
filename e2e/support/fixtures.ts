@@ -147,17 +147,17 @@ export function fmtDateShort(page: Page, date: string): Promise<string> {
 }
 
 /**
- * Responde al próximo confirm() de la página (aceptar o cancelar) y devuelve su mensaje.
- * Crear la promesa ANTES del clic que abre el diálogo.
+ * Feature 014: responde al diálogo de confirmación propio de la app (reemplaza al confirm() del
+ * navegador). Espera el diálogo, devuelve su texto ("título\ncuerpo") y pulsa el botón indicado.
  */
-export function answerNextDialog(page: Page, accept: boolean): Promise<string> {
-  return new Promise((resolve) => {
-    page.once('dialog', async (dialog) => {
-      const message = `${dialog.type()}: ${dialog.message()}`;
-      await (accept ? dialog.accept() : dialog.dismiss());
-      resolve(message);
-    });
-  });
+export async function confirmDialog(page: Page, action: 'Borrar' | 'Conservar'): Promise<string> {
+  const dialog = page.getByRole('dialog');
+  await expect(dialog).toBeVisible();
+  const title = (await dialog.locator('#confirm-title').innerText()).trim();
+  const body = (await dialog.locator('#confirm-body').innerText()).trim();
+  await dialog.getByRole('button', { name: action, exact: true }).click();
+  await expect(dialog).toHaveCount(0);
+  return `${title}\n${body}`;
 }
 
 /** Cambia de pestaña con la navegación principal (Noche, Tendencias, Siestas, Métricas). */

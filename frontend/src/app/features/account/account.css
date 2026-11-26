@@ -1,4 +1,5 @@
 @layer components {
+  :host { display: block; container-type: inline-size; }
   .account-card {
     max-width: 520px;
     margin: 1rem auto 0;

@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test';
-import { answerNextDialog, expect, fmtDateShort, openTab, setNow, test } from '../support/fixtures';
+import { confirmDialog, expect, fmtDateShort, openTab, setNow, test } from '../support/fixtures';
 
 // US3 · Registrar siestas (specs/001-linea-base/spec.md)
 
@@ -100,14 +100,12 @@ test.describe('Siestas (US3)', () => {
     await expect(nap).toContainText('larga');
     await expect(page.getByText('1 siesta · 50 min')).toBeVisible();
 
-    const cancelled = answerNextDialog(page, false);
     await nap.getByRole('button', { name: 'Eliminar' }).click();
-    expect(await cancelled).toBe('confirm: ¿Eliminar esta siesta?');
+    expect(await confirmDialog(page, 'Conservar')).toMatch(/^¿Borrar esta siesta\?\nSe borra la siesta del .+\. No se puede recuperar\.$/);
     await expect(nap).toBeVisible();
 
-    const accepted = answerNextDialog(page, true);
     await nap.getByRole('button', { name: 'Eliminar' }).click();
-    await accepted;
+    await confirmDialog(page, 'Borrar');
     await expect(page.getByText('Sin siestas registradas todavía.')).toBeVisible();
     expect(await api.naps()).toHaveLength(0);
   });

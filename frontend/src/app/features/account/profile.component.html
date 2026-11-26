@@ -5,7 +5,7 @@
   @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
 
   @if (profile(); as p) {
-    <form class="account-form" (ngSubmit)="saveProfile()">
+    <form appFieldError class="account-form" (ngSubmit)="saveProfile()">
       <label class="field"><span>Nombre visible</span>
         <input type="text" name="display_name" [(ngModel)]="displayName" maxlength="60" required>
       </label>
@@ -27,7 +27,7 @@
     <app-cycle-settings [cycleMin]="p.cycle_min" [latencyMin]="p.latency_min" (changed)="cycleChanged($event)" />
 
     <h3>Email</h3>
-    <form class="account-form" (ngSubmit)="saveEmail()">
+    <form appFieldError class="account-form" (ngSubmit)="saveEmail()">
       <label class="field"><span>Email</span>
         <input type="email" name="email" [(ngModel)]="newEmail" autocomplete="username" required>
       </label>
@@ -38,7 +38,7 @@
     </form>
 
     <h3>Contraseña</h3>
-    <form class="account-form" (ngSubmit)="savePassword()">
+    <form appFieldError class="account-form" (ngSubmit)="savePassword()">
       <label class="field"><span>Contraseña actual</span>
         <input type="password" name="currentPassword" [(ngModel)]="currentPassword" autocomplete="current-password" required>
       </label>
@@ -69,7 +69,7 @@
       @if (p.role === 'owner') {
         <p class="small muted">Como propietario, solo puedes borrar tu cuenta cuando no quede nadie más usando Descanso.</p>
       }
-      <form class="account-form" (ngSubmit)="deleteAccount()">
+      <form appFieldError class="account-form" (ngSubmit)="deleteAccount()">
         <label class="field"><span>Contraseña</span>
           <input type="password" name="deletePassword" [(ngModel)]="deletePassword" autocomplete="current-password" required>
         </label>

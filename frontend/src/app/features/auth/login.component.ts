@@ -1,4 +1,5 @@
 import { Component, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { FieldErrorDirective } from '../../shared/forms/field-error.directive';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/auth.service';
@@ -6,7 +7,7 @@ import { AuthService } from '../../core/auth.service';
 /** Pantalla "Entrar" (feature 004, US1). */
 @Component({
   selector: 'app-login',
-  imports: [FormsModule],
+  imports: [FieldErrorDirective, FormsModule],
   templateUrl: './login.component.html',
   styleUrl: './auth.css',
 })

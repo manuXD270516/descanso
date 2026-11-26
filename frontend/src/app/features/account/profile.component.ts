@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, output, signal } from '@angular/core';
+import { FieldErrorDirective } from '../../shared/forms/field-error.directive';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { AccountService, Activity, Profile } from '../../core/account.service';
@@ -14,7 +15,7 @@ const ACTIONS: Record<Activity['action'], string> = {
 /** Mi perfil (feature 008, US3–US5). */
 @Component({
   selector: 'app-profile',
-  imports: [FormsModule, GoalEditorComponent, CycleSettingsComponent],
+  imports: [FieldErrorDirective, FormsModule, GoalEditorComponent, CycleSettingsComponent],
   templateUrl: './profile.component.html',
   styleUrl: './account.css',
 })

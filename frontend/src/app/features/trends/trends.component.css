@@ -1,5 +1,5 @@
 @layer components {
-  :host { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.9rem; }
+  :host { container-type: inline-size; display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.9rem; }
   .summary {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));

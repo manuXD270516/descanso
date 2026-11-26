@@ -51,13 +51,13 @@
     {{ showManual() ? 'Ocultar registro manual' : 'Registrar una noche pasada' }}
   </button>
   @if (showManual()) {
-    <div class="manual">
+    <div class="manual" appFieldError #manualForm="appFieldError">
       <div class="grid-2">
-        <label class="field"><span>Me dormí</span><input type="datetime-local" [(ngModel)]="manual.bedtime"></label>
-        <label class="field"><span>Desperté</span><input type="datetime-local" [(ngModel)]="manual.wake"></label>
+        <label class="field"><span>Me dormí</span><input type="datetime-local" name="bedtime" [(ngModel)]="manual.bedtime" required></label>
+        <label class="field"><span>Desperté</span><input type="datetime-local" name="wake" [(ngModel)]="manual.wake" required></label>
       </div>
       <label class="field"><span>Notas (opcional)</span><input type="text" [(ngModel)]="manual.notes" placeholder="Ej. me desperté dos veces"></label>
-      <div class="row end"><button class="btn" type="button" (click)="saveManual()" [disabled]="busy() || !manual.bedtime || !manual.wake">Guardar noche</button></div>
+      <div class="row end"><button class="btn" type="button" (click)="manualForm.validate() && saveManual()" [disabled]="busy()">Guardar noche</button></div>
     </div>
   }
 </section>
@@ -103,7 +103,7 @@
 
 <!-- Detalle -->
 <section class="list">
-  <div class="row block-head"><h2>Registros</h2>@if (nightsOrigin(); as o) { <app-origin-badge [origin]="o" /> }</div>
+  <div class="row block-head"><h2 #listHead tabindex="-1">Registros</h2>@if (nightsOrigin(); as o) { <app-origin-badge [origin]="o" /> }</div>
   @if (records().length === 0) {
     <p class="empty">Aún no hay noches registradas. Empieza con "Me voy a dormir" o registra una noche pasada.</p>
   }

@@ -1,4 +1,5 @@
 import { Component, ElementRef, inject, input, output, signal, viewChild } from '@angular/core';
+import { FieldErrorDirective } from '../../shared/forms/field-error.directive';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/auth.service';
@@ -6,7 +7,7 @@ import { AuthService } from '../../core/auth.service';
 /** Contraseña nueva con un enlace de recuperación del propietario (feature 008, US4). */
 @Component({
   selector: 'app-reset-password',
-  imports: [FormsModule],
+  imports: [FieldErrorDirective, FormsModule],
   styleUrl: './account.css',
   template: `
     <section class="panel account-card" aria-labelledby="reset-title">
@@ -18,7 +19,7 @@ import { AuthService } from '../../core/auth.service';
         @if (error()) {
           <p class="error" role="alert" tabindex="-1" #errorMsg>{{ error() }}</p>
         }
-        <form (ngSubmit)="submit()">
+        <form appFieldError (ngSubmit)="submit()">
           <label class="field"><span>Contraseña nueva</span>
             <input type="password" name="password" [(ngModel)]="password" autocomplete="new-password" required>
             <small class="muted small">Al menos 12 caracteres.</small>

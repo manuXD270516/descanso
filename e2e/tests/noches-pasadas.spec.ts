@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test';
-import { answerNextDialog, expect, fmtDateShort, setNow, test } from '../support/fixtures';
+import { confirmDialog, expect, fmtDateShort, setNow, test } from '../support/fixtures';
 
 // US2 · Registrar, editar y eliminar noches pasadas (specs/001-linea-base/spec.md)
 
@@ -16,19 +16,34 @@ test.describe('Noches pasadas (US2)', () => {
     await setNow(page, NOW);
   });
 
-  test('US2-2 · "Guardar noche" está deshabilitado mientras falte dormir o despertar', async ({ page }) => {
+  test('US2-2 · "Guardar noche" con dormir o despertar vacíos no envía, marca el campo y enfoca el primero (014)', async ({ page, api }) => {
     await page.goto('/');
     await page.getByRole('button', { name: 'Registrar una noche pasada' }).click();
     const save = page.getByRole('button', { name: 'Guardar noche' });
+    const bedtime = page.getByLabel('Me dormí');
+    const wake = page.getByLabel('Desperté');
 
-    await expect(save).toBeDisabled();
-    await page.getByLabel('Me dormí').fill('2026-09-05T22:15');
-    await expect(save).toBeDisabled();
-    await page.getByLabel('Me dormí').fill('');
-    await page.getByLabel('Desperté').fill('2026-09-06T06:45');
-    await expect(save).toBeDisabled();
-    await page.getByLabel('Me dormí').fill('2026-09-05T22:15');
-    await expect(save).toBeEnabled();
+    // La etiqueta lo dice en texto y, al solo entrar al campo, no hay error todavía
+    await expect(bedtime).toHaveAccessibleName(/\(obligatorio\)/);
+    await expect(bedtime).toHaveAttribute('aria-invalid', 'false');
+
+    await save.click();
+    await expect(bedtime).toBeFocused();
+    await expect(bedtime).toHaveAttribute('aria-invalid', 'true');
+    await expect(bedtime).toHaveAccessibleDescription('Este campo es obligatorio.');
+    expect(await api.nights()).toHaveLength(0);
+
+    await bedtime.fill('2026-09-05T22:15');
+    await expect(bedtime).toHaveAttribute('aria-invalid', 'false');
+    await save.click();
+    await expect(wake).toBeFocused();
+    await expect(wake).toHaveAttribute('aria-invalid', 'true');
+    expect(await api.nights()).toHaveLength(0);
+
+    await wake.fill('2026-09-06T06:45');
+    await save.click();
+    await expect(page.getByRole('article').filter({ hasText: '22:15 → 06:45' })).toContainText('8 h 30 min');
+    expect(await api.nights()).toHaveLength(1);
   });
 
   test('US2-1 · una noche pasada válida queda cerrada con la fecha del día en que se acostó', async ({ page, api }) => {
@@ -73,20 +88,43 @@ test.describe('Noches pasadas (US2)', () => {
     await api.createNight('2026-09-05T23:00', '2026-09-06T07:00');
     await page.goto('/');
     const card = record(page, '23:00 → 07:00');
-    const expected = `¿Eliminar la noche del ${await fmtDateShort(page, '2026-09-05')}?`;
+    const expected = `¿Borrar esta noche?\nSe borra el registro de la noche del ${await fmtDateShort(page, '2026-09-05')}. No se puede recuperar.`;
 
-    const cancelled = answerNextDialog(page, false);
-    await card.getByRole('button', { name: 'Eliminar' }).click();
-    expect(await cancelled).toBe(`confirm: ${expected}`);
+    const remove = card.getByRole('button', { name: 'Eliminar' });
+    await remove.click();
+    expect(await confirmDialog(page, 'Conservar')).toBe(expected);
     await expect(card).toBeVisible();
+    await expect(remove).toBeFocused(); // el foco vuelve a quien abrió el diálogo
     expect(await api.nights()).toHaveLength(1);
 
-    const accepted = answerNextDialog(page, true);
-    await card.getByRole('button', { name: 'Eliminar' }).click();
-    await accepted;
+    await remove.click();
+    await confirmDialog(page, 'Borrar');
+    await expect(page.getByRole('heading', { name: 'Registros' })).toBeFocused();
     await expect(card).toHaveCount(0);
     await expect(page.getByText('Aún no hay noches registradas.')).toBeVisible();
     expect(await api.nights()).toHaveLength(0);
+  });
+
+  test('US3 · Esc no borra, tocar fuera no cierra y el fondo no se desplaza con el diálogo abierto (014)', async ({ page, api }) => {
+    await api.createNight('2026-09-05T23:00', '2026-09-06T07:00');
+    await page.goto('/');
+    const card = record(page, '23:00 → 07:00');
+    await card.getByRole('button', { name: 'Eliminar' }).click();
+    const dialog = page.getByRole('dialog');
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole('button', { name: 'Conservar' })).toBeFocused();
+    await expect(dialog).toHaveAccessibleName('¿Borrar esta noche?');
+    await expect(dialog).toHaveAccessibleDescription(/No se puede recuperar/);
+    expect(await page.evaluate(() => getComputedStyle(document.documentElement).overflow)).toBe('hidden');
+
+    await page.mouse.click(2, 2); // fuera del diálogo (el telón)
+    await expect(dialog).toBeVisible();
+
+    await page.keyboard.press('Escape');
+    await expect(dialog).toHaveCount(0);
+    await expect(card).toBeVisible();
+    expect(await api.nights()).toHaveLength(1);
+    expect(await page.evaluate(() => getComputedStyle(document.documentElement).overflow)).not.toBe('hidden');
   });
 
   test('US2-5 · una edición con despertar no posterior a dormir se rechaza y el registro no cambia', async ({ page, api }) => {

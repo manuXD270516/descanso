@@ -1,6 +1,6 @@
 @layer components {
   .top {
-    max-width: 720px;
+    max-width: 45rem;
     margin: 0 auto;
     padding: 1.4rem 1rem 0.5rem;
     display: flex;
@@ -40,7 +40,7 @@
   .tab.active { background: var(--surface-hover); color: var(--ink); }
 
   .content {
-    max-width: 720px;
+    max-width: 45rem;
     margin: 0 auto;
     padding: 0.5rem 1rem 3rem;
     display: grid;
@@ -56,7 +56,7 @@
   }
 
   .version {
-    max-width: 720px;
+    max-width: 45rem;
     margin: 0 auto;
     padding: 0 1rem 1.5rem;
     color: var(--ink-muted);
@@ -111,7 +111,7 @@
   .account-links { display: grid; gap: 0.15rem; }
   .account-links .btn { justify-self: stretch; text-align: left; }
   .reset-notice {
-    max-width: 720px;
+    max-width: 45rem;
     margin: 0.5rem auto 0;
     padding: 0.6rem 1rem;
     display: flex;

@@ -10,7 +10,7 @@
     <p class="error" role="alert" tabindex="-1" #errorMsg>{{ error() }}</p>
   }
 
-  <form (ngSubmit)="submit()" class="auth-form">
+  <form appFieldError (ngSubmit)="submit()" class="auth-form">
     <label class="field"><span>Código de alta</span>
       <input type="password" name="token" [(ngModel)]="token" autocomplete="off" required>
     </label>

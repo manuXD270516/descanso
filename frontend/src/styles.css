@@ -179,6 +179,11 @@
   .field { display: grid; gap: 0.3rem; min-inline-size: 0; }
   .field > span { font-size: var(--fs-sm); color: var(--ink-muted); }
 
+  /* Campo con error (feature 014): borde, icono y texto, no solo color; lo marca appFieldError */
+  :is(input, select, textarea)[aria-invalid="true"] { border: 2px solid var(--danger); }
+  .field-error { display: flex; gap: var(--sp-2); color: var(--danger); font-size: var(--fs-sm); }
+  .field-error::before { content: "⚠" / ""; }
+
   .row { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
   .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: 0.75rem; }
 
@@ -199,7 +204,30 @@
     border-radius: var(--radius);
   }
 
+  /* Diálogo de confirmación (feature 014): <dialog> modal compartido */
+  dialog.confirm {
+    inline-size: min(26rem, 100% - 2rem);
+    padding: 1.25rem;
+    background: var(--surface-raised);
+    color: var(--ink);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-dialog);
+  }
+  dialog.confirm::backdrop { background: var(--backdrop); }
+  .confirm-form { display: grid; gap: var(--sp-3); }
+  .confirm-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--sp-2); }
+  @media (width < 30rem) {
+    .confirm-actions { flex-direction: column; }
+    .confirm-actions .btn { inline-size: 100%; }
+  }
+  html:has(dialog[open]) { overflow: hidden; }
+
   @media (prefers-reduced-motion: no-preference) {
+    dialog.confirm[open] {
+      transition: opacity var(--dur-base) var(--ease-out), translate var(--dur-base) var(--ease-out);
+      @starting-style { opacity: 0; translate: 0 0.5rem; }
+    }
     .btn { transition: background var(--dur-fast), transform 0.1s; }
   }
 }

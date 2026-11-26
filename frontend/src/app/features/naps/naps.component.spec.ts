@@ -4,11 +4,14 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { NapsComponent } from './naps.component';
 import { Nap } from '../../core/api.service';
 import { addDays, localDate } from '../../core/time';
+import { ConfirmService } from '../../shared/confirm/confirm.service';
 
 describe('NapsComponent', () => {
   let fixture: ComponentFixture<NapsComponent>;
   let http: HttpTestingController;
   let el: HTMLElement;
+  // Feature 014: el diálogo propio sustituye a confirm(); aquí se responde con un servicio falso
+  const confirmFake = { ask: jasmine.createSpy('ask') };
   const now = new Date(2026, 8, 8, 15, 0); // 8 sep 2026, 15:00 hora local
 
   const button = (text: string) => Array.from(el.querySelectorAll('button')).find((b) => b.textContent!.trim() === text)!;
@@ -24,7 +27,7 @@ describe('NapsComponent', () => {
     jasmine.clock().mockDate(now);
     TestBed.configureTestingModule({
       imports: [NapsComponent],
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [provideHttpClient(), provideHttpClientTesting(), { provide: ConfirmService, useValue: confirmFake }],
     });
     http = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(NapsComponent);
@@ -82,10 +85,12 @@ describe('NapsComponent', () => {
     flushList();
   });
 
-  it('eliminar pide confirmación (US3-5)', () => {
+  it('eliminar pide confirmación (US3-5)', async () => {
     flushList([{ id: 5, date: '2026-09-08', start_time: '2026-09-08T13:00:00-04:00', end_time: '2026-09-08T13:20:00-04:00', notes: null, duration_min: 20 }]);
-    spyOn(window, 'confirm').and.returnValue(true);
+    confirmFake.ask.and.resolveTo(true);
     button('Eliminar').click();
+    await fixture.whenStable();
+    expect(confirmFake.ask.calls.mostRecent().args[0].title).toBe('¿Borrar esta siesta?');
     const req = http.expectOne('/api/naps/5');
     expect(req.request.method).toBe('DELETE');
     req.flush(null);

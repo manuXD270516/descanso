@@ -17,6 +17,7 @@ import { TrendsComponent } from './features/trends/trends.component';
 import { WelcomeComponent } from './features/onboarding/welcome.component';
 import { MyScheduleComponent } from './features/schedule/my-schedule.component';
 import { BedtimeNoticeComponent } from './shared/bedtime-notice.component';
+import { ConfirmDialogComponent } from './shared/confirm/confirm-dialog.component';
 import { NightUiService } from './features/night/night-ui.service';
 import { PushService } from './core/push.service';
 
@@ -31,7 +32,7 @@ type PublicView = 'register' | 'reset' | 'forgot' | 'privacy';
   imports: [
     NightComponent, NapsComponent, MetricsComponent, LoginComponent, SetupComponent,
     RegisterComponent, ResetPasswordComponent, ForgotComponent, PrivacyComponent, ProfileComponent, PeopleComponent,
-    TrendsComponent, WelcomeComponent, MyScheduleComponent, BedtimeNoticeComponent,
+    TrendsComponent, WelcomeComponent, MyScheduleComponent, BedtimeNoticeComponent, ConfirmDialogComponent,
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',

@@ -4,6 +4,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { MetricsComponent } from './metrics.component';
 import { Metric, MetricEntry } from '../../core/api.service';
 import { addDays, localDate } from '../../core/time';
+import { ConfirmService } from '../../shared/confirm/confirm.service';
 
 function metric(p: Partial<Metric>): Metric {
   return { id: 1, name: 'Calidad del sueño', type: 'scale', unit: null, min_value: 1, max_value: 5, color: '#5b6ee1', sort_order: 0, archived: 0, ...p };
@@ -13,6 +14,8 @@ describe('MetricsComponent', () => {
   let fixture: ComponentFixture<MetricsComponent>;
   let http: HttpTestingController;
   let el: HTMLElement;
+  // Feature 014: el diálogo propio sustituye a confirm(); aquí se responde con un servicio falso
+  const confirmFake = { ask: jasmine.createSpy('ask') };
   const today = localDate();
 
   const buttons = (text: string) => Array.from(el.querySelectorAll('button')).filter((b) => b.textContent!.trim() === text);
@@ -33,7 +36,7 @@ describe('MetricsComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [MetricsComponent],
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [provideHttpClient(), provideHttpClientTesting(), { provide: ConfirmService, useValue: confirmFake }],
     });
     http = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(MetricsComponent);
@@ -113,18 +116,21 @@ describe('MetricsComponent', () => {
     expect(el.querySelector('.entries .empty')).not.toBeNull();
   });
 
-  it('"Eliminar" solo aparece en las archivadas y respeta la confirmación (US5-8)', () => {
+  it('"Eliminar" solo aparece en las archivadas y respeta la confirmación (US5-8)', async () => {
     load([metric({}), metric({ id: 9, name: 'Vieja', archived: 1 })]);
     expect(buttons('Eliminar').length).toBe(0);
     button('1 archivada').click();
     fixture.detectChanges();
 
-    const confirmSpy = spyOn(window, 'confirm').and.returnValue(false);
+    confirmFake.ask.and.resolveTo(false);
     button('Eliminar').click();
+    await fixture.whenStable();
     http.expectNone('/api/metrics/9');
 
-    confirmSpy.and.returnValue(true);
+    confirmFake.ask.and.resolveTo(true);
     button('Eliminar').click();
+    await fixture.whenStable();
+    expect(confirmFake.ask.calls.mostRecent().args[0].title).toBe('¿Borrar la métrica «Vieja»?');
     const req = http.expectOne('/api/metrics/9');
     expect(req.request.method).toBe('DELETE');
     req.flush(null);

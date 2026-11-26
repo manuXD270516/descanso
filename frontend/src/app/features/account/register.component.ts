@@ -1,4 +1,5 @@
 import { Component, ElementRef, inject, input, output, signal, viewChild } from '@angular/core';
+import { FieldErrorDirective } from '../../shared/forms/field-error.directive';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/auth.service';
@@ -7,7 +8,7 @@ import { OPERATOR_NOTICE, POLICY_SECTIONS } from '../../core/privacy';
 /** Registro con invitación (feature 008, US1 y US6). */
 @Component({
   selector: 'app-register',
-  imports: [FormsModule],
+  imports: [FieldErrorDirective, FormsModule],
   styleUrl: './account.css',
   template: `
     <section class="panel account-card" aria-labelledby="register-title">
@@ -26,7 +27,7 @@ import { OPERATOR_NOTICE, POLICY_SECTIONS } from '../../core/privacy';
         <p class="error" role="alert" tabindex="-1" #errorMsg>{{ error() }}</p>
       }
 
-      <form (ngSubmit)="submit()">
+      <form appFieldError (ngSubmit)="submit()">
         <label class="field"><span>Tu nombre</span>
           <input type="text" name="display_name" [(ngModel)]="displayName" autocomplete="nickname" maxlength="60" required>
         </label>

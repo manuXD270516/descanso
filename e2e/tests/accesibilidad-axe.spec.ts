@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import type { Page } from '@playwright/test';
-import { expect, openTab, test } from '../support/fixtures';
+import { expect, openTab, setNow, test } from '../support/fixtures';
 import { expandTab, TABS, waitForTab } from '../support/tabs';
 
 // Feature 014 · accesibilidad automática en ambos temas (SC-002, SC-003, SC-007).
@@ -174,6 +174,22 @@ test.describe('axe en la pantalla de entrar (servidor propio, sin sesión)', () 
       await page.goto('/');
       await expect(page.getByRole('heading', { name: 'Entrar' })).toBeVisible();
       await expectNoViolations(page, `entrar-${theme}`);
+    });
+  }
+});
+
+// --- Diálogo de confirmación abierto (feature 014, US3) ---------------------------------------
+
+test.describe('axe con el diálogo de confirmación abierto (servidor propio)', () => {
+  for (const theme of THEMES) {
+    test(`SC-002 · el diálogo abierto no tiene violaciones (${theme})`, async ({ page, api }) => {
+      await api.createNight('2026-09-05T23:00', '2026-09-06T07:00');
+      await setNow(page, '2026-09-08T12:00');
+      await page.emulateMedia({ colorScheme: theme });
+      await page.goto('/');
+      await page.getByRole('button', { name: 'Eliminar' }).first().click();
+      await expect(page.getByRole('dialog')).toBeVisible();
+      await expectNoViolations(page, `dialogo-${theme}`);
     });
   }
 });
