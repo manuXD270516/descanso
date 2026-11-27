@@ -21,43 +21,50 @@ test.describe('Siestas (US3)', () => {
 
   test('US3-1 · el formulario propone los últimos 30 minutos y muestra "Duración: 30 min"', async ({ page }) => {
     const form = newNapForm(page);
-    await expect(form.getByLabel('Inicio', { exact: true })).toHaveValue('2026-09-08T14:30');
-    await expect(form.getByLabel('Fin', { exact: true })).toHaveValue('2026-09-08T15:00');
+    await expect(form.getByLabel(/^Inicio/)).toHaveValue('2026-09-08T14:30');
+    await expect(form.getByLabel(/^Fin/)).toHaveValue('2026-09-08T15:00');
     await expect(form.getByText('Duración: 30 min')).toBeVisible();
     await expect(form.getByRole('button', { name: 'Guardar siesta' })).toBeEnabled();
   });
 
-  test('US3-2 · con fin igual o anterior al inicio avisa y deshabilita "Guardar siesta"', async ({ page }) => {
+  test('US3-2 · con fin igual o anterior al inicio avisa y no guarda: el error queda en el campo "Fin" (FR-021, 014)', async ({ page, api }) => {
     const form = newNapForm(page);
-    const end = form.getByLabel('Fin', { exact: true });
+    const end = form.getByLabel(/^Fin/);
     const save = form.getByRole('button', { name: 'Guardar siesta' });
 
     for (const value of ['2026-09-08T14:30', '2026-09-08T14:00']) {
       await end.fill(value);
       await expect(form.getByText('El fin debe ser posterior al inicio')).toBeVisible();
-      await expect(save).toBeDisabled();
+      await expect(save).toBeEnabled();
+      await save.click();
+      await expect(end).toBeFocused();
+      await expect(end).toHaveAttribute('aria-invalid', 'true');
+      await expect(end).toHaveAccessibleDescription('El fin debe ser posterior al inicio.');
+      expect(await api.naps()).toHaveLength(0);
     }
 
-    // Al corregir la hora, la duración y el botón se actualizan (aclaración de US3-2)
+    // Al corregir la hora, el error desaparece y la duración se actualiza (aclaración de US3-2)
     await end.fill('2026-09-08T14:50');
+    await expect(end).toHaveAttribute('aria-invalid', 'false');
     await expect(form.getByText('Duración: 20 min')).toBeVisible();
-    await expect(save).toBeEnabled();
+    await save.click();
+    await expect(page.getByText('1 siesta · 20 min')).toBeVisible();
   });
 
   test('US3-3 · dos siestas del mismo día (20 y 45 min) se agrupan como "2 siestas · 1 h 05 min"', async ({ page, api }) => {
     const form = newNapForm(page);
     const save = form.getByRole('button', { name: 'Guardar siesta' });
 
-    await form.getByLabel('Inicio', { exact: true }).fill('2026-09-08T13:00');
-    await form.getByLabel('Fin', { exact: true }).fill('2026-09-08T13:20');
+    await form.getByLabel(/^Inicio/).fill('2026-09-08T13:00');
+    await form.getByLabel(/^Fin/).fill('2026-09-08T13:20');
     await form.getByLabel('Notas (opcional)').fill('después del almuerzo');
     await save.click();
     // Tras guardar, el formulario vuelve a proponer los últimos 30 minutos
-    await expect(form.getByLabel('Inicio', { exact: true })).toHaveValue('2026-09-08T14:30');
+    await expect(form.getByLabel(/^Inicio/)).toHaveValue('2026-09-08T14:30');
     await expect(form.getByLabel('Notas (opcional)')).toHaveValue('');
 
-    await form.getByLabel('Inicio', { exact: true }).fill('2026-09-08T09:00');
-    await form.getByLabel('Fin', { exact: true }).fill('2026-09-08T09:45');
+    await form.getByLabel(/^Inicio/).fill('2026-09-08T09:00');
+    await form.getByLabel(/^Fin/).fill('2026-09-08T09:45');
     await save.click();
 
     const group = dayGroup(page, await fmtDateShort(page, '2026-09-08'));
@@ -91,7 +98,7 @@ test.describe('Siestas (US3)', () => {
 
     const nap = page.getByRole('article');
     await nap.getByRole('button', { name: 'Editar' }).click();
-    await nap.getByLabel('Fin', { exact: true }).fill('2026-09-08T13:50');
+    await nap.getByLabel(/^Fin/).fill('2026-09-08T13:50');
     await nap.getByLabel('Notas', { exact: true }).fill('larga');
     await nap.getByRole('button', { name: 'Guardar cambios' }).click();
 

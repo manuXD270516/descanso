@@ -23,12 +23,15 @@ test('ajustes de ciclo: 100/20 se guardan y se conservan; 120 → error con el r
   await page.goto('/');
   const calc = page.locator('app-cycle-calculator');
   await calc.getByText(/^Ajustar/).click();
-  await calc.getByLabel('Duración del ciclo (min)').fill('120');
+  await calc.getByLabel(/^Duración del ciclo/).fill('120');
   await calc.getByRole('button', { name: 'Guardar ajustes' }).click();
-  await expect(calc.getByRole('alert')).toHaveText('La duración del ciclo debe estar entre 70 y 110 minutos');
+  // FR-021 (014): el rango se valida en el campo antes de enviar (el servidor lo sigue exigiendo)
+  await expect(calc.getByLabel(/^Duración del ciclo/)).toHaveAttribute('aria-invalid', 'true');
+  await expect(calc.getByLabel(/^Duración del ciclo/)).toHaveAccessibleDescription('Debe estar entre 70 y 110 minutos.');
+  expect(((await (await api.request.get('/api/me')).json()) as { cycle_min: number }).cycle_min).toBe(90);
 
-  await calc.getByLabel('Duración del ciclo (min)').fill('100');
-  await calc.getByLabel('Tiempo en dormirte (min)').fill('20');
+  await calc.getByLabel(/^Duración del ciclo/).fill('100');
+  await calc.getByLabel(/^Tiempo en dormirte/).fill('20');
   await calc.getByRole('button', { name: 'Guardar ajustes' }).click();
   await expect(calc.getByRole('status')).toHaveText('Ajustes guardados.');
   await page.getByLabel('Hora de dormir').fill('2026-09-29T23:00');

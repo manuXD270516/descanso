@@ -22,7 +22,13 @@ const settle = async (f: ComponentFixture<unknown>) => { for (let i = 0; i < 3; 
 describe('Feature 013 · app', () => {
   let http: HttpTestingController;
 
+  afterEach(() => {
+    delete (document as unknown as { startViewTransition?: unknown }).startViewTransition;
+  });
+
   beforeEach(() => {
+    // Cambios de pestaña síncronos en estas pruebas: sin transición de vista
+    (document as unknown as { startViewTransition?: unknown }).startViewTransition = undefined;
     TestBed.configureTestingModule({
       imports: [App],
       providers: [provideHttpClient(withInterceptors([authInterceptor])), provideHttpClientTesting()],

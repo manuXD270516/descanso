@@ -8,7 +8,7 @@
   .day-center { display: grid; justify-items: center; gap: 0.25rem; }
   .day-label { font-size: var(--fs-lg); font-weight: 600; letter-spacing: -0.02em; text-transform: capitalize; }
   .day-center input { width: auto; max-width: 100%; padding: 0.25rem 0.5rem; font-size: 0.85rem; color: var(--ink-muted); background: transparent; border-color: transparent; }
-  .day-center input:hover { border-color: var(--line-strong); }
+  @media (hover: hover) { .day-center input:hover { border-color: var(--line-strong); } }
 
   .entries { display: grid; gap: 0.6rem; }
   .metric { display: grid; gap: 0.6rem; padding: 0.9rem 1rem; border-left: 4px solid var(--metric-color, var(--cat-1)); }

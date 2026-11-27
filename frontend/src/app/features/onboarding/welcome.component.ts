@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { FieldErrorDirective } from '../../shared/forms/field-error.directive';
 import { switchMap, of } from 'rxjs';
 import { AuthService } from '../../core/auth.service';
 import { CYCLE_MIN, cyclesFor, fmtGoal } from '../../core/cycles';
@@ -17,9 +18,9 @@ import { StreakOfferComponent } from '../streak/streak-offer.component';
  */
 @Component({
   selector: 'app-welcome',
-  imports: [FormsModule, ScheduleEditorComponent, StreakOfferComponent],
+  imports: [FieldErrorDirective, FormsModule, ScheduleEditorComponent, StreakOfferComponent],
   template: `
-    <section class="panel welcome" aria-labelledby="welcome-title">
+    <section class="panel welcome" aria-labelledby="welcome-title" appFieldError #fe="appFieldError">
       <h2 id="welcome-title">¿Cuántas horas quieres dormir?</h2>
       <p class="muted">Lo usamos para tus tendencias y tu horario. Puedes cambiarlo cuando quieras.</p>
       <div class="row wrap" role="group" aria-label="Ciclos completos">
@@ -29,8 +30,8 @@ import { StreakOfferComponent } from '../streak/streak-offer.component';
         }
       </div>
       <div class="row wrap">
-        <label class="field"><span>Horas</span><input type="number" name="h" [ngModel]="hours()" (ngModelChange)="setParts($event, minutes())" min="4" max="12"></label>
-        <label class="field"><span>Minutos</span><input type="number" name="m" [ngModel]="minutes()" (ngModelChange)="setParts(hours(), $event)" min="0" max="59" step="5"></label>
+        <label class="field"><span>Horas</span><input type="number" name="h" data-unit="horas" [ngModel]="hours()" (ngModelChange)="setParts($event, minutes())" min="4" max="12" required></label>
+        <label class="field"><span>Minutos</span><input type="number" name="m" data-unit="minutos" [ngModel]="minutes()" (ngModelChange)="setParts(hours(), $event)" min="0" max="59" step="5" required></label>
       </div>
       <p class="small faint">Un ciclo de sueño dura unos {{ cycle }} minutos (varía entre personas): despertar al final de uno suele sentar mejor.</p>
 
@@ -43,7 +44,7 @@ import { StreakOfferComponent } from '../streak/streak-offer.component';
 
       @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
       <div class="row wrap">
-        <button type="button" class="btn btn-moon" [disabled]="busy()" (click)="finish(goal(), days())">Guardar</button>
+        <button type="button" class="btn btn-moon" data-submit [disabled]="busy()" (click)="fe.validate() && finish(goal(), days())">Guardar</button>
         <button type="button" class="btn btn-ghost" [disabled]="busy()" (click)="finish()">Saltar (7 h)</button>
       </div>
     </section>

@@ -57,7 +57,7 @@
         <label class="field"><span>Desperté</span><input type="datetime-local" name="wake" [(ngModel)]="manual.wake" required></label>
       </div>
       <label class="field"><span>Notas (opcional)</span><input type="text" [(ngModel)]="manual.notes" placeholder="Ej. me desperté dos veces"></label>
-      <div class="row end"><button class="btn" type="button" (click)="manualForm.validate() && saveManual()" [disabled]="busy()">Guardar noche</button></div>
+      <div class="row end"><button class="btn" type="button" data-submit (click)="manualForm.validate() && saveManual()" [disabled]="busy()">Guardar noche</button></div>
     </div>
   }
 </section>
