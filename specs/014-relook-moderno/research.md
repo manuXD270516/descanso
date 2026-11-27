@@ -239,6 +239,18 @@ mueve (Q5). En Karma, `startViewTransition` queda sin definir (camino directo). 
 
 **Razón**: `ui-behaviors/same-document-transitions.md`, `ui-behaviors/motion.md`.
 
+**Decisión revisada (PR #98)**: `navigate()` ya no espera a `appRef.whenStable()` dentro del callback de
+`startViewTransition`; aplica el cambio y llama a `appRef.tick()` de forma síncrona. Razón: con
+`REQUESTS_CONTRIBUTE_TO_STABILITY` (activo por defecto) `whenStable()` también espera a las peticiones
+HTTP pendientes, así que la pantalla quedaba congelada en la vista vieja hasta unos 4 s mientras la
+vista nueva cargaba datos. Con `tick()` el DOM nuevo existe al terminar el callback y los datos entran
+después, con el estado de carga de cada vista.
+
+Alternativas evaluadas: (1) mantener `whenStable()` (congela la pantalla); (2) desactivar
+`REQUESTS_CONTRIBUTE_TO_STABILITY` (afecta a toda la app y al SSR/pruebas); (3) un tiempo máximo con
+`Promise.race` (arbitrario y sigue congelando hasta el tope); (4) `flushSync`/`afterNextRender` (no
+aplican de forma fiable con zoneless fuera de un componente). Se eligió `tick()` síncrono.
+
 **Alternativas**: animaciones de Angular (`@angular/animations`, más peso y deprecado en favor de CSS);
 `withViewTransitions()` del router (no hay router).
 

@@ -44,6 +44,8 @@ jobs:
       - name: Frontend — build de producción
         working-directory: frontend
         run: npx ng build
+      - name: Frontend — estilos y presupuesto
+        run: node scripts/check-styles.mjs
 
   # Pruebas end-to-end con Playwright: navegador real contra `node backend/src/server.js`.
   # Corre en paralelo a "quality". No es (todavía) un check requerido por la protección de master,
