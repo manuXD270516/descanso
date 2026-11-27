@@ -1,4 +1,4 @@
-import { inputLocalToIso, nightDate } from './time';
+import { inputDurationMin, inputLocalToIso, nightDate } from './time';
 
 describe('nightDate (fecha de la noche = día local en que te acuestas)', () => {
   it('antes de medianoche: 23:40 del lunes → lunes', () => {
@@ -31,5 +31,45 @@ describe('inputLocalToIso', () => {
 
   it('no duplica los segundos si ya vienen', () => {
     expect(inputLocalToIso('2026-09-07T23:40:15')).toMatch(/^2026-09-07T23:40:15[+-]\d{2}:\d{2}$/);
+  });
+});
+
+describe('inputDurationMin (T046: misma duración y validez al crear y al editar)', () => {
+  // Karma no permite fijar la zona del navegador: se inyecta la conversión de America/New_York, donde el
+  // 2026-11-01 el reloj retrocede de 02:00 a 01:00 y la hora 01:00-01:59 existe con -04:00 y con -05:00.
+  const nuevaYork = (offsetDeLaHoraRepetida: string) => (v: string) => {
+    const hora = v.slice(11, 16);
+    const repetida = v.startsWith('2026-11-01') && hora >= '01:00' && hora < '02:00';
+    const off = repetida ? offsetDeLaHoraRepetida : v.startsWith('2026-11-01') ? '-05:00' : '-04:00';
+    return `${v}:00${off}`;
+  };
+
+  it('en la hora repetida, 01:30 con -04:00 y con -05:00 son instantes distintos (una hora de diferencia)', () => {
+    const a = Date.parse(nuevaYork('-04:00')('2026-11-01T01:30'));
+    const b = Date.parse(nuevaYork('-05:00')('2026-11-01T01:30'));
+    expect(b - a).toBe(60 * 60000);
+  });
+
+  it('mide con los mismos offsets que se envían: 01:30 (-04:00) a 02:10 (-05:00) son 100 min, no 40', () => {
+    expect(inputDurationMin('2026-11-01T01:30', '2026-11-01T02:10', nuevaYork('-04:00'))).toBe(100);
+  });
+
+  it('si el inicio cae en la segunda pasada (-05:00), el mismo fin da 40 min', () => {
+    expect(inputDurationMin('2026-11-01T01:30', '2026-11-01T02:10', nuevaYork('-05:00'))).toBe(40);
+  });
+
+  it('un fin igual o anterior al inicio no es válido (null)', () => {
+    expect(inputDurationMin('2026-11-01T01:30', '2026-11-01T01:30', nuevaYork('-04:00'))).toBeNull();
+    expect(inputDurationMin('2026-11-01T01:50', '2026-11-01T01:20', nuevaYork('-04:00'))).toBeNull();
+  });
+
+  it('sin inicio o sin fin devuelve null', () => {
+    expect(inputDurationMin('', '2026-11-01T02:10')).toBeNull();
+    expect(inputDurationMin('2026-11-01T01:30', '')).toBeNull();
+  });
+
+  it('con la conversión real da lo mismo que la resta de los ISO enviados', () => {
+    const s = '2026-09-07T14:00', e = '2026-09-07T14:45';
+    expect(inputDurationMin(s, e)).toBe(Math.round((Date.parse(inputLocalToIso(e)) - Date.parse(inputLocalToIso(s))) / 60000));
   });
 });

@@ -3,7 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { ApiService, Nap } from '../../core/api.service';
-import { addDays, fmtDateShort, fmtDuration, fmtTime, inputLocalToIso, isoToInputLocal, localDate, nightDate, toInputLocal } from '../../core/time';
+import { addDays, fmtDateShort, fmtDuration, fmtTime, inputDurationMin, inputLocalToIso, isoToInputLocal, localDate, nightDate, toInputLocal } from '../../core/time';
 import { OriginBadgeComponent } from '../../shared/origin/origin-badge.component';
 import { ConfirmService } from '../../shared/confirm/confirm.service';
 import { FieldErrorDirective } from '../../shared/forms/field-error.directive';
@@ -45,9 +45,7 @@ export class NapsComponent implements OnInit {
 
   /** Método y no computed(): `form` es un objeto plano ligado con ngModel, no un signal */
   formDuration(): number | null {
-    if (!this.form.start || !this.form.end) return null;
-    const m = Math.round((new Date(this.form.end).getTime() - new Date(this.form.start).getTime()) / 60000);
-    return m > 0 ? m : null;
+    return inputDurationMin(this.form.start, this.form.end);
   }
 
   ngOnInit() {
@@ -86,8 +84,8 @@ export class NapsComponent implements OnInit {
 
   saveEdit(id: number, fe: FieldErrorDirective) {
     if (!fe.validate()) return;
-    // Mismo criterio que al crear: el fin va después del inicio, y el error queda en el campo "Fin"
-    if (new Date(this.edit.end).getTime() <= new Date(this.edit.start).getTime()) {
+    // Mismo cálculo que al crear: el fin va después del inicio, y el error queda en el campo "Fin"
+    if (!inputDurationMin(this.edit.start, this.edit.end)) {
       fe.report('editEnd', 'El fin debe ser posterior al inicio.');
       return;
     }
