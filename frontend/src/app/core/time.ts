@@ -20,6 +20,18 @@ export function inputLocalToIso(v: string): string {
 }
 
 /**
+ * Duración en minutos entre dos valores de <input type="datetime-local"> (inicio y fin), o null si el fin
+ * no es posterior al inicio. Se mide entre los mismos ISO con offset que se envían al servidor, así la
+ * validez y la duración coinciden con lo guardado también en la hora repetida del cambio de horario (T046).
+ * `toIso` se inyecta solo en las pruebas, para fijar un desfase sin depender de la zona del navegador.
+ */
+export function inputDurationMin(start: string, end: string, toIso: (v: string) => string = inputLocalToIso): number | null {
+  if (!start || !end) return null;
+  const m = Math.round((Date.parse(toIso(end)) - Date.parse(toIso(start))) / 60000);
+  return m > 0 ? m : null;
+}
+
+/**
  * Fecha de la noche (YYYY-MM-DD): el día local en que la persona se acuesta.
  * El ISO lleva el offset de quien registra, así que su parte de fecha ya es el día local.
  */
