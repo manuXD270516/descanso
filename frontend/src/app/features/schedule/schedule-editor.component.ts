@@ -21,20 +21,20 @@ interface Pair { wake: string; bed: string }
         <fieldset class="pair">
           <legend class="small">{{ mode() === 'weekend' ? 'Noches de lunes a viernes' : 'Todas las noches' }}</legend>
           <label class="field"><span>¿A qué hora quieres levantarte?</span>
-            <input type="time" name="weekWake" [ngModel]="week().wake" (ngModelChange)="setWake('week', $event)">
+            <input type="time" name="weekWake" [ngModel]="week().wake" (ngModelChange)="setWake('week', $event)" [required]="requireTimes()">
           </label>
           <label class="field"><span>Hora de acostarte</span>
-            <input type="time" name="weekBed" [ngModel]="week().bed" (ngModelChange)="setBed('week', $event)">
+            <input type="time" name="weekBed" [ngModel]="week().bed" (ngModelChange)="setBed('week', $event)" [required]="requireTimes()">
           </label>
         </fieldset>
         @if (mode() === 'weekend') {
           <fieldset class="pair">
             <legend class="small">Noches del sábado y del domingo</legend>
             <label class="field"><span>Levantarte</span>
-              <input type="time" name="endWake" [ngModel]="weekend().wake" (ngModelChange)="setWake('weekend', $event)">
+              <input type="time" name="endWake" [ngModel]="weekend().wake" (ngModelChange)="setWake('weekend', $event)" [required]="requireTimes()">
             </label>
             <label class="field"><span>Acostarte</span>
-              <input type="time" name="endBed" [ngModel]="weekend().bed" (ngModelChange)="setBed('weekend', $event)">
+              <input type="time" name="endBed" [ngModel]="weekend().bed" (ngModelChange)="setBed('weekend', $event)" [required]="requireTimes()">
             </label>
           </fieldset>
         }
@@ -47,8 +47,8 @@ interface Pair { wake: string; bed: string }
             @for (w of order; track w) {
               <tr>
                 <th scope="row">{{ names[w] }}</th>
-                <td><input type="time" [name]="'wake' + w" [attr.aria-label]="'Levantarte tras la noche del ' + names[w]" [ngModel]="each()[w].wake" (ngModelChange)="setEach(w, 'wake', $event)"></td>
-                <td><input type="time" [name]="'bed' + w" [attr.aria-label]="'Acostarte la noche del ' + names[w]" [ngModel]="each()[w].bed" (ngModelChange)="setEach(w, 'bed', $event)"></td>
+                <td><input type="time" [name]="'wake' + w" [attr.aria-label]="'Levantarte tras la noche del ' + names[w]" [ngModel]="each()[w].wake" (ngModelChange)="setEach(w, 'wake', $event)" [required]="requireTimes()"></td>
+                <td><input type="time" [name]="'bed' + w" [attr.aria-label]="'Acostarte la noche del ' + names[w]" [ngModel]="each()[w].bed" (ngModelChange)="setEach(w, 'bed', $event)" [required]="requireTimes()"></td>
               </tr>
             }
           </tbody>
@@ -83,6 +83,8 @@ interface Pair { wake: string; bed: string }
 export class ScheduleEditorComponent {
   /** Objetivo de sueño para proponer la hora de acostarse. */
   readonly goalMin = input(420);
+  /** Si todas las horas son obligatorias (en Mi horario sí; en la bienvenida el horario es opcional). */
+  readonly requireTimes = input(false);
   /** Días ya guardados (null = horario nuevo). */
   readonly initial = input<ScheduleDay[] | null>(null);
   readonly changed = output<ScheduleDay[] | null>();

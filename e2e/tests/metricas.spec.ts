@@ -48,11 +48,17 @@ test.describe('Métricas (US5)', () => {
   });
 
   test('US5-2 · crear una escala sin nombre o con mínimo ≥ máximo se rechaza', async ({ page, api }) => {
+    const before = (await api.metrics()).length;
     await page.getByRole('button', { name: 'Nueva métrica' }).click();
     const create = page.getByRole('button', { name: 'Crear métrica' });
-    await expect(create).toBeDisabled(); // sin nombre
+    // FR-021 (014): sin nombre no se envía y el foco va al campo; solo espacios, también
+    await create.click();
+    await expect(page.getByLabel('Nombre')).toBeFocused();
+    await expect(page.getByLabel('Nombre')).toHaveAttribute('aria-invalid', 'true');
     await page.getByLabel('Nombre').fill('   ');
-    await expect(create).toBeDisabled(); // solo espacios
+    await create.click();
+    await expect(page.getByLabel('Nombre')).toHaveAccessibleDescription('Escribe un nombre para la métrica.');
+    expect(await api.metrics()).toHaveLength(before);
 
     await page.getByLabel('Nombre').fill('Ánimo');
     for (const [min, max] of [['5', '1'], ['3', '3']]) {

@@ -1,4 +1,5 @@
 import { Component, effect, inject, input, output, signal } from '@angular/core';
+import { FieldErrorDirective } from '../../shared/forms/field-error.directive';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { AccountService } from '../../core/account.service';
@@ -11,17 +12,17 @@ import { CYCLE_MIN, LATENCY_MIN } from '../../core/cycles';
  */
 @Component({
   selector: 'app-cycle-settings',
-  imports: [FormsModule],
+  imports: [FieldErrorDirective, FormsModule],
   template: `
-    <div class="cycle-settings">
+    <div class="cycle-settings" appFieldError #fe="appFieldError">
       <div class="row wrap">
         <label class="field"><span>Duración del ciclo (min)</span>
-          <input type="number" name="cycleMin" [(ngModel)]="cycle" min="70" max="110" step="5">
+          <input type="number" name="cycleMin" data-unit="minutos" [(ngModel)]="cycle" min="70" max="110" step="5" required>
         </label>
         <label class="field"><span>Tiempo en dormirte (min)</span>
-          <input type="number" name="latencyMin" [(ngModel)]="latency" min="0" max="60" step="5">
+          <input type="number" name="latencyMin" data-unit="minutos" [(ngModel)]="latency" min="0" max="60" step="5" required>
         </label>
-        <button type="button" class="btn btn-sm" (click)="save()" [disabled]="busy()">Guardar ajustes</button>
+        <button type="button" class="btn btn-sm" data-submit (click)="fe.validate() && save()" [disabled]="busy()">Guardar ajustes</button>
       </div>
       @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
       @if (saved()) { <p class="small" role="status">Ajustes guardados.</p> }

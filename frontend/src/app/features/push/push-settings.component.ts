@@ -1,4 +1,5 @@
 import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
+import { FieldErrorDirective } from '../../shared/forms/field-error.directive';
 import { HttpErrorResponse } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import {
@@ -17,6 +18,7 @@ import { fmtDateShort } from '../../core/time';
  */
 @Component({
   selector: 'app-push-settings',
+  imports: [FieldErrorDirective],
   template: `
     <section class="push" aria-labelledby="push-title">
       <h3 id="push-title">{{ title }}</h3>
@@ -113,10 +115,10 @@ import { fmtDateShort } from '../../core/time';
                 <span>No enviarme avisos en esta franja</span>
               </label>
               @if (dndOn()) {
-                <div class="row wrap">
-                  <label class="field"><span>Desde</span><input type="time" name="dndStart" [value]="dndStart()" (input)="dndStart.set($any($event.target).value)"></label>
-                  <label class="field"><span>Hasta</span><input type="time" name="dndEnd" [value]="dndEnd()" (input)="dndEnd.set($any($event.target).value)"></label>
-                  <button type="button" class="btn btn-sm" [disabled]="busy()" (click)="saveDnd()">Guardar franja</button>
+                <div class="row wrap" appFieldError #dnd="appFieldError">
+                  <label class="field"><span>Desde</span><input type="time" name="dndStart" [value]="dndStart()" (input)="dndStart.set($any($event.target).value)" required></label>
+                  <label class="field"><span>Hasta</span><input type="time" name="dndEnd" [value]="dndEnd()" (input)="dndEnd.set($any($event.target).value)" required></label>
+                  <button type="button" class="btn btn-sm" data-submit [disabled]="busy()" (click)="dnd.validate() && saveDnd()">Guardar franja</button>
                 </div>
                 <p class="small muted">Puede cruzar la medianoche. Los avisos que caigan dentro no se envían ni se aplazan.</p>
               }

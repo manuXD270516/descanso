@@ -103,6 +103,7 @@ suma de duraciones.
    hace 30 minutos, fin es ahora y se muestra "Duración: 30 min".
 2. **Given** fin igual o anterior a inicio, **When** revisa el formulario, **Then** ve "El fin
    debe ser posterior al inicio" y "Guardar siesta" está deshabilitado.
+   _Enmienda (feature 014, FR-021): "Guardar siesta" ya no se deshabilita; al pulsarlo con el fin igual o anterior al inicio no se guarda nada, el error queda en el campo "Fin" y el foco va a él._
 3. **Given** dos siestas el mismo día (20 y 45 min), **When** ve la lista, **Then** ese día
    muestra "2 siestas · 1 h 05 min".
 4. **Given** una siesta de hace 31 días, **When** ve la lista, **Then** no aparece.

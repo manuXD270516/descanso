@@ -6,10 +6,11 @@ import { ApiService, Nap } from '../../core/api.service';
 import { addDays, fmtDateShort, fmtDuration, fmtTime, inputLocalToIso, isoToInputLocal, localDate, nightDate, toInputLocal } from '../../core/time';
 import { OriginBadgeComponent } from '../../shared/origin/origin-badge.component';
 import { ConfirmService } from '../../shared/confirm/confirm.service';
+import { FieldErrorDirective } from '../../shared/forms/field-error.directive';
 
 @Component({
   selector: 'app-naps',
-  imports: [FormsModule, OriginBadgeComponent],
+  imports: [FieldErrorDirective, FormsModule, OriginBadgeComponent],
   templateUrl: './naps.component.html',
   styleUrl: './naps.component.css',
 })
@@ -67,7 +68,10 @@ export class NapsComponent implements OnInit {
     });
   }
 
-  save() {
+  save(fe: FieldErrorDirective) {
+    if (!fe.validate()) return;
+    // Regla de negocio que el navegador no valida: el fin va después del inicio
+    if (!this.formDuration()) { fe.report('end', 'El fin debe ser posterior al inicio.'); return; }
     const start = inputLocalToIso(this.form.start);
     this.run(
       this.api.createNap({ date: nightDate(start), start_time: start, end_time: inputLocalToIso(this.form.end), notes: this.form.notes || null }),
@@ -80,7 +84,13 @@ export class NapsComponent implements OnInit {
     this.edit = { start: isoToInputLocal(n.start_time), end: isoToInputLocal(n.end_time), notes: n.notes ?? '' };
   }
 
-  saveEdit(id: number) {
+  saveEdit(id: number, fe: FieldErrorDirective) {
+    if (!fe.validate()) return;
+    // Mismo criterio que al crear: el fin va después del inicio, y el error queda en el campo "Fin"
+    if (new Date(this.edit.end).getTime() <= new Date(this.edit.start).getTime()) {
+      fe.report('editEnd', 'El fin debe ser posterior al inicio.');
+      return;
+    }
     const start = inputLocalToIso(this.edit.start);
     this.run(
       this.api.updateNap(id, { date: nightDate(start), start_time: start, end_time: inputLocalToIso(this.edit.end), notes: this.edit.notes || null }),

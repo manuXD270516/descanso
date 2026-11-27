@@ -56,3 +56,21 @@ test.describe('Versión desplegada (servidor propio con APP_VERSION)', () => {
     await expect(page.getByRole('contentinfo')).toHaveText('Versión 0123456');
   });
 });
+
+test.describe('Transición entre pestañas (servidor compartido, solo lectura)', () => {
+  test.use({ isolate: false });
+
+  test('FR-024 · con movimiento permitido el cambio de pestaña funciona con transición y el foco sigue en la pestaña', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.goto('/');
+    const nav = page.getByRole('navigation', { name: 'Secciones' });
+    await nav.getByRole('button', { name: 'Siestas' }).focus();
+    await page.keyboard.press('Enter');
+    await expect(nav.getByRole('button', { name: 'Siestas' })).toHaveAttribute('aria-current', 'page');
+    await expect(page.getByRole('heading', { name: 'Nueva siesta' })).toBeVisible();
+    await expect(nav.getByRole('button', { name: 'Siestas' })).toBeFocused();
+    await nav.getByRole('button', { name: 'Métricas' }).click();
+    await nav.getByRole('button', { name: 'Noche' }).click(); // dos cambios seguidos: gana el último
+    await expect(nav.getByRole('button', { name: 'Noche' })).toHaveAttribute('aria-current', 'page');
+  });
+});

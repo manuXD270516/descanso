@@ -76,7 +76,7 @@
           <!-- Feature 010 (US5): aviso a la hora de prepararse, con la app abierta -->
           <app-bedtime-notice />
           @switch (accountView()) {
-            @case ('profile') { <app-profile (deleted)="accountView.set(null)" /> }
+            @case ('profile') { <app-profile (deleted)="navigate(() => accountView.set(null))" /> }
             @case ('schedule') { <app-my-schedule /> }
             @case ('people') { <app-people /> }
             @case ('privacy') { <app-privacy /> }

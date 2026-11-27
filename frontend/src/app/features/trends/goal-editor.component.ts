@@ -1,4 +1,5 @@
 import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
+import { FieldErrorDirective } from '../../shared/forms/field-error.directive';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { AccountService } from '../../core/account.service';
@@ -10,9 +11,9 @@ import { CYCLE_MIN, GOAL_MAX, GOAL_MIN, cyclesFor, fmtGoal } from '../../core/cy
  */
 @Component({
   selector: 'app-goal-editor',
-  imports: [FormsModule],
+  imports: [FieldErrorDirective, FormsModule],
   template: `
-    <div class="goal-editor">
+    <div class="goal-editor" appFieldError #fe="appFieldError">
       <p class="small">
         Tu objetivo: <strong>{{ fmt(draft()) }}</strong>, unos <strong>{{ equivalent() }}</strong> ciclos de {{ cycleMin() }} min.
       </p>
@@ -23,9 +24,9 @@ import { CYCLE_MIN, GOAL_MAX, GOAL_MIN, cyclesFor, fmtGoal } from '../../core/cy
         }
       </div>
       <div class="row wrap">
-        <label class="field"><span>Horas</span><input type="number" name="goalHours" [ngModel]="hours()" (ngModelChange)="setParts($event, minutes())" min="4" max="12"></label>
-        <label class="field"><span>Minutos</span><input type="number" name="goalMinutes" [ngModel]="minutes()" (ngModelChange)="setParts(hours(), $event)" min="0" max="59" step="5"></label>
-        <button type="button" class="btn" (click)="save()" [disabled]="busy()">Guardar objetivo</button>
+        <label class="field"><span>Horas</span><input type="number" name="goalHours" data-unit="horas" [ngModel]="hours()" (ngModelChange)="setParts($event, minutes())" min="4" max="12" required></label>
+        <label class="field"><span>Minutos</span><input type="number" name="goalMinutes" data-unit="minutos" [ngModel]="minutes()" (ngModelChange)="setParts(hours(), $event)" min="0" max="59" step="5" required></label>
+        <button type="button" class="btn" data-submit (click)="fe.validate() && save()" [disabled]="busy()">Guardar objetivo</button>
       </div>
       <p class="small faint">Un ciclo dura unos {{ cycleMin() }} minutos, aunque varía entre personas y a lo largo de la noche: tómalo como orientación.</p>
       @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
